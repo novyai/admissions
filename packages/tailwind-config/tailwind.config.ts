@@ -18,7 +18,6 @@ const config: Omit<Config, "content"> = {
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "serif"],
         inter: ["var(--font-inter)", "system-ui", "sans-serif"],
-
         mono: ["var(--font-default)", "monospace"],
         monoBold: ["var(--font-mono-bold)", "monospace"],
 

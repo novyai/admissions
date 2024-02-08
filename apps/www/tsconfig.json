@@ -9,6 +9,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ui/*": ["../../packages/ui/src/*"],
+      "@db/*": ["../../packages/db/src/*"],
+
     },
     "baseUrl": ".",
     "declaration": false,

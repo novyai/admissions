@@ -1,3 +1,9 @@
+import Link from "next/link"
+
 export default async function Page() {
-  return <div>Page</div>
+  return (
+    <div>
+      <Link href="/admin/courses">Admin</Link>
+    </div>
+  )
 }
