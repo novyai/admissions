@@ -75,9 +75,7 @@ export function PromptComposer({
               onClick={() => onSubmit(prompt)}
               className="ml-[-88px] h-14 z-10"
             >
-              {loading ?
-                <Loader2 className="h-4 w-6 animate-spin" />
-              : "Ask"}
+              {loading ? <Loader2 className="h-4 w-6 animate-spin" /> : "Ask"}
             </Button>
           </>
         </div>

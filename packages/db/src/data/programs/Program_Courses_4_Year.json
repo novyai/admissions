@@ -1,0 +1,92 @@
+[
+  {
+    "courseId": "CDA 4205",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CDA 4205L",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "EEE 3394",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "EGN 3373",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "EGN 3615",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "EGN 4450",
+    "semester": 1,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CDA 4203",
+    "semester": 2,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CDA 4203L",
+    "semester": 2,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "COT 4400",
+    "semester": 2,
+    "year": 3,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CDA 4213",
+    "semester": 1,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CDA 4213L",
+    "semester": 1,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "COP 4600",
+    "semester": 1,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "ENC 3246",
+    "semester": 1,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CIS 4250",
+    "semester": 2,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  },
+  {
+    "courseId": "CIS 4910",
+    "semester": 2,
+    "year": 4,
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12"
+  }
+]

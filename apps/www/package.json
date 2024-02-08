@@ -10,12 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@kinde-oss/kinde-auth-nextjs": "^2.1.5",
-    "@mdx-js/loader": "^2.3.0",
-    "@mdx-js/react": "^2.3.0",
     "@next/eslint-plugin-next": "^14.0.2",
-    "@next/mdx": "^13.4.19",
-    "@repo/constants": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

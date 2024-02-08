@@ -1,0 +1,1982 @@
+[
+  {
+    "id": 1,
+    "code": "MVW",
+    "name": "MVW",
+    "universityId": 1
+  },
+  {
+    "id": 2,
+    "code": "MIS",
+    "name": "MIS",
+    "universityId": 1
+  },
+  {
+    "id": 3,
+    "code": "LAE",
+    "name": "LAE",
+    "universityId": 1
+  },
+  {
+    "id": 4,
+    "code": "CEG",
+    "name": "CEG",
+    "universityId": 1
+  },
+  {
+    "id": 5,
+    "code": "JOU",
+    "name": "JOU",
+    "universityId": 1
+  },
+  {
+    "id": 6,
+    "code": "PAS",
+    "name": "PAS",
+    "universityId": 1
+  },
+  {
+    "id": 7,
+    "code": "LDR",
+    "name": "LDR",
+    "universityId": 1
+  },
+  {
+    "id": 8,
+    "code": "RED",
+    "name": "RED",
+    "universityId": 1
+  },
+  {
+    "id": 9,
+    "code": "EUH",
+    "name": "EUH",
+    "universityId": 1
+  },
+  {
+    "id": 10,
+    "code": "ENY",
+    "name": "ENY",
+    "universityId": 1
+  },
+  {
+    "id": 11,
+    "code": "JPN",
+    "name": "JPN",
+    "universityId": 1
+  },
+  {
+    "id": 12,
+    "code": "NWC",
+    "name": "NWC",
+    "universityId": 1
+  },
+  {
+    "id": 13,
+    "code": "OSE",
+    "name": "OSE",
+    "universityId": 1
+  },
+  {
+    "id": 14,
+    "code": "EML",
+    "name": "EML",
+    "universityId": 1
+  },
+  {
+    "id": 15,
+    "code": "WST",
+    "name": "WST",
+    "universityId": 1
+  },
+  {
+    "id": 16,
+    "code": "CES",
+    "name": "CES",
+    "universityId": 1
+  },
+  {
+    "id": 17,
+    "code": "REL",
+    "name": "REL",
+    "universityId": 1
+  },
+  {
+    "id": 18,
+    "code": "SMT",
+    "name": "SMT",
+    "universityId": 1
+  },
+  {
+    "id": 19,
+    "code": "CBH",
+    "name": "CBH",
+    "universityId": 1
+  },
+  {
+    "id": 20,
+    "code": "ITT",
+    "name": "ITT",
+    "universityId": 1
+  },
+  {
+    "id": 21,
+    "code": "FAS",
+    "name": "FAS",
+    "universityId": 1
+  },
+  {
+    "id": 22,
+    "code": "SPW",
+    "name": "SPW",
+    "universityId": 1
+  },
+  {
+    "id": 23,
+    "code": "EAB",
+    "name": "EAB",
+    "universityId": 1
+  },
+  {
+    "id": 24,
+    "code": "SUR",
+    "name": "SUR",
+    "universityId": 1
+  },
+  {
+    "id": 25,
+    "code": "COM",
+    "name": "COM",
+    "universityId": 1
+  },
+  {
+    "id": 26,
+    "code": "CLA",
+    "name": "CLA",
+    "universityId": 1
+  },
+  {
+    "id": 27,
+    "code": "ENG",
+    "name": "ENG",
+    "universityId": 1
+  },
+  {
+    "id": 28,
+    "code": "CJT",
+    "name": "CJT",
+    "universityId": 1
+  },
+  {
+    "id": 29,
+    "code": "CHS",
+    "name": "CHS",
+    "universityId": 1
+  },
+  {
+    "id": 30,
+    "code": "CJJ",
+    "name": "CJJ",
+    "universityId": 1
+  },
+  {
+    "id": 31,
+    "code": "DAE",
+    "name": "DAE",
+    "universityId": 1
+  },
+  {
+    "id": 32,
+    "code": "MMC",
+    "name": "MMC",
+    "universityId": 1
+  },
+  {
+    "id": 33,
+    "code": "MUH",
+    "name": "MUH",
+    "universityId": 1
+  },
+  {
+    "id": 34,
+    "code": "RMI",
+    "name": "RMI",
+    "universityId": 1
+  },
+  {
+    "id": 35,
+    "code": "ARA",
+    "name": "ARA",
+    "universityId": 1
+  },
+  {
+    "id": 36,
+    "code": "EDF",
+    "name": "EDF",
+    "universityId": 1
+  },
+  {
+    "id": 37,
+    "code": "OCG",
+    "name": "OCG",
+    "universityId": 1
+  },
+  {
+    "id": 38,
+    "code": "SPA",
+    "name": "SPA",
+    "universityId": 1
+  },
+  {
+    "id": 39,
+    "code": "EAP",
+    "name": "EAP",
+    "universityId": 1
+  },
+  {
+    "id": 40,
+    "code": "PHC",
+    "name": "PHC",
+    "universityId": 1
+  },
+  {
+    "id": 41,
+    "code": "ASL",
+    "name": "ASL",
+    "universityId": 1
+  },
+  {
+    "id": 42,
+    "code": "HCCE",
+    "name": "HCCE",
+    "universityId": 1
+  },
+  {
+    "id": 43,
+    "code": "HSA",
+    "name": "HSA",
+    "universityId": 1
+  },
+  {
+    "id": 44,
+    "code": "PHT",
+    "name": "PHT",
+    "universityId": 1
+  },
+  {
+    "id": 45,
+    "code": "HIM",
+    "name": "HIM",
+    "universityId": 1
+  },
+  {
+    "id": 46,
+    "code": "EED",
+    "name": "EED",
+    "universityId": 1
+  },
+  {
+    "id": 47,
+    "code": "LIS",
+    "name": "LIS",
+    "universityId": 1
+  },
+  {
+    "id": 48,
+    "code": "CHD",
+    "name": "CHD",
+    "universityId": 1
+  },
+  {
+    "id": 49,
+    "code": "SCM",
+    "name": "SCM",
+    "universityId": 1
+  },
+  {
+    "id": 50,
+    "code": "EGI",
+    "name": "EGI",
+    "universityId": 1
+  },
+  {
+    "id": 51,
+    "code": "LAH",
+    "name": "LAH",
+    "universityId": 1
+  },
+  {
+    "id": 52,
+    "code": "WOH",
+    "name": "WOH",
+    "universityId": 1
+  },
+  {
+    "id": 53,
+    "code": "EIN",
+    "name": "EIN",
+    "universityId": 1
+  },
+  {
+    "id": 54,
+    "code": "PHZ",
+    "name": "PHZ",
+    "universityId": 1
+  },
+  {
+    "id": 55,
+    "code": "MUG",
+    "name": "MUG",
+    "universityId": 1
+  },
+  {
+    "id": 56,
+    "code": "TSL",
+    "name": "TSL",
+    "universityId": 1
+  },
+  {
+    "id": 57,
+    "code": "NEB",
+    "name": "NEB",
+    "universityId": 1
+  },
+  {
+    "id": 58,
+    "code": "LAT",
+    "name": "LAT",
+    "universityId": 1
+  },
+  {
+    "id": 59,
+    "code": "SYA",
+    "name": "SYA",
+    "universityId": 1
+  },
+  {
+    "id": 60,
+    "code": "EUS",
+    "name": "EUS",
+    "universityId": 1
+  },
+  {
+    "id": 61,
+    "code": "SDS",
+    "name": "SDS",
+    "universityId": 1
+  },
+  {
+    "id": 62,
+    "code": "ZOO",
+    "name": "ZOO",
+    "universityId": 1
+  },
+  {
+    "id": 63,
+    "code": "MUS",
+    "name": "MUS",
+    "universityId": 1
+  },
+  {
+    "id": 64,
+    "code": "PPE",
+    "name": "PPE",
+    "universityId": 1
+  },
+  {
+    "id": 65,
+    "code": "TPA",
+    "name": "TPA",
+    "universityId": 1
+  },
+  {
+    "id": 66,
+    "code": "EMR",
+    "name": "EMR",
+    "universityId": 1
+  },
+  {
+    "id": 67,
+    "code": "LIN",
+    "name": "LIN",
+    "universityId": 1
+  },
+  {
+    "id": 68,
+    "code": "ENT",
+    "name": "ENT",
+    "universityId": 1
+  },
+  {
+    "id": 69,
+    "code": "ECH",
+    "name": "ECH",
+    "universityId": 1
+  },
+  {
+    "id": 70,
+    "code": "COP",
+    "name": "COP",
+    "universityId": 1
+  },
+  {
+    "id": 71,
+    "code": "ECT",
+    "name": "ECT",
+    "universityId": 1
+  },
+  {
+    "id": 72,
+    "code": "EDG",
+    "name": "EDG",
+    "universityId": 1
+  },
+  {
+    "id": 73,
+    "code": "PSC",
+    "name": "PSC",
+    "universityId": 1
+  },
+  {
+    "id": 74,
+    "code": "PHY",
+    "name": "PHY",
+    "universityId": 1
+  },
+  {
+    "id": 75,
+    "code": "SYD",
+    "name": "SYD",
+    "universityId": 1
+  },
+  {
+    "id": 76,
+    "code": "SOP",
+    "name": "SOP",
+    "universityId": 1
+  },
+  {
+    "id": 77,
+    "code": "LIT",
+    "name": "LIT",
+    "universityId": 1
+  },
+  {
+    "id": 78,
+    "code": "ARE",
+    "name": "ARE",
+    "universityId": 1
+  },
+  {
+    "id": 79,
+    "code": "BSC",
+    "name": "BSC",
+    "universityId": 1
+  },
+  {
+    "id": 80,
+    "code": "GEA",
+    "name": "GEA",
+    "universityId": 1
+  },
+  {
+    "id": 81,
+    "code": "NUR",
+    "name": "NUR",
+    "universityId": 1
+  },
+  {
+    "id": 82,
+    "code": "CYP",
+    "name": "CYP",
+    "universityId": 1
+  },
+  {
+    "id": 83,
+    "code": "PET",
+    "name": "PET",
+    "universityId": 1
+  },
+  {
+    "id": 84,
+    "code": "CCE",
+    "name": "CCE",
+    "universityId": 1
+  },
+  {
+    "id": 85,
+    "code": "PSY",
+    "name": "PSY",
+    "universityId": 1
+  },
+  {
+    "id": 86,
+    "code": "ITW",
+    "name": "ITW",
+    "universityId": 1
+  },
+  {
+    "id": 87,
+    "code": "ITA",
+    "name": "ITA",
+    "universityId": 1
+  },
+  {
+    "id": 88,
+    "code": "ISC",
+    "name": "ISC",
+    "universityId": 1
+  },
+  {
+    "id": 89,
+    "code": "CJE",
+    "name": "CJE",
+    "universityId": 1
+  },
+  {
+    "id": 90,
+    "code": "MTG",
+    "name": "MTG",
+    "universityId": 1
+  },
+  {
+    "id": 91,
+    "code": "NGR",
+    "name": "NGR",
+    "universityId": 1
+  },
+  {
+    "id": 92,
+    "code": "IDS",
+    "name": "IDS",
+    "universityId": 1
+  },
+  {
+    "id": 93,
+    "code": "MEL",
+    "name": "MEL",
+    "universityId": 1
+  },
+  {
+    "id": 94,
+    "code": "RAT",
+    "name": "RAT",
+    "universityId": 1
+  },
+  {
+    "id": 95,
+    "code": "HSC",
+    "name": "HSC",
+    "universityId": 1
+  },
+  {
+    "id": 96,
+    "code": "FOT",
+    "name": "FOT",
+    "universityId": 1
+  },
+  {
+    "id": 97,
+    "code": "SSE",
+    "name": "SSE",
+    "universityId": 1
+  },
+  {
+    "id": 98,
+    "code": "OCC",
+    "name": "OCC",
+    "universityId": 1
+  },
+  {
+    "id": 99,
+    "code": "GEB",
+    "name": "GEB",
+    "universityId": 1
+  },
+  {
+    "id": 100,
+    "code": "AFH",
+    "name": "AFH",
+    "universityId": 1
+  },
+  {
+    "id": 101,
+    "code": "MVP",
+    "name": "MVP",
+    "universityId": 1
+  },
+  {
+    "id": 102,
+    "code": "GMS",
+    "name": "GMS",
+    "universityId": 1
+  },
+  {
+    "id": 103,
+    "code": "STA",
+    "name": "STA",
+    "universityId": 1
+  },
+  {
+    "id": 104,
+    "code": "NSP",
+    "name": "NSP",
+    "universityId": 1
+  },
+  {
+    "id": 105,
+    "code": "GEY",
+    "name": "GEY",
+    "universityId": 1
+  },
+  {
+    "id": 106,
+    "code": "MUN",
+    "name": "MUN",
+    "universityId": 1
+  },
+  {
+    "id": 107,
+    "code": "REA",
+    "name": "REA",
+    "universityId": 1
+  },
+  {
+    "id": 108,
+    "code": "MHS",
+    "name": "MHS",
+    "universityId": 1
+  },
+  {
+    "id": 109,
+    "code": "FIN",
+    "name": "FIN",
+    "universityId": 1
+  },
+  {
+    "id": 110,
+    "code": "HIS",
+    "name": "HIS",
+    "universityId": 1
+  },
+  {
+    "id": 111,
+    "code": "FRT",
+    "name": "FRT",
+    "universityId": 1
+  },
+  {
+    "id": 112,
+    "code": "RLG",
+    "name": "RLG",
+    "universityId": 1
+  },
+  {
+    "id": 113,
+    "code": "GIS",
+    "name": "GIS",
+    "universityId": 1
+  },
+  {
+    "id": 114,
+    "code": "URP",
+    "name": "URP",
+    "universityId": 1
+  },
+  {
+    "id": 115,
+    "code": "EDP",
+    "name": "EDP",
+    "universityId": 1
+  },
+  {
+    "id": 116,
+    "code": "EOC",
+    "name": "EOC",
+    "universityId": 1
+  },
+  {
+    "id": 117,
+    "code": "SYO",
+    "name": "SYO",
+    "universityId": 1
+  },
+  {
+    "id": 118,
+    "code": "GRE",
+    "name": "GRE",
+    "universityId": 1
+  },
+  {
+    "id": 119,
+    "code": "MUM",
+    "name": "MUM",
+    "universityId": 1
+  },
+  {
+    "id": 120,
+    "code": "FIL",
+    "name": "FIL",
+    "universityId": 1
+  },
+  {
+    "id": 121,
+    "code": "GET",
+    "name": "GET",
+    "universityId": 1
+  },
+  {
+    "id": 122,
+    "code": "JPT",
+    "name": "JPT",
+    "universityId": 1
+  },
+  {
+    "id": 123,
+    "code": "ACG",
+    "name": "ACG",
+    "universityId": 1
+  },
+  {
+    "id": 124,
+    "code": "PUP",
+    "name": "PUP",
+    "universityId": 1
+  },
+  {
+    "id": 125,
+    "code": "SLS",
+    "name": "SLS",
+    "universityId": 1
+  },
+  {
+    "id": 126,
+    "code": "EPD",
+    "name": "EPD",
+    "universityId": 1
+  },
+  {
+    "id": 127,
+    "code": "ADV",
+    "name": "ADV",
+    "universityId": 1
+  },
+  {
+    "id": 128,
+    "code": "EPH",
+    "name": "EPH",
+    "universityId": 1
+  },
+  {
+    "id": 129,
+    "code": "CHM",
+    "name": "CHM",
+    "universityId": 1
+  },
+  {
+    "id": 130,
+    "code": "SPS",
+    "name": "SPS",
+    "universityId": 1
+  },
+  {
+    "id": 131,
+    "code": "PHA",
+    "name": "PHA",
+    "universityId": 1
+  },
+  {
+    "id": 132,
+    "code": "SOW",
+    "name": "SOW",
+    "universityId": 1
+  },
+  {
+    "id": 133,
+    "code": "ISE",
+    "name": "ISE",
+    "universityId": 1
+  },
+  {
+    "id": 134,
+    "code": "CLT",
+    "name": "CLT",
+    "universityId": 1
+  },
+  {
+    "id": 135,
+    "code": "FLE",
+    "name": "FLE",
+    "universityId": 1
+  },
+  {
+    "id": 136,
+    "code": "POR",
+    "name": "POR",
+    "universityId": 1
+  },
+  {
+    "id": 137,
+    "code": "EDM",
+    "name": "EDM",
+    "universityId": 1
+  },
+  {
+    "id": 138,
+    "code": "ARC",
+    "name": "ARC",
+    "universityId": 1
+  },
+  {
+    "id": 139,
+    "code": "LAS",
+    "name": "LAS",
+    "universityId": 1
+  },
+  {
+    "id": 140,
+    "code": "PEL",
+    "name": "PEL",
+    "universityId": 1
+  },
+  {
+    "id": 141,
+    "code": "ENL",
+    "name": "ENL",
+    "universityId": 1
+  },
+  {
+    "id": 142,
+    "code": "FOS",
+    "name": "FOS",
+    "universityId": 1
+  },
+  {
+    "id": 143,
+    "code": "EGN",
+    "name": "EGN",
+    "universityId": 1
+  },
+  {
+    "id": 144,
+    "code": "GEW",
+    "name": "GEW",
+    "universityId": 1
+  },
+  {
+    "id": 145,
+    "code": "GRK",
+    "name": "GRK",
+    "universityId": 1
+  },
+  {
+    "id": 146,
+    "code": "PGY",
+    "name": "PGY",
+    "universityId": 1
+  },
+  {
+    "id": 147,
+    "code": "GLY",
+    "name": "GLY",
+    "universityId": 1
+  },
+  {
+    "id": 148,
+    "code": "MAE",
+    "name": "MAE",
+    "universityId": 1
+  },
+  {
+    "id": 149,
+    "code": "DIE",
+    "name": "DIE",
+    "universityId": 1
+  },
+  {
+    "id": 150,
+    "code": "ENS",
+    "name": "ENS",
+    "universityId": 1
+  },
+  {
+    "id": 151,
+    "code": "ISS",
+    "name": "ISS",
+    "universityId": 1
+  },
+  {
+    "id": 152,
+    "code": "BTE",
+    "name": "BTE",
+    "universityId": 1
+  },
+  {
+    "id": 153,
+    "code": "CHI",
+    "name": "CHI",
+    "universityId": 1
+  },
+  {
+    "id": 154,
+    "code": "OCB",
+    "name": "OCB",
+    "universityId": 1
+  },
+  {
+    "id": 155,
+    "code": "PCB",
+    "name": "PCB",
+    "universityId": 1
+  },
+  {
+    "id": 156,
+    "code": "MAA",
+    "name": "MAA",
+    "universityId": 1
+  },
+  {
+    "id": 157,
+    "code": "GER",
+    "name": "GER",
+    "universityId": 1
+  },
+  {
+    "id": 158,
+    "code": "BMS",
+    "name": "BMS",
+    "universityId": 1
+  },
+  {
+    "id": 159,
+    "code": "DPT",
+    "name": "DPT",
+    "universityId": 1
+  },
+  {
+    "id": 160,
+    "code": "HBR",
+    "name": "HBR",
+    "universityId": 1
+  },
+  {
+    "id": 161,
+    "code": "VIC",
+    "name": "VIC",
+    "universityId": 1
+  },
+  {
+    "id": 162,
+    "code": "EMA",
+    "name": "EMA",
+    "universityId": 1
+  },
+  {
+    "id": 163,
+    "code": "PHH",
+    "name": "PHH",
+    "universityId": 1
+  },
+  {
+    "id": 164,
+    "code": "NSC",
+    "name": "NSC",
+    "universityId": 1
+  },
+  {
+    "id": 165,
+    "code": "SPN",
+    "name": "SPN",
+    "universityId": 1
+  },
+  {
+    "id": 166,
+    "code": "MAD",
+    "name": "MAD",
+    "universityId": 1
+  },
+  {
+    "id": 167,
+    "code": "EDS",
+    "name": "EDS",
+    "universityId": 1
+  },
+  {
+    "id": 168,
+    "code": "EGS",
+    "name": "EGS",
+    "universityId": 1
+  },
+  {
+    "id": 169,
+    "code": "CWR",
+    "name": "CWR",
+    "universityId": 1
+  },
+  {
+    "id": 170,
+    "code": "REH",
+    "name": "REH",
+    "universityId": 1
+  },
+  {
+    "id": 171,
+    "code": "ENV",
+    "name": "ENV",
+    "universityId": 1
+  },
+  {
+    "id": 172,
+    "code": "RTV",
+    "name": "RTV",
+    "universityId": 1
+  },
+  {
+    "id": 173,
+    "code": "PEN",
+    "name": "PEN",
+    "universityId": 1
+  },
+  {
+    "id": 174,
+    "code": "PEQ",
+    "name": "PEQ",
+    "universityId": 1
+  },
+  {
+    "id": 175,
+    "code": "EEL",
+    "name": "EEL",
+    "universityId": 1
+  },
+  {
+    "id": 176,
+    "code": "MVJ",
+    "name": "MVJ",
+    "universityId": 1
+  },
+  {
+    "id": 177,
+    "code": "FOL",
+    "name": "FOL",
+    "universityId": 1
+  },
+  {
+    "id": 178,
+    "code": "MAS",
+    "name": "MAS",
+    "universityId": 1
+  },
+  {
+    "id": 179,
+    "code": "EEC",
+    "name": "EEC",
+    "universityId": 1
+  },
+  {
+    "id": 180,
+    "code": "HUN",
+    "name": "HUN",
+    "universityId": 1
+  },
+  {
+    "id": 181,
+    "code": "GRA",
+    "name": "GRA",
+    "universityId": 1
+  },
+  {
+    "id": 182,
+    "code": "DAA",
+    "name": "DAA",
+    "universityId": 1
+  },
+  {
+    "id": 183,
+    "code": "PHP",
+    "name": "PHP",
+    "universityId": 1
+  },
+  {
+    "id": 184,
+    "code": "DEC",
+    "name": "DEC",
+    "universityId": 1
+  },
+  {
+    "id": 185,
+    "code": "AFA",
+    "name": "AFA",
+    "universityId": 1
+  },
+  {
+    "id": 186,
+    "code": "CGS",
+    "name": "CGS",
+    "universityId": 1
+  },
+  {
+    "id": 187,
+    "code": "SPB",
+    "name": "SPB",
+    "universityId": 1
+  },
+  {
+    "id": 188,
+    "code": "FRW",
+    "name": "FRW",
+    "universityId": 1
+  },
+  {
+    "id": 189,
+    "code": "EGM",
+    "name": "EGM",
+    "universityId": 1
+  },
+  {
+    "id": 190,
+    "code": "RUT",
+    "name": "RUT",
+    "universityId": 1
+  },
+  {
+    "id": 191,
+    "code": "CEN",
+    "name": "CEN",
+    "universityId": 1
+  },
+  {
+    "id": 192,
+    "code": "MUE",
+    "name": "MUE",
+    "universityId": 1
+  },
+  {
+    "id": 193,
+    "code": "HUS",
+    "name": "HUS",
+    "universityId": 1
+  },
+  {
+    "id": 194,
+    "code": "AFR",
+    "name": "AFR",
+    "universityId": 1
+  },
+  {
+    "id": 195,
+    "code": "POS",
+    "name": "POS",
+    "universityId": 1
+  },
+  {
+    "id": 196,
+    "code": "MAC",
+    "name": "MAC",
+    "universityId": 1
+  },
+  {
+    "id": 197,
+    "code": "ELD",
+    "name": "ELD",
+    "universityId": 1
+  },
+  {
+    "id": 198,
+    "code": "MUT",
+    "name": "MUT",
+    "universityId": 1
+  },
+  {
+    "id": 199,
+    "code": "ISM",
+    "name": "ISM",
+    "universityId": 1
+  },
+  {
+    "id": 200,
+    "code": "EVT",
+    "name": "EVT",
+    "universityId": 1
+  },
+  {
+    "id": 201,
+    "code": "ADE",
+    "name": "ADE",
+    "universityId": 1
+  },
+  {
+    "id": 202,
+    "code": "RUS",
+    "name": "RUS",
+    "universityId": 1
+  },
+  {
+    "id": 203,
+    "code": "CPO",
+    "name": "CPO",
+    "universityId": 1
+  },
+  {
+    "id": 204,
+    "code": "SPC",
+    "name": "SPC",
+    "universityId": 1
+  },
+  {
+    "id": 205,
+    "code": "TTE",
+    "name": "TTE",
+    "universityId": 1
+  },
+  {
+    "id": 206,
+    "code": "ECO",
+    "name": "ECO",
+    "universityId": 1
+  },
+  {
+    "id": 207,
+    "code": "HLP",
+    "name": "HLP",
+    "universityId": 1
+  },
+  {
+    "id": 208,
+    "code": "CAP",
+    "name": "CAP",
+    "universityId": 1
+  },
+  {
+    "id": 209,
+    "code": "PUR",
+    "name": "PUR",
+    "universityId": 1
+  },
+  {
+    "id": 210,
+    "code": "URS",
+    "name": "URS",
+    "universityId": 1
+  },
+  {
+    "id": 211,
+    "code": "MCB",
+    "name": "MCB",
+    "universityId": 1
+  },
+  {
+    "id": 212,
+    "code": "AFS",
+    "name": "AFS",
+    "universityId": 1
+  },
+  {
+    "id": 213,
+    "code": "PEP",
+    "name": "PEP",
+    "universityId": 1
+  },
+  {
+    "id": 214,
+    "code": "THE",
+    "name": "THE",
+    "universityId": 1
+  },
+  {
+    "id": 215,
+    "code": "EXP",
+    "name": "EXP",
+    "universityId": 1
+  },
+  {
+    "id": 216,
+    "code": "EES",
+    "name": "EES",
+    "universityId": 1
+  },
+  {
+    "id": 217,
+    "code": "CCJ",
+    "name": "CCJ",
+    "universityId": 1
+  },
+  {
+    "id": 218,
+    "code": "SPM",
+    "name": "SPM",
+    "universityId": 1
+  },
+  {
+    "id": 219,
+    "code": "AMS",
+    "name": "AMS",
+    "universityId": 1
+  },
+  {
+    "id": 220,
+    "code": "MVS",
+    "name": "MVS",
+    "universityId": 1
+  },
+  {
+    "id": 221,
+    "code": "ARH",
+    "name": "ARH",
+    "universityId": 1
+  },
+  {
+    "id": 222,
+    "code": "ECS",
+    "name": "ECS",
+    "universityId": 1
+  },
+  {
+    "id": 223,
+    "code": "INR",
+    "name": "INR",
+    "universityId": 1
+  },
+  {
+    "id": 224,
+    "code": "COT",
+    "name": "COT",
+    "universityId": 1
+  },
+  {
+    "id": 225,
+    "code": "ETG",
+    "name": "ETG",
+    "universityId": 1
+  },
+  {
+    "id": 226,
+    "code": "POL",
+    "name": "POL",
+    "universityId": 1
+  },
+  {
+    "id": 227,
+    "code": "SCE",
+    "name": "SCE",
+    "universityId": 1
+  },
+  {
+    "id": 228,
+    "code": "HMG",
+    "name": "HMG",
+    "universityId": 1
+  },
+  {
+    "id": 229,
+    "code": "BOT",
+    "name": "BOT",
+    "universityId": 1
+  },
+  {
+    "id": 230,
+    "code": "HCCR",
+    "name": "HCCR",
+    "universityId": 1
+  },
+  {
+    "id": 231,
+    "code": "AML",
+    "name": "AML",
+    "universityId": 1
+  },
+  {
+    "id": 232,
+    "code": "MVK",
+    "name": "MVK",
+    "universityId": 1
+  },
+  {
+    "id": 233,
+    "code": "EEE",
+    "name": "EEE",
+    "universityId": 1
+  },
+  {
+    "id": 234,
+    "code": "SPT",
+    "name": "SPT",
+    "universityId": 1
+  },
+  {
+    "id": 235,
+    "code": "QMB",
+    "name": "QMB",
+    "universityId": 1
+  },
+  {
+    "id": 236,
+    "code": "MSG",
+    "name": "MSG",
+    "universityId": 1
+  },
+  {
+    "id": 237,
+    "code": "HEB",
+    "name": "HEB",
+    "universityId": 1
+  },
+  {
+    "id": 238,
+    "code": "ORI",
+    "name": "ORI",
+    "universityId": 1
+  },
+  {
+    "id": 239,
+    "code": "MHF",
+    "name": "MHF",
+    "universityId": 1
+  },
+  {
+    "id": 240,
+    "code": "MAN",
+    "name": "MAN",
+    "universityId": 1
+  },
+  {
+    "id": 241,
+    "code": "CJL",
+    "name": "CJL",
+    "universityId": 1
+  },
+  {
+    "id": 242,
+    "code": "ECP",
+    "name": "ECP",
+    "universityId": 1
+  },
+  {
+    "id": 243,
+    "code": "HFT",
+    "name": "HFT",
+    "universityId": 1
+  },
+  {
+    "id": 244,
+    "code": "ENC",
+    "name": "ENC",
+    "universityId": 1
+  },
+  {
+    "id": 245,
+    "code": "CGN",
+    "name": "CGN",
+    "universityId": 1
+  },
+  {
+    "id": 246,
+    "code": "INT",
+    "name": "INT",
+    "universityId": 1
+  },
+  {
+    "id": 247,
+    "code": "PAD",
+    "name": "PAD",
+    "universityId": 1
+  },
+  {
+    "id": 248,
+    "code": "DEP",
+    "name": "DEP",
+    "universityId": 1
+  },
+  {
+    "id": 249,
+    "code": "CNT",
+    "name": "CNT",
+    "universityId": 1
+  },
+  {
+    "id": 250,
+    "code": "BCH",
+    "name": "BCH",
+    "universityId": 1
+  },
+  {
+    "id": 251,
+    "code": "BUL",
+    "name": "BUL",
+    "universityId": 1
+  },
+  {
+    "id": 252,
+    "code": "LNW",
+    "name": "LNW",
+    "universityId": 1
+  },
+  {
+    "id": 253,
+    "code": "ASH",
+    "name": "ASH",
+    "universityId": 1
+  },
+  {
+    "id": 254,
+    "code": "MDE",
+    "name": "MDE",
+    "universityId": 1
+  },
+  {
+    "id": 255,
+    "code": "ELR",
+    "name": "ELR",
+    "universityId": 1
+  },
+  {
+    "id": 256,
+    "code": "MVB",
+    "name": "MVB",
+    "universityId": 1
+  },
+  {
+    "id": 257,
+    "code": "NCX",
+    "name": "NCX",
+    "universityId": 1
+  },
+  {
+    "id": 258,
+    "code": "IDH",
+    "name": "IDH",
+    "universityId": 1
+  },
+  {
+    "id": 259,
+    "code": "CHT",
+    "name": "CHT",
+    "universityId": 1
+  },
+  {
+    "id": 260,
+    "code": "ANT",
+    "name": "ANT",
+    "universityId": 1
+  },
+  {
+    "id": 261,
+    "code": "MDC",
+    "name": "MDC",
+    "universityId": 1
+  },
+  {
+    "id": 262,
+    "code": "EEX",
+    "name": "EEX",
+    "universityId": 1
+  },
+  {
+    "id": 263,
+    "code": "MUC",
+    "name": "MUC",
+    "universityId": 1
+  },
+  {
+    "id": 264,
+    "code": "MAR",
+    "name": "MAR",
+    "universityId": 1
+  },
+  {
+    "id": 265,
+    "code": "MGF",
+    "name": "MGF",
+    "universityId": 1
+  },
+  {
+    "id": 266,
+    "code": "ECW",
+    "name": "ECW",
+    "universityId": 1
+  },
+  {
+    "id": 267,
+    "code": "APK",
+    "name": "APK",
+    "universityId": 1
+  },
+  {
+    "id": 268,
+    "code": "EAS",
+    "name": "EAS",
+    "universityId": 1
+  },
+  {
+    "id": 269,
+    "code": "PSB",
+    "name": "PSB",
+    "universityId": 1
+  },
+  {
+    "id": 270,
+    "code": "CRW",
+    "name": "CRW",
+    "universityId": 1
+  },
+  {
+    "id": 271,
+    "code": "MAP",
+    "name": "MAP",
+    "universityId": 1
+  },
+  {
+    "id": 272,
+    "code": "RSD",
+    "name": "RSD",
+    "universityId": 1
+  },
+  {
+    "id": 273,
+    "code": "ESC",
+    "name": "ESC",
+    "universityId": 1
+  },
+  {
+    "id": 274,
+    "code": "FSS",
+    "name": "FSS",
+    "universityId": 1
+  },
+  {
+    "id": 275,
+    "code": "EIA",
+    "name": "EIA",
+    "universityId": 1
+  },
+  {
+    "id": 276,
+    "code": "BME",
+    "name": "BME",
+    "universityId": 1
+  },
+  {
+    "id": 277,
+    "code": "ART",
+    "name": "ART",
+    "universityId": 1
+  },
+  {
+    "id": 278,
+    "code": "MLS",
+    "name": "MLS",
+    "universityId": 1
+  },
+  {
+    "id": 279,
+    "code": "CAS",
+    "name": "CAS",
+    "universityId": 1
+  },
+  {
+    "id": 280,
+    "code": "PHM",
+    "name": "PHM",
+    "universityId": 1
+  },
+  {
+    "id": 281,
+    "code": "AMH",
+    "name": "AMH",
+    "universityId": 1
+  },
+  {
+    "id": 282,
+    "code": "DSC",
+    "name": "DSC",
+    "universityId": 1
+  },
+  {
+    "id": 283,
+    "code": "AST",
+    "name": "AST",
+    "universityId": 1
+  },
+  {
+    "id": 284,
+    "code": "OCE",
+    "name": "OCE",
+    "universityId": 1
+  },
+  {
+    "id": 285,
+    "code": "SYP",
+    "name": "SYP",
+    "universityId": 1
+  },
+  {
+    "id": 286,
+    "code": "GEO",
+    "name": "GEO",
+    "universityId": 1
+  },
+  {
+    "id": 287,
+    "code": "OCP",
+    "name": "OCP",
+    "universityId": 1
+  },
+  {
+    "id": 288,
+    "code": "ASN",
+    "name": "ASN",
+    "universityId": 1
+  },
+  {
+    "id": 289,
+    "code": "DIG",
+    "name": "DIG",
+    "universityId": 1
+  },
+  {
+    "id": 290,
+    "code": "MSL",
+    "name": "MSL",
+    "universityId": 1
+  },
+  {
+    "id": 291,
+    "code": "ETE",
+    "name": "ETE",
+    "universityId": 1
+  },
+  {
+    "id": 292,
+    "code": "BCC",
+    "name": "BCC",
+    "universityId": 1
+  },
+  {
+    "id": 293,
+    "code": "HCCM",
+    "name": "HCCM",
+    "universityId": 1
+  },
+  {
+    "id": 294,
+    "code": "INP",
+    "name": "INP",
+    "universityId": 1
+  },
+  {
+    "id": 295,
+    "code": "TAX",
+    "name": "TAX",
+    "universityId": 1
+  },
+  {
+    "id": 296,
+    "code": "ATR",
+    "name": "ATR",
+    "universityId": 1
+  },
+  {
+    "id": 297,
+    "code": "CLP",
+    "name": "CLP",
+    "universityId": 1
+  },
+  {
+    "id": 298,
+    "code": "ANS",
+    "name": "ANS",
+    "universityId": 1
+  },
+  {
+    "id": 299,
+    "code": "EBD",
+    "name": "EBD",
+    "universityId": 1
+  },
+  {
+    "id": 300,
+    "code": "EDE",
+    "name": "EDE",
+    "universityId": 1
+  },
+  {
+    "id": 301,
+    "code": "PEM",
+    "name": "PEM",
+    "universityId": 1
+  },
+  {
+    "id": 302,
+    "code": "CTS",
+    "name": "CTS",
+    "universityId": 1
+  },
+  {
+    "id": 303,
+    "code": "FRE",
+    "name": "FRE",
+    "universityId": 1
+  },
+  {
+    "id": 304,
+    "code": "IDC",
+    "name": "IDC",
+    "universityId": 1
+  },
+  {
+    "id": 305,
+    "code": "ESE",
+    "name": "ESE",
+    "universityId": 1
+  },
+  {
+    "id": 306,
+    "code": "EDH",
+    "name": "EDH",
+    "universityId": 1
+  },
+  {
+    "id": 307,
+    "code": "CIS",
+    "name": "CIS",
+    "universityId": 1
+  },
+  {
+    "id": 308,
+    "code": "POT",
+    "name": "POT",
+    "universityId": 1
+  },
+  {
+    "id": 309,
+    "code": "CST",
+    "name": "CST",
+    "universityId": 1
+  },
+  {
+    "id": 310,
+    "code": "ANG",
+    "name": "ANG",
+    "universityId": 1
+  },
+  {
+    "id": 311,
+    "code": "PHI",
+    "name": "PHI",
+    "universityId": 1
+  },
+  {
+    "id": 312,
+    "code": "SYG",
+    "name": "SYG",
+    "universityId": 1
+  },
+  {
+    "id": 313,
+    "code": "TPP",
+    "name": "TPP",
+    "universityId": 1
+  },
+  {
+    "id": 314,
+    "code": "MAT",
+    "name": "MAT",
+    "universityId": 1
+  },
+  {
+    "id": 315,
+    "code": "EVR",
+    "name": "EVR",
+    "universityId": 1
+  },
+  {
+    "id": 316,
+    "code": "MET",
+    "name": "MET",
+    "universityId": 1
+  },
+  {
+    "id": 317,
+    "code": "DAN",
+    "name": "DAN",
+    "universityId": 1
+  },
+  {
+    "id": 318,
+    "code": "EME",
+    "name": "EME",
+    "universityId": 1
+  },
+  {
+    "id": 319,
+    "code": "ESI",
+    "name": "ESI",
+    "universityId": 1
+  },
+  {
+    "id": 320,
+    "code": "MUO",
+    "name": "MUO",
+    "universityId": 1
+  },
+  {
+    "id": 321,
+    "code": "CDA",
+    "name": "CDA",
+    "universityId": 1
+  },
+  {
+    "id": 322,
+    "code": "MUL",
+    "name": "MUL",
+    "universityId": 1
+  },
+  {
+    "id": 323,
+    "code": "CJC",
+    "name": "CJC",
+    "universityId": 1
+  },
+  {
+    "id": 324,
+    "code": "EDA",
+    "name": "EDA",
+    "universityId": 1
+  },
+  {
+    "id": 325,
+    "code": "EIV",
+    "name": "EIV",
+    "universityId": 1
+  },
+  {
+    "id": 326,
+    "code": "GRW",
+    "name": "GRW",
+    "universityId": 1
+  },
+  {
+    "id": 327,
+    "code": "HUM",
+    "name": "HUM",
+    "universityId": 1
+  },
+  {
+    "id": 328,
+    "code": "REE",
+    "name": "REE",
+    "universityId": 1
+  },
+  {
+    "id": 329,
+    "code": "MVV",
+    "name": "MVV",
+    "universityId": 1
+  },
+  {
+    "id": 330,
+    "code": "RCS",
+    "name": "RCS",
+    "universityId": 1
+  }
+]
