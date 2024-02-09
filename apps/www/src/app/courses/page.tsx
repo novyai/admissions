@@ -1,37 +1,8 @@
-import { HydratedCourse } from "@/types"
-import { db } from "@db/client"
+import { getAllCourses } from "@/db/courses"
 
 import { CoursesTable } from "@/components/courses-table"
 
 export const revalidate = 0
-
-const getAllCourses = async ({
-  skip = 0,
-  take = 20,
-  filters = {},
-  orderBy = {}
-}): Promise<{ courses: HydratedCourse[]; total: number }> => {
-  const where = {
-    ...filters
-  }
-
-  const [courses, total] = await db.$transaction([
-    db.course.findMany({
-      skip,
-      take,
-      where,
-      orderBy,
-      include: {
-        department: true,
-        conditions: true,
-        prerequisites: true
-      }
-    }),
-    db.course.count({ where })
-  ])
-  return { courses, total }
-}
-
 export default async function Page({
   searchParams
 }: {
@@ -40,12 +11,11 @@ export default async function Page({
     take?: string
     q?: string
     orderBy?: {
-      [key: string]: "asc" | "desc"
+      [key: string]: string
     }
   }
 }) {
   const { skip, take, q, orderBy } = searchParams
-
   const filters = q?.length
     ? {
         OR: [
@@ -72,10 +42,8 @@ export default async function Page({
 
   return (
     <>
-      <div className="w-full h-full overflow-y-auto">
-        <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight my-8 px-6">
-          All Courses
-        </h1>
+      <div className="w-full h-full overflow-y-auto my-8 px-6">
+        <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">All Courses</h1>
         <CoursesTable courses={courses} total={total} />
       </div>
     </>

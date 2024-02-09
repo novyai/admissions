@@ -13,7 +13,7 @@ export function AdminNav() {
         <Link
           href="/"
           className={buttonVariants({
-            variant: pathname === "/" ? "secondary" : "ghost"
+            variant: pathname === "/admin" ? "secondary" : "ghost"
           })}
         >
           Dashboard
@@ -21,9 +21,19 @@ export function AdminNav() {
       </li>
       <li>
         <Link
-          href="/admin/courses"
+          href="/students"
           className={buttonVariants({
-            variant: pathname.startsWith("/admin/courses") ? "secondary" : "ghost"
+            variant: pathname.startsWith("/students") ? "secondary" : "ghost"
+          })}
+        >
+          Students
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/courses"
+          className={buttonVariants({
+            variant: pathname.startsWith("/courses") ? "secondary" : "ghost"
           })}
         >
           Courses

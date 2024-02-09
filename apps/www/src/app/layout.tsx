@@ -1,42 +1,40 @@
 import "@repo/ui/styles.css"
 
 import { ReactNode } from "react"
-import { cn } from "@ui/lib/utils"
 import { defaultFontMapper } from "@ui/styles/fonts"
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+
+import { cn } from "@/lib/utils"
+import { AdminNav } from "@/components/admin-nav"
+import AppMenu from "@/components/app-menu"
 
 import Providers from "./providers"
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  interactiveWidget: "resizes-content"
-}
-
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn(
-        defaultFontMapper.default,
-        defaultFontMapper.serif,
-        defaultFontMapper.mono,
-        "antialiased overflow-hidden h-screen w-screen"
-      )}
-    >
-      <body className="antialiased relative">
+    <html lang="en" suppressHydrationWarning>
+      <body>
         <Providers>
-          <>
-            <div className="h-screen w-screen flex flex-col overflow-hidden bg-background">
-              {children}
+          <div
+            className={cn(
+              defaultFontMapper.default,
+              defaultFontMapper.serif,
+              defaultFontMapper.mono,
+              "flex-col items-stretch h-screen w-screen overflow-hidden"
+            )}
+          >
+            <div className="w-screen h-screen overflow-hidden flex flex-col items-start">
+              <div className="w-full border-b-[1px] border-b-gray-3 p-4 flex justify-between">
+                <AdminNav />
+
+                <div className="flex items-center gap-4">
+                  <AppMenu />
+                </div>
+              </div>
+
+              <main className="w-full h-[calc(100%-60px)] flex-1 overflow-hidden">{children}</main>
             </div>
-          </>
+          </div>
         </Providers>
-        <Analytics />
-        <SpeedInsights />
       </body>
     </html>
   )

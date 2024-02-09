@@ -104,7 +104,8 @@ const config: Omit<Config, "content"> = {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    require("windy-radix-palette")
+    require("windy-radix-palette"),
+    
   ]
 }
 export default config

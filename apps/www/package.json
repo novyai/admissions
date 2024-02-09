@@ -10,12 +10,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@hackdance/agents": "^1.0.1",
+    "@hackdance/hooks": "^4.0.0",
     "@next/eslint-plugin-next": "^14.0.2",
+    "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/ui": "workspace:*",
-    "@repo/db": "workspace:*",
     "@types/eslint": "^8.44.7",
     "@types/mdx": "^2.0.7",
     "@types/node": "^17.0.12",
