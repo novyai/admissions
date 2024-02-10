@@ -1,0 +1,59 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "OPENAI_API_KEY",
+    "OPENAI_ORG_ID"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**"
+      ]
+    },
+    "lint": {},
+    "test": {
+      "cache": false,
+      "persistent": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false,
+      "persistent": false
+    },
+    "type-check": {
+      "cache": false,
+      "persistent": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate:deploy": {},
+    "db:push": {
+      "cache": false
+    },
+    "db:format": {},
+    "db:seed": {
+      "cache": false
+    },
+    "studio": {},
+    "db:reset": {
+      "cache": false
+    },
+    "db:rps": {
+      "cache": false
+    
+    }
+  }
+}

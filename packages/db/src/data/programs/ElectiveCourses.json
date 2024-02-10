@@ -1,0 +1,137 @@
+[
+  {
+    "courseId": "CAP 4401",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4410",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4621",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4628",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4641",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4662",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CAP 4744",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CDA 4621",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CEN 4020",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CEN 4072",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4212",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4345",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4900",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4915",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4930",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CIS 4940",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CNT 4004",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CNT 4411",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "CNT 4419",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COP 4020",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COP 4365",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COP 4520",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COP 4620",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COP 4710",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COT 4210",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COT 4521",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  },
+  {
+    "courseId": "COT 4601",
+    "programId": "a7c8aa62-aad5-4a02-b0dc-83e5e99f4f12",
+    "category": "CSE Elective"
+  }
+]

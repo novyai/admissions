@@ -1,0 +1,404 @@
+{
+  "Program": {
+    "Name": "Computer Engineering B.S.C.P.",
+    "TotalDegreeHours": 120,
+    "MissionStatement": [
+      "Lead the advancement of computer science, computer engineering, information technology, and cybersecurity through internationally recognized research and education, as well as technology transfer.",
+      "Prepare students for full and ethical participation in a diverse society and encourage lifelong learning."
+    ],
+    "ProgramObjectives": [
+      "Our graduates will apply their knowledge and skills to succeed in their careers and/or obtain advanced degrees.",
+      "Our graduates will function ethically and responsibly, and will remain informed and involved as full participants in our profession and society.",
+      "Our graduates will creatively solve problems, communicate effectively, and successfully function in multi-disciplinary teams."
+    ],
+    "StudentOutcomes": [
+      "Identify, formulate, and solve complex engineering problems by applying principles of engineering, science, and mathematics.",
+      "Apply engineering design to produce solutions that meet specified needs with consideration of public health, safety, and welfare, as well as global, cultural, social, environmental, and economic factors.",
+      "Communicate effectively with a range of audiences."
+    ]
+  },
+  "Courses": {
+    "MAC 2281": {
+      "Name": "Engineering Calculus I",
+      "Credits": 4,
+      "Alternatives": ["MAC 2311"]
+    },
+    "MAC 2282": {
+      "Name": "Engineering Calculus II",
+      "Credits": 4,
+      "Alternatives": ["MAC 2312"]
+    },
+    "MAC 2283": {
+      "Name": "Engineering Calculus III",
+      "Credits": 4,
+      "Alternatives": ["MAC 2313"]
+    },
+    "MAP 2302": {
+      "Name": "Differential Equations",
+      "Credits": 3,
+      "Alternatives": ["EGN 3433"]
+    },
+    "CHM 2045": {
+      "Name": "General Chemistry I",
+      "Credits": 3,
+      "Alternatives": ["CHS 2440"]
+    },
+    "PHY 2048": {
+      "Name": "General Physics I - Calculus Based",
+      "Credits": 3,
+      "Alternatives": [],
+      "Lab": "PHY 2048L"
+    },
+    "PHY 2049": {
+      "Name": "General Physics II - Calculus Based",
+      "Credits": 3,
+      "Alternatives": [],
+      "Lab": "PHY 2049L"
+    },
+    "COP 2510": {
+      "Name": "Programming Concepts",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "COP 3514": {
+      "Name": "Program Design",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "COP 4530": {
+      "Name": "Data Structures",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "CDA 3103": {
+      "Name": "Computer Organization",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "CDA 4203": {
+      "Name": "Computer System Design",
+      "Credits": 3,
+      "Alternatives": [],
+      "Lab": "CDA 4203L"
+    },
+    "CDA 4205": {
+      "Name": "Computer Architecture",
+      "Credits": 3,
+      "Alternatives": [],
+      "Lab": "CDA 4205L"
+    },
+    "COT 4400": {
+      "Name": "Analysis of Algorithms",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "CIS 4250": {
+      "Name": "Ethical Issues and Professional Conduct",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "CIS 4910": {
+      "Name": "Computer Science and Engineering Project",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "ENC 1101": {
+      "Name": "Composition I",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "ENC 1102": {
+      "Name": "Composition II",
+      "Credits": 3,
+      "Alternatives": []
+    },
+    "ENC 3246": {
+      "Name": "Communication for Engineers",
+      "Credits": 3,
+      "Alternatives": []
+    }
+  },
+  "Electives": {
+    "CSE": [
+      {
+        "Code": "CAP 4401",
+        "Name": "Image Processing Fundamentals",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4410",
+        "Name": "Computer Vision",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4621",
+        "Name": "Introduction to Artificial Intelligence",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4628",
+        "Name": "Affective Computing",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4641",
+        "Name": "Natural Language Processing",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4662",
+        "Name": "Introduction to Robotics",
+        "Credits": 3
+      },
+      {
+        "Code": "CAP 4744",
+        "Name": "Interactive Data Visualization",
+        "Credits": 3
+      },
+      {
+        "Code": "CDA 4621",
+        "Name": "Control of Mobile Robots",
+        "Credits": 3
+      },
+      {
+        "Code": "CEN 4020",
+        "Name": "Software Engineering",
+        "Credits": 3
+      },
+      {
+        "Code": "CEN 4072",
+        "Name": "Software Testing",
+        "Credits": 3
+      },
+      {
+        "Code": "CIS 4212",
+        "Name": "Privacy-Preserving and Trustworthy Cyber-Infrastructures",
+        "Credits": 3
+      },
+      {
+        "Code": "CIS 4345",
+        "Name": "Big Data Storage and Analysis with Hadoop",
+        "Credits": 3
+      },
+      {
+        "Code": "CIS 4900",
+        "Name": "Independent Study in Computer Science",
+        "Credits": "1-5"
+      },
+      {
+        "Code": "CIS 4915",
+        "Name": "Supervised Research in Computer Science",
+        "Credits": "1-5"
+      },
+      {
+        "Code": "CIS 4930",
+        "Name": "Special Topics in Computer Science I",
+        "Credits": "1-3"
+      },
+      {
+        "Code": "CIS 4940",
+        "Name": "Industry Internship",
+        "Credits": "0-6"
+      },
+      {
+        "Code": "CNT 4004",
+        "Name": "Computer Networks I",
+        "Credits": 3
+      },
+      {
+        "Code": "CNT 4411",
+        "Name": "Computing and Network Security",
+        "Credits": 3
+      },
+      {
+        "Code": "CNT 4419",
+        "Name": "Secure Coding",
+        "Credits": 3
+      },
+      {
+        "Code": "COP 4020",
+        "Name": "Programming Languages",
+        "Credits": 3
+      },
+      {
+        "Code": "COP 4365",
+        "Name": "Software System Development",
+        "Credits": 3
+      },
+      {
+        "Code": "COP 4520",
+        "Name": "Computing in Massively Parallel Systems",
+        "Credits": 3
+      },
+      {
+        "Code": "COP 4620",
+        "Name": "Compilers",
+        "Credits": 3
+      },
+      {
+        "Code": "COP 4710",
+        "Name": "Database Design",
+        "Credits": 3
+      },
+      {
+        "Code": "COT 4210",
+        "Name": "Automata Theory and Formal Languages",
+        "Credits": 3
+      },
+      {
+        "Code": "COT 4521",
+        "Name": "Computational Geometry",
+        "Credits": 3
+      },
+      {
+        "Code": "COT 4601",
+        "Name": "Quantum Computing and Quantum Algorithms",
+        "Credits": 3
+      }
+    ],
+    "CompositionAndTechnicalWriting": [
+      {
+        "Code": "ENC 1101",
+        "Name": "Composition I",
+        "Credits": 3
+      },
+      {
+        "Code": "ENC 1102",
+        "Name": "Composition II",
+        "Credits": 3
+      },
+      {
+        "Code": "ENC 3246",
+        "Name": "Communication for Engineers",
+        "Credits": 3
+      }
+    ],
+    "HardwareElectives": [
+      {
+        "Code": "CDA 4253",
+        "Name": "Field Programmable Gate Array System Design and Analysis",
+        "Credits": 3
+      },
+      {
+        "Code": "CDA 4321",
+        "Name": "Cryptographic Hardware and Embedded Systems",
+        "Credits": 3
+      },
+      {
+        "Code": "CDA 4322",
+        "Name": "Principles of Secure Hardware Design",
+        "Credits": 3
+      },
+      {
+        "Code": "CDA 4323",
+        "Name": "Practical Hardware Security",
+        "Credits": 3
+      }
+    ],
+    "AdditionalInformation": {
+      "GPARequirements": [
+        "Minimum 2.0 semester GPA",
+        "2.0 Math and Science GPA",
+        "2.0 Engineering GPA",
+        "2.0 Specialization GPA",
+        "2.0 USF GPA",
+        "2.0 overall GPA"
+      ],
+      "GradingRequirements": "The minimum acceptable grade in all BSCP required math, science, and engineering courses is a C or higher (C- is insufficient).",
+      "ResidencyRequirements": "Transfer students must complete a minimum number of approved specialization courses in the major at USF. The minimum number of USF specialization credit hours required is established by the respective academic department. In no case will this be less than 18 hours."
+    }
+  },
+  "AdmissionAndProgression": {
+    "Freshman": "https://www.usf.edu/admissions/freshmen/admission-information/requirements-deadlines.aspx",
+    "Transfer": "https://www.usf.edu/admissions/transfer/admission-information/index.aspx",
+    "International": "https://www.usf.edu/admissions/international/admission-information/index.aspx",
+    "UpperDivisionRequirements": [
+      "Completion of MAC 2311, MAC 2312, PHY 2048, PHY 2048L with minimum grades of C",
+      "Completion of COP 2510 with a minimum grade of B",
+      "Minimum overall GPA of 2.0",
+      "Minimum USF GPA of 2.0"
+    ]
+  },
+  "DepartmentalPolicies": {
+    "MandatoryAdvising": true,
+    "ExitInterview": true
+  },
+  "AdditionalInformation": {
+    "GPARequirements": "Minimum 2.0 semester GPA, 2.0 Math and Science GPA, 2.0 Engineering GPA, 2.0 Specialization GPA, 2.0 USF GPA, and 2.0 overall GPA.",
+    "GradingRequirements": "Minimum acceptable grade in all BSCP required math, science, and engineering courses is a C or higher. Minimum acceptable grade in specialization courses is a C-.",
+    "ResidencyRequirements": "Transfer students must complete a minimum number of approved specialization courses in the major at USF. Minimum of 18 approved specialization hours required."
+  },
+  "semester_schedule": [
+    {
+      "Year": 1,
+      "Semester": "Fall",
+      "Courses": ["CHM 2045", "CHM 2045L", "EGN 3000", "EGN 3000L", "ENC 1101", "MAC 2281"]
+    },
+    {
+      "Year": 1,
+      "Semester": "Spring",
+      "Courses": ["COP 2510", "COT 3100", "MAC 2282", "PHY 2048", "PHY 2048L"]
+    },
+    {
+      "Year": 2,
+      "Semester": "Fall",
+      "Courses": ["CDA 3103", "COP 3514", "MAC 2283", "PHY 2049", "PHY 2049L"]
+    },
+    {
+      "Year": 2,
+      "Semester": "Spring",
+      "Courses": ["CDA 3201", "CDA 3201L", "COP 4530", "EGN 3433", "ENC 1102"]
+    },
+    {
+      "Year": 2,
+      "Semester": "Summer",
+      "Courses": ["EGN 3443"]
+    },
+    {
+      "Year": 3,
+      "Semester": "Fall",
+      "Courses": ["CDA 4205", "CDA 4205L", "EEE 3394", "EGN 3373", "EGN 3615", "EGN 4450"]
+    },
+    {
+      "Year": 3,
+      "Semester": "Spring",
+      "Courses": ["CDA 4203", "CDA 4203L", "COT 4400"]
+    },
+    {
+      "Year": 4,
+      "Semester": "Fall",
+      "Courses": ["CDA 4213", "CDA 4213L", "COP 4600", "ENC 3246"]
+    },
+    {
+      "Year": 4,
+      "Semester": "Spring",
+      "Courses": ["CIS 4250", "CIS 4910"]
+    }
+  ],
+  "course_prerequisites": {
+    "MAC 2282": ["MAC 2281", "MAC 2311"],
+    "MAC 2283": ["MAC 2282", "MAC 2312"],
+    "CDA 3103": ["COP 2510"],
+    "COP 3514": ["COP 2510"],
+    "PHY 2049": ["PHY 2048"],
+    "PHY 2049L": ["PHY 2048L"],
+    "CDA 3201": ["CDA 3103"],
+    "CDA 3201L": ["CDA 3103"],
+    "COP 4530": ["COP 3514"],
+    "EGN 3433": ["MAC 2283", "MAC 2313"],
+    "CDA 4205": ["CDA 3201"],
+    "CDA 4205L": ["CDA 3201L"],
+    "EEE 3394": ["PHY 2049"],
+    "EGN 3373": ["PHY 2049"],
+    "EGN 3615": ["MAC 2282", "MAC 2312"],
+    "EGN 4450": ["MAC 2283", "MAC 2313"],
+    "CDA 4203": ["CDA 4205"],
+    "CDA 4203L": ["CDA 4205L"],
+    "COT 4400": ["COP 4530"],
+    "CDA 4213": ["CDA 4203"],
+    "CDA 4213L": ["CDA 4203L"],
+    "COP 4600": ["COP 4530"],
+    "CIS 4250": ["CDA 4203"],
+    "CIS 4910": ["CIS 4250"]
+  }
+}

@@ -1,0 +1,258 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  directUrl    = env("DIRECT_URL")
+  relationMode = "prisma"
+}
+
+enum RequirementType {
+  PREREQUISITE
+  COREQUISITE
+}
+
+enum LogicalOperator {
+  AND
+  OR
+}
+
+enum UserType {
+  ADMIN
+  STUDENT
+}
+
+enum DegreeStatus {
+  AW
+  DE
+}
+
+model User {
+  id        String   @id @default(uuid())
+  uid       String?  @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  userType  UserType
+  studentId String?  @unique
+  student   Student? @relation(fields: [studentId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@index([studentId])
+}
+
+// Table for storing university data
+model University {
+  id          String       @id @default(uuid())
+  name        String
+  departments Department[]
+  courses     Course[]
+  students    Student[]
+  Program     Program[]
+}
+
+// Table for storing department data
+model Department {
+  id           String     @id @default(uuid())
+  code         String     @unique
+  name         String
+  universityId String
+  courses      Course[]
+  university   University @relation(fields: [universityId], references: [id])
+  Program      Program[]
+
+  @@index([universityId])
+}
+
+// Table for storing student data
+model Student {
+  id               String            @id @default(uuid())
+  studentId        String
+  universityId     String
+  degreeData       DegreeData[]
+  universityGrades UniversityGrade[]
+  transferGrades   TransferGrade[]
+  university       University        @relation(fields: [universityId], references: [id])
+
+  userId String? @unique
+  user   User?
+
+  @@index([universityId])
+}
+
+// Table for storing grade related data
+model Grade {
+  id                    String  @id @default(uuid())
+  gradeCode             String
+  gradeNumericValue     Int
+  gradeQualityPoints    Int
+  gradeAttemptedInd     Boolean
+  gradeCompletedInd     Boolean
+  gradePassedInd        Boolean
+  gradeGPAInd           Boolean
+  gradeTraditionalInd   Boolean
+  gradeRepeatIncludeInd Boolean
+}
+
+// Table for storing unique courses
+model Course {
+  id                String              @id @default(uuid())
+  courseSubject     String
+  courseNumber      String
+  name              String
+  startTerm         Int?
+  endTerm           Int?
+  departmentId      String
+  universityId      String?
+  conditions        ConditionGroup[]
+  department        Department          @relation(fields: [departmentId], references: [id])
+  university        University?         @relation(fields: [universityId], references: [id])
+  universityGrade   UniversityGrade[]
+  prerequisites     Prerequisite[]
+  ProgramCourse     ProgramCourse[]
+  AlternativeCourse AlternativeCourse[]
+  ElectiveCourse    ElectiveCourse[]
+
+  @@unique(fields: [courseNumber, courseSubject], name: "courseIdentifier")
+  @@index([departmentId])
+  @@index([universityId])
+}
+
+model ConditionGroup {
+  id              String           @id @default(uuid())
+  courseId        String
+  logicalOperator LogicalOperator?
+  conditions      Condition[]
+  course          Course           @relation(fields: [courseId], references: [id])
+
+  @@index([courseId])
+}
+
+model Condition {
+  id               String          @id @default(uuid())
+  conditionGroupId String
+  minimumGrade     String?
+  type             RequirementType
+  prerequisites    Prerequisite[]
+  conditionGroup   ConditionGroup  @relation(fields: [conditionGroupId], references: [id])
+
+  @@index([conditionGroupId])
+}
+
+// Table for storing prerequisites
+model Prerequisite {
+  id          String    @id @default(uuid())
+  conditionId String
+  courseId    String
+  course      Course    @relation(fields: [courseId], references: [id])
+  condition   Condition @relation(fields: [conditionId], references: [id])
+
+  @@index([courseId])
+  @@index([conditionId])
+}
+
+// Table for storing degree data
+model DegreeData {
+  id                   String       @id @default(uuid())
+  studentId            String
+  degreeSequenceNumber Int
+  degreeTerm           String
+  degreeCode           String
+  cipDegree            String
+  degreeStatus         DegreeStatus
+  student              Student      @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+}
+
+model Program {
+  id                String              @id @default(uuid())
+  name              String
+  totalDegreeHours  Int
+  universityId      String
+  departmentId      String
+  programCourses    ProgramCourse[]
+  university        University          @relation(fields: [universityId], references: [id])
+  department        Department          @relation(fields: [departmentId], references: [id])
+  AlternativeCourse AlternativeCourse[]
+  ElectiveCourse    ElectiveCourse[]
+
+  @@index([universityId])
+  @@index([departmentId])
+}
+
+model ProgramCourse {
+  id        String  @id @default(uuid())
+  courseId  String
+  semester  Int
+  year      Int
+  programId String
+  course    Course  @relation(fields: [courseId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
+
+  @@index([courseId])
+  @@index([programId])
+}
+
+model ElectiveCourse {
+  id        String  @id @default(uuid())
+  courseId  String
+  programId String
+  category  String
+  course    Course  @relation(fields: [courseId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
+
+  @@index([courseId])
+  @@index([programId])
+}
+
+model AlternativeCourse {
+  id        String  @id @default(uuid())
+  courseId  String
+  altCourse String
+  programId String
+  course    Course  @relation(fields: [courseId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
+
+  @@index([courseId])
+  @@index([programId])
+}
+
+model UniversityGrade {
+  id           String   @id @default(uuid())
+  studentId    String
+  term         Int
+  finalGrade   String
+  creditHours  Int
+  repeatCourse Boolean? @default(false)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id])
+  student      Student  @relation(fields: [studentId], references: [id])
+
+  @@index([courseId])
+  @@index([studentId])
+}
+
+// Table for storing transfer grades
+model TransferGrade {
+  id              String  @id @default(uuid())
+  studentId       String
+  sbgiCode        String
+  sbgiDesc        String
+  term            Int
+  courseSeqNo     Int
+  courseSubject   String
+  courseNumber    String
+  courseTitle     String
+  creditHours     Int
+  equivalentGrade String
+  transferGrade   String
+  countInGPA      String
+  repeatCourse    Boolean @default(false)
+  student         Student @relation(fields: [studentId], references: [id])
+
+  @@index([studentId])
+}

@@ -1,0 +1,134 @@
+[
+  {
+    "courseId": "CHM 2045",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "CHM 2045L",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "EGN 3000",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "EGN 3000L",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "ENC 1101",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "MAC 2281",
+    "semester": 1,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "COP 2510",
+    "semester": 2,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "COT 3100",
+    "semester": 2,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "MAC 2282",
+    "semester": 2,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "PHY 2048",
+    "semester": 2,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "PHY 2048L",
+    "semester": 2,
+    "year": 1,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "CDA 3103",
+    "semester": 1,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "COP 3514",
+    "semester": 1,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "MAC 2283",
+    "semester": 1,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "PHY 2049",
+    "semester": 1,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "PHY 2049L",
+    "semester": 1,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "CDA 3201",
+    "semester": 2,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "CDA 3201L",
+    "semester": 2,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "COP 4530",
+    "semester": 2,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "EGN 3433",
+    "semester": 2,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "ENC 1102",
+    "semester": 2,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  },
+  {
+    "courseId": "EGN 3443",
+    "semester": 3,
+    "year": 2,
+    "programId": "e9d10b95-b43e-4344-8dd6-d9af37d5ccd6"
+  }
+]

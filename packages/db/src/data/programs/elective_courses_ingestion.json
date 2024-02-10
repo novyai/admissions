@@ -1,0 +1,172 @@
+[
+  {
+    "courseId": "CAP 4401",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4410",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4621",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4628",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4641",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4662",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CAP 4744",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CDA 4621",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CEN 4020",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CEN 4072",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4212",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4345",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4900",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4915",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4930",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CIS 4940",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CNT 4004",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CNT 4411",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "CNT 4419",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COP 4020",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COP 4365",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COP 4520",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COP 4620",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COP 4710",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COT 4210",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COT 4521",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "COT 4601",
+    "programId": "program_id_here",
+    "category": "CSE"
+  },
+  {
+    "courseId": "ENC 1101",
+    "programId": "program_id_here",
+    "category": "CompositionAndTechnicalWriting"
+  },
+  {
+    "courseId": "ENC 1102",
+    "programId": "program_id_here",
+    "category": "CompositionAndTechnicalWriting"
+  },
+  {
+    "courseId": "ENC 3246",
+    "programId": "program_id_here",
+    "category": "CompositionAndTechnicalWriting"
+  },
+  {
+    "courseId": "CDA 4253",
+    "programId": "program_id_here",
+    "category": "HardwareElectives"
+  },
+  {
+    "courseId": "CDA 4321",
+    "programId": "program_id_here",
+    "category": "HardwareElectives"
+  },
+  {
+    "courseId": "CDA 4322",
+    "programId": "program_id_here",
+    "category": "HardwareElectives"
+  },
+  {
+    "courseId": "CDA 4323",
+    "programId": "program_id_here",
+    "category": "HardwareElectives"
+  }
+]

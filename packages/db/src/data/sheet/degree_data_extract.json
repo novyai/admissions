@@ -1,0 +1,1538 @@
+[
+  {
+    "ID": "4G2z7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4E1x4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "4E1x4",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0X0h7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "5B4f7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3X2v8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5R2s0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9E1t6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4M9o8",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0M5a8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3G5r7",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3L5l1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2C6z3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4E6j1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2D8e1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "2D8e1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "7F9g1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3L9l1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "3L9l1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9Z3q7",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4B8p9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2A0e9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6U2d8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9T4t8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9Y2m2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7P7v1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3M7s6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0L5h6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9A2s0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7A0o7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9F3m9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1T4i4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6L3t2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4G4l4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "1A8a9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1T9d3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8S8y2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7R0g0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9N2k6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7G7p9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5Y8l5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5X9v0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6D5e3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9R8d6",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2Y7e0",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5N3k5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0V0l7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5U9b7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4P0y2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7M9n1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z8p5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7E0g0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9R3y0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0P3k5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6A0y1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7L4a0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4E3l6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1C0x4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6K6d4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7K5j6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5L0c0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3M8j9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6I8j8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7O7d5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1I8w6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1E4y4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4L0k1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6A2t4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6C6m3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6Z9x1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7Z4w1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4F0o9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7X8l5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7C8w9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6O2l3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3W7g9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4J1a7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3G2k5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7L7w2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "6X5d3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "6X5d3",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6O7j7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5U7k8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1U9y3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5J3q7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8D3l5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0F7d9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "5C2q6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5E2w7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0C4n3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0S2t7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4G6q8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4V3e1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0Q9e1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3C3a2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6U6a9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3J2b8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5E0s0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6M3e0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7K0q1",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2E4y7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4V4z4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2D8u7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3Q3g9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0Z4k1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4X5d8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0N1k7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9W0c4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2T8a1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1K0l7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2C9z8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7O3a3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4B7j3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2Y5r5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5Z6y2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5F9e1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8A2a2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8B1q3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Q7m6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3T9a9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3S1u6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9U2f4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2T3n1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2G3f2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "3L3w9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6A4z2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2L1u1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4P8y7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2U7b3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5L2t3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9T9k3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7S7e4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4C3z3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7G6g7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1L1i3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5Q7c8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7L1o3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2O5i6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0O9x9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9F4a9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2J9z2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4U0i1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z5o7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4O0b0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "4O0b0",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3F0n8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0T5f9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z7p1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0U7v5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2O9o8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8T0u1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "2I5u0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9Y6j1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3C6n4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "5T3b2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0Q4u9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3B8o8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8I0g6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8D7e6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1F9d8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "4B7n8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z9b4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7F9s4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "2J7s9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202205",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "2J7s9",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z7g6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4C1j4",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3E8s5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0A6j1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7Y7w5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9N8n5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3K6m7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9P8z8",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7N9a6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6K6x2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Z1n8",
+    "DEGREE SEQUENCE NUMBER": 2,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "4L2u3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1W5i5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9M6w6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "7P3d6",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "9L2m2",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8E4m1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6U6u5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8Y9o0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6E0p9",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3H3z1",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "6I6l3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "0Y9y7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202208",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "DE"
+  },
+  {
+    "ID": "3M1q5",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "3D5n3",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "8S5t7",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  },
+  {
+    "ID": "1A1y0",
+    "DEGREE SEQUENCE NUMBER": 1,
+    "DEGREE TERM": "202301",
+    "DEGREE_CODE": "BSCS",
+    "CIP_DEGREE": "110101",
+    "DEGREE_STATUS": "AW"
+  }
+]

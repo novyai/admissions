@@ -1,0 +1,27 @@
+[
+  {
+    "courseId": "MAC 2281",
+    "altCourse": "MAC 2311",
+    "programId": "PLACEHOLDER_PROGRAM_ID"
+  },
+  {
+    "courseId": "MAC 2282",
+    "altCourse": "MAC 2312",
+    "programId": "PLACEHOLDER_PROGRAM_ID"
+  },
+  {
+    "courseId": "MAC 2283",
+    "altCourse": "MAC 2313",
+    "programId": "PLACEHOLDER_PROGRAM_ID"
+  },
+  {
+    "courseId": "MAP 2302",
+    "altCourse": "EGN 3433",
+    "programId": "PLACEHOLDER_PROGRAM_ID"
+  },
+  {
+    "courseId": "CHM 2045",
+    "altCourse": "CHS 2440",
+    "programId": "PLACEHOLDER_PROGRAM_ID"
+  }
+]

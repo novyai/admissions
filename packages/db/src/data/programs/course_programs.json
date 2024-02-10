@@ -1,0 +1,101 @@
+{
+  "MAC 2281": {
+    "Name": "Engineering Calculus I",
+    "Credits": 4,
+    "Alternatives": ["MAC 2311"]
+  },
+  "MAC 2282": {
+    "Name": "Engineering Calculus II",
+    "Credits": 4,
+    "Alternatives": ["MAC 2312"]
+  },
+  "MAC 2283": {
+    "Name": "Engineering Calculus III",
+    "Credits": 4,
+    "Alternatives": ["MAC 2313"]
+  },
+  "MAP 2302": {
+    "Name": "Differential Equations",
+    "Credits": 3,
+    "Alternatives": ["EGN 3433"]
+  },
+  "CHM 2045": {
+    "Name": "General Chemistry I",
+    "Credits": 3,
+    "Alternatives": ["CHS 2440"]
+  },
+  "PHY 2048": {
+    "Name": "General Physics I - Calculus Based",
+    "Credits": 3,
+    "Alternatives": [],
+    "Lab": "PHY 2048L"
+  },
+  "PHY 2049": {
+    "Name": "General Physics II - Calculus Based",
+    "Credits": 3,
+    "Alternatives": [],
+    "Lab": "PHY 2049L"
+  },
+  "COP 2510": {
+    "Name": "Programming Concepts",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "COP 3514": {
+    "Name": "Program Design",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "COP 4530": {
+    "Name": "Data Structures",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "CDA 3103": {
+    "Name": "Computer Organization",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "CDA 4203": {
+    "Name": "Computer System Design",
+    "Credits": 3,
+    "Alternatives": [],
+    "Lab": "CDA 4203L"
+  },
+  "CDA 4205": {
+    "Name": "Computer Architecture",
+    "Credits": 3,
+    "Alternatives": [],
+    "Lab": "CDA 4205L"
+  },
+  "COT 4400": {
+    "Name": "Analysis of Algorithms",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "CIS 4250": {
+    "Name": "Ethical Issues and Professional Conduct",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "CIS 4910": {
+    "Name": "Computer Science and Engineering Project",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "ENC 1101": {
+    "Name": "Composition I",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "ENC 1102": {
+    "Name": "Composition II",
+    "Credits": 3,
+    "Alternatives": []
+  },
+  "ENC 3246": {
+    "Name": "Communication for Engineers",
+    "Credits": 3,
+    "Alternatives": []
+  }
+}
