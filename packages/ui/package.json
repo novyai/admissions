@@ -5,11 +5,16 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    "./*": { "import": ["./src/*.tsx", "./src/*.ts"] },
+    "./*": {
+      "import": [
+        "./src/*.tsx",
+        "./src/*.ts"
+      ]
+    },
     "./styles.css": "./src/styles/globals.css"
   },
   "scripts": {
-    "lint": "eslint src/",
+    "format": "eslint ./src --fix",
     "type-check": "tsc --noEmit",
     "generate:component": "turbo gen react-component",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",

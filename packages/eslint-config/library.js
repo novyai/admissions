@@ -19,6 +19,10 @@ module.exports = {
       }
     }
   },
+  globals: {
+    React: true,
+    JSX: true
+  },
   ignorePatterns: [".*.js", "node_modules/", "dist/"],
   rules: {
     "no-prototype-builtins": "off",

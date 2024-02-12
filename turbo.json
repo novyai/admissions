@@ -53,7 +53,9 @@
     },
     "db:rps": {
       "cache": false
-    
+    },
+    "format": {
+      "cache": false
     }
   }
 }
