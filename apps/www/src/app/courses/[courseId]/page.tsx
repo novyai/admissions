@@ -1,4 +1,5 @@
 import { getCourseWithPrereqs } from "@/db/courses"
+import { Card, CardContent, CardHeader } from "@ui/components/ui/card"
 
 export default async function Page({
   params: { courseId }
@@ -10,25 +11,21 @@ export default async function Page({
   const { course, prereqs } = await getCourseWithPrereqs(courseId, [])
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto py-6 px-6">
       <div className="space-y-6 md:container">
         <div className="w-full sticky top-0 bg-background/50 backdrop-blur-md">
-          <div className="py-6 px-6 flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <div>
               <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">{course.name}</h1>
-              <small className="text-sm font-medium leading-none">
+              <small className="text-lg font-medium leading-none">
                 {course.courseSubject} {course.courseNumber}
               </small>
             </div>
-            <div>{/* <StudentCommand studentId={params.studentId} /> */}</div>
-          </div>
-          <div className="flex flex-col md:flex-row items-center justify-between gap-2 px-4">
-            {/* <StudentSummary gpaStats={gpaStats} /> */}
           </div>
 
-          <p>{JSON.stringify(course)}</p>
+          <pre>{JSON.stringify(course, null, 2)}</pre>
           <br />
-          <pre>{JSON.stringify(prereqs, null, 2)}</pre>
+          {prereqs ? <pre>{JSON.stringify(prereqs, null, 2)}</pre> : <p>No Prerequisites</p>}
         </div>
       </div>
     </div>
