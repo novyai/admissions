@@ -1,4 +1,4 @@
-import { HydratedCourse } from "@/types"
+import { CourseWithPrereqs, HydratedCourse } from "@/types"
 import { Course, db, Department, Prerequisite } from "@db/client"
 
 export const getAllCourses = async ({
@@ -37,20 +37,6 @@ export const getAllCourses = async ({
   }
 }
 
-type HydratedCourseWithPrereqs = Course & {
-  department: Department
-  conditions: {
-    conditions: {
-      prerequisites: Prerequisite[]
-    }[]
-  }[]
-}
-
-type CourseWithPrereqs = {
-  course: HydratedCourseWithPrereqs
-  prereqs?: CourseWithPrereqs[]
-}
-
 export const getCourseWithPrereqs = async (
   courseId: string,
   queriedCourses: string[]
@@ -87,7 +73,10 @@ export const getCourseWithPrereqs = async (
   const filteredPrereqsCourses = [...prereqsCourses].filter(c => !queriedCourses.includes(c))
 
   if (filteredPrereqsCourses.length === 0) {
-    return { course }
+    return {
+      course,
+      prereqs: []
+    }
   }
 
   // for each prereq, pull in the course and its dependencies

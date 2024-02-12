@@ -19,10 +19,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               defaultFontMapper.default,
               defaultFontMapper.serif,
               defaultFontMapper.mono,
-              "flex-col items-stretch h-screen w-screen overflow-hidden"
+              "flex-col items-stretch h-screen w-screen overflow-y-scroll overflow-x-hidden"
             )}
           >
-            <div className="w-screen h-screen overflow-hidden flex flex-col items-start">
+            <div className="w-screen h-screen overflow-x-hidden flex flex-col items-start">
               <div className="w-full border-b-[1px] border-b-gray-3 p-4 flex justify-between">
                 <AdminNav />
 
@@ -31,7 +31,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </div>
               </div>
 
-              <main className="w-full h-[calc(100%-60px)] flex-1 overflow-hidden">{children}</main>
+              <main className="w-full h-[calc(100%-60px)] flex-1">{children}</main>
             </div>
           </div>
         </Providers>
