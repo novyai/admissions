@@ -6,7 +6,6 @@ import {
   Prerequisite,
   Student,
   TransferGrade,
-  University,
   UniversityGrade,
   User
 } from "@db/client"
@@ -35,16 +34,11 @@ export type StudentTranscript = {
   user: User
 }
 
-type HydratedCourseWithPrereqs = Course & {
+export type HydratedCourseWithPrereqs = Course & {
   department: Department
   conditions: {
     conditions: {
       prerequisites: Prerequisite[]
     }[]
   }[]
-}
-
-export type CourseWithPrereqs = {
-  course: HydratedCourseWithPrereqs
-  prereqs?: CourseWithPrereqs[]
 }
