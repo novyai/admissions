@@ -1,5 +1,5 @@
-import { CourseWithPrereqs, HydratedCourse } from "@/types"
-import { Course, db, Department, Prerequisite } from "@db/client"
+import { HydratedCourse, HydratedCourseWithPrereqs } from "@/types"
+import { db } from "@db/client"
 
 export const getAllCourses = async ({
   skip = 0,
@@ -37,10 +37,33 @@ export const getAllCourses = async ({
   }
 }
 
+export const getCourses = async (courseIds: string[]): Promise<HydratedCourse[]> => {
+  try {
+    return await db.course.findMany({
+      where: {
+        id: {
+          in: courseIds
+        }
+      },
+      include: {
+        department: true,
+        conditions: true,
+        prerequisites: true
+      }
+    })
+  } catch (error) {
+    console.error("Failed to get courses: ", error)
+    throw new Error("Failed to get courses")
+  }
+}
+
 export const getCourseWithPrereqs = async (
   courseId: string,
   queriedCourses: string[]
-): Promise<CourseWithPrereqs> => {
+): Promise<{
+  course: HydratedCourseWithPrereqs
+  prereqMap: Map<string, string[]>
+}> => {
   // pull in current course
   const course = await db.course.findUnique({
     where: {
@@ -72,23 +95,25 @@ export const getCourseWithPrereqs = async (
   // remove circular dependencies from the query
   const filteredPrereqsCourses = [...prereqsCourses].filter(c => !queriedCourses.includes(c))
 
+  const prereqMap = new Map([[course.id, filteredPrereqsCourses]])
   if (filteredPrereqsCourses.length === 0) {
     return {
       course,
-      prereqs: []
+      prereqMap
     }
   }
 
-  // for each prereq, pull in the course and its dependencies
-  const prereqs = await Promise.all(
-    filteredPrereqsCourses.map(async courseId => {
-      const prereqCourse = await getCourseWithPrereqs(courseId, [...queriedCourses, courseId])
-      return prereqCourse
-    })
-  )
+  let newQueriedCourses = [...queriedCourses, course.id]
+  for (const courseId of filteredPrereqsCourses) {
+    newQueriedCourses = [...queriedCourses, courseId]
+    const { prereqMap: prereqPrereqMap } = await getCourseWithPrereqs(courseId, newQueriedCourses)
+    for (const [key, value] of prereqPrereqMap) {
+      prereqMap.set(key, value)
+    }
+  }
 
   return {
     course,
-    prereqs
+    prereqMap
   }
 }
