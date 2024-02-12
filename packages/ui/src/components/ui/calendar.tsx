@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React from "react"
 import { buttonVariants } from "@ui/components/ui/button"
 import { cn } from "@ui/lib/utils"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -46,8 +46,8 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ...classNames
       }}
       components={{
-        IconLeft: ({}) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({}) => <ChevronRight className="h-4 w-4" />
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />
       }}
       {...props}
     />
