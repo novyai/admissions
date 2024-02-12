@@ -1,12 +1,12 @@
 {
   "editor.defaultFormatter": "vscode.typescript-language-features",
   "editor.tabSize": 2,
-  "editor.formatOnType": false,
-  "editor.formatOnPaste": false,
+  "editor.formatOnType": true,
+  "editor.formatOnPaste": true,
   "editor.trimAutoWhitespace": true,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "[javascript, javascriptreact, typescript, typescriptreact]": {
-    "editor.formatOnSave": false
+    "editor.formatOnSave": true
   },
   "editor.codeActionsOnSave": {
     "source.fixAll": "always",
@@ -25,11 +25,12 @@
   "[yaml]": {
     "editor.autoIndent": "advanced",
     "editor.tabSize": 2,
-    "editor.formatOnSave": true,
-    "editor.formatOnType": false,
-    "editor.formatOnPaste": true
   },
-  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact"
+  ],
   "eslint.workingDirectories": [
     {
       "pattern": "./apps/*"
@@ -45,7 +46,6 @@
     }
   ],
   "eslint.debug": true,
-  "github-actions.workflows.pinned.workflows": [".github/workflows/release.yml"],
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.validate.enable": true,
@@ -62,5 +62,6 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
-  }
+  },
+  "svg.preview.background": "white"
 }
