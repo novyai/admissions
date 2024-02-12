@@ -1,5 +1,4 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { Card, CardContent, CardHeader } from "@ui/components/ui/card"
 
 export default async function Page({
   params: { courseId }
