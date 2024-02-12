@@ -41,11 +41,9 @@ export default async function Page({
   })
 
   return (
-    <>
-      <div className="w-full h-full overflow-y-auto my-8 px-6">
-        <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">All Courses</h1>
-        <CoursesTable courses={courses} total={total} />
-      </div>
-    </>
+    <div className="w-full h-full overflow-y-auto my-8 px-6">
+      <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">All Students</h1>
+      <CoursesTable courses={courses} total={total} />
+    </div>
   )
 }

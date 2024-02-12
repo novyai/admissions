@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { HydratedCourse } from "@/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
@@ -50,7 +51,9 @@ export const columns: ColumnDef<HydratedCourse>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center space-x-2">
-          <span>{row.original.name ?? "--"}</span>
+          <Link className="text-blue-9 hover:underline" href={`/courses/${row.original.id}`}>
+            {row.original.name}
+          </Link>
         </div>
       )
     }
