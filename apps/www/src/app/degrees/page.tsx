@@ -1,5 +1,4 @@
-import { getRequiredCoursesForDegree } from "@/db/degree"
-import { CourseWithPrereqs } from "@/types"
+import { getDegreeData } from "@/db/degree"
 import { Prisma } from "@db/client"
 import cseDegree from "@db/data/test.json"
 
@@ -14,16 +13,7 @@ export default async function Page() {
     }
   })
 
-  const courseData = await getRequiredCoursesForDegree(deptCourses)
-
-  // find courses that are missing:
-  const missingCourses = deptCourses.filter(course => {
-    return !courseData.some(
-      c =>
-        c.course.courseNumber === course.courseNumber &&
-        c.course.department.code === course?.department?.code
-    )
-  })
+  const { schedule, allCourses, missingCourses } = await getDegreeData(deptCourses)
 
   return (
     <>
@@ -31,31 +21,38 @@ export default async function Page() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h2 className="text-2xl font-bold mb-4">Courses</h2>
-          <p>{missingCourses.length} missing courses</p>
+          <p>
+            total courses: {allCourses.length} | missing courses: {missingCourses.length}
+          </p>
 
-          <p>Courses with their dependencies</p>
+          {/* <p>course with dependencies as graph</p> */}
+          {/* <pre>{JSON.stringify(graph, null, 2)}</pre> */}
+
+          {/* <pre>{JSON.stringify(schedule, null, 2)}</pre> */}
+
+          <p>Schedule</p>
+
           <ul>
-            {courseData.map(course => {
-              return <RenderCourseWithPrereqs key={course.course.id} course={course} />
+            {schedule.map((semester, i) => {
+              return (
+                <li key={i}>
+                  <h3>Semester {i + 1}</h3>
+                  <ul>
+                    {semester.map((course, j) => {
+                      const courseData = allCourses.find(c => c.id === course)
+                      return (
+                        <li key={j}>
+                          {courseData?.department?.code} {courseData?.courseNumber}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </li>
+              )
             })}
           </ul>
         </div>
       </div>
     </>
-  )
-}
-
-const RenderCourseWithPrereqs = ({ course }: { course: CourseWithPrereqs }) => {
-  return (
-    <li key={course.course.id} className="pl-2">
-      {course.course.department.code} {course.course.courseNumber}
-      {course.prereqs && (
-        <ul>
-          {course.prereqs.map((prereq, i) => {
-            return <RenderCourseWithPrereqs key={i} course={prereq} />
-          })}
-        </ul>
-      )}
-    </li>
   )
 }
