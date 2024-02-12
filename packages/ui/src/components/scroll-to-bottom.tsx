@@ -1,11 +1,10 @@
 "use client"
 
 import * as React from "react"
-import { ArrowDown } from "lucide-react"
-
-import { cn } from "@ui/lib/utils"
-import { useAtBottom } from "@ui/hooks/use-at-bottom"
 import { Button } from "@ui/components/ui/button"
+import { useAtBottom } from "@ui/hooks/use-at-bottom"
+import { cn } from "@ui/lib/utils"
+import { ArrowDown } from "lucide-react"
 
 export function ScrollToBottom({ scrollerRef }: { scrollerRef: React.RefObject<HTMLDivElement> }) {
   const isAtBottom = useAtBottom({ scrollerRef: scrollerRef, offset: 200 })
