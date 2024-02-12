@@ -39,6 +39,16 @@ export function AdminNav() {
           Courses
         </Link>
       </li>
+      <li>
+        <Link
+          href="/degrees"
+          className={buttonVariants({
+            variant: pathname.startsWith("/degrees") ? "secondary" : "ghost"
+          })}
+        >
+          Degrees
+        </Link>
+      </li>
     </ul>
   )
 }
