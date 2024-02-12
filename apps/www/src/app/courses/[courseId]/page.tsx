@@ -1,7 +1,4 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { HydratedCourse } from "@/types"
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/ui/card"
-import { ActivitySquare } from "lucide-react"
 
 export default async function Page({
   params: { courseId }
@@ -37,32 +34,3 @@ export default async function Page({
     </div>
   )
 }
-
-// const CourseDetails = ({ course }: { course: HydratedCourse }) => {
-//   return (
-//     <>
-//       <Card className="w-full backdrop-blur-sm bg-card/75">
-//         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//           <CardTitle className="text-sm font-medium">Course Summary</CardTitle>
-//           <ActivitySquare className="h-4 w-4 text-muted-foreground" />
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">GPA: {gpaStats?.gpa?.toFixed(2) ?? "--"}</div>
-//           <p className="text-xs text-muted-foreground">
-//             Total Credits: {gpaStats?.totalCredits ?? "--"}
-//           </p>
-//         </CardContent>
-//       </Card>
-//       <Card className="w-full backdrop-blur-sm bg-card/75">
-//         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-//           <CardTitle className="text-sm font-medium">Course Summary</CardTitle>
-//           <BookOpenCheck className="h-4 w-4 text-muted-foreground" />
-//         </CardHeader>
-//         <CardContent>
-//           <div className="text-2xl font-bold">Completed: {gpaStats?.completedCourses ?? "--"}</div>
-//           <p className="text-xs text-muted-foreground">Passed: {gpaStats?.passedCourses ?? "--"}</p>
-//         </CardContent>
-//       </Card>
-//     </>
-//   )
-// }
