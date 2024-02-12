@@ -54,10 +54,9 @@ async function topologicalSort(prereqMap: Map<string, string[]>): Promise<string
     // Mark the current node as visited and remove it from the visiting set
     visiting.delete(courseId)
     visited.add(courseId)
-    stack.unshift(courseId) // Add the current node to the stack (front for topological order)
+    stack.unshift(courseId)
   }
 
-  // Perform DFS from each node
   const allKeys = [...prereqMap.keys()]
 
   allKeys.forEach(courseId => {
