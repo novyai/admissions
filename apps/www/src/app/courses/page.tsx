@@ -18,19 +18,19 @@ export default async function Page({
   const { skip, take, q, orderBy } = searchParams
   const filters = q?.length
     ? {
-        OR: [
-          {
-            courseSubject: {
-              contains: q
-            }
-          },
-          {
-            name: {
-              contains: q
-            }
+      OR: [
+        {
+          courseSubject: {
+            contains: q
           }
-        ]
-      }
+        },
+        {
+          name: {
+            contains: q
+          }
+        }
+      ]
+    }
     : undefined
 
   const { courses, total } = await getAllCourses({
@@ -42,7 +42,7 @@ export default async function Page({
 
   return (
     <div className="w-full h-full overflow-y-auto my-8 px-6">
-      <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">All Students</h1>
+      <h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight">All Courses</h1>
       <CoursesTable courses={courses} total={total} />
     </div>
   )

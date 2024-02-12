@@ -132,9 +132,5 @@ export const columns: ColumnDef<HydratedCourse>[] = [
 ]
 
 export function CoursesTable({ courses, total }: { courses: HydratedCourse[]; total: number }) {
-  return (
-    <div>
-      <DataTable data={courses} columns={columns} rowCount={total} />
-    </div>
-  )
+  return <DataTable data={courses} columns={columns} rowCount={total} />
 }
