@@ -51,7 +51,10 @@ type CourseWithPrereqs = {
   prereqs?: CourseWithPrereqs[]
 }
 
-export const getCourseWithPrereqs = async (courseId: string): Promise<CourseWithPrereqs> => {
+export const getCourseWithPrereqs = async (
+  courseId: string,
+  queriedCourses: string[]
+): Promise<CourseWithPrereqs> => {
   // pull in current course
   const course = await db.course.findUnique({
     where: {
@@ -79,14 +82,18 @@ export const getCourseWithPrereqs = async (courseId: string): Promise<CourseWith
   const prereqsCourses = new Set(
     course.conditions.flatMap(c => c.conditions.flatMap(c => c.prerequisites.map(p => p.courseId)))
   )
-  if (prereqsCourses.size === 0) {
+
+  // remove circular dependencies from the query
+  const filteredPrereqsCourses = [...prereqsCourses].filter(c => !queriedCourses.includes(c))
+
+  if (filteredPrereqsCourses.length === 0) {
     return { course }
   }
 
   // for each prereq, pull in the course and its dependencies
   const prereqs = await Promise.all(
-    [...prereqsCourses].map(async courseId => {
-      const prereqCourse = await getCourseWithPrereqs(courseId)
+    filteredPrereqsCourses.map(async courseId => {
+      const prereqCourse = await getCourseWithPrereqs(courseId, [...queriedCourses, courseId])
       return prereqCourse
     })
   )
