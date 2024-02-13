@@ -54,7 +54,7 @@ async function topologicalSort(prereqMap: Map<string, string[]>): Promise<string
     // Mark the current node as visited and remove it from the visiting set
     visiting.delete(courseId)
     visited.add(courseId)
-    stack.unshift(courseId)
+    stack.push(courseId)
   }
 
   const allKeys = [...prereqMap.keys()]
