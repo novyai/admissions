@@ -29,7 +29,14 @@ const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => 
     return acc
   }, new Map<string, string[]>())
 
-  return overallPrereqMap
+  const overallDependentMap = withPrereqs.reduce((acc, { dependentMap }) => {
+    for (const [courseId, dependents] of dependentMap.entries()) {
+      acc.set(courseId, [...(acc.get(courseId) || []), ...dependents])
+    }
+    return acc
+  }, new Map<string, string[]>())
+
+  return { prereqMap: overallPrereqMap, dependentMap: overallDependentMap }
 }
 
 async function topologicalSort(prereqMap: Map<string, string[]>): Promise<string[]> {
@@ -79,24 +86,11 @@ const planSchedule = (sortedCourses: string[], coursesPerSemester: number): stri
 }
 
 export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
-  const prereqMap = await getRequiredCoursesMap(deptCourses)
+  const { prereqMap, dependentMap } = await getRequiredCoursesMap(deptCourses)
 
   const sortedCourses = await topologicalSort(prereqMap)
 
   const schedule = planSchedule(sortedCourses, 4)
-
-  const courseMap = await db.course.findMany({
-    where: {
-      OR: sortedCourses.map(courseId => ({ id: courseId }))
-    },
-    include: {
-      department: true
-    }
-  })
-
-  const missingCourses = sortedCourses.filter(
-    courseId => !courseMap.find(course => course.id === courseId)
-  )
 
   const allCourses: HydratedCourse[] = await db.course.findMany({
     where: {
@@ -111,10 +105,15 @@ export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
     }
   })
 
+  const missingCourses = sortedCourses.filter(
+    courseId => !allCourses.find(course => course.id === courseId)
+  )
+
   return {
     schedule,
     allCourses,
-    courseMap,
-    missingCourses
+    prereqMap,
+    missingCourses,
+    dependentMap
   }
 }

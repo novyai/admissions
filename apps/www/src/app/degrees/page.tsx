@@ -3,17 +3,23 @@ import { Prisma } from "@db/client"
 import cseDegree from "@db/data/test.json"
 
 export default async function Page() {
-  const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
-    const [dept, num] = course.split(" ")
-    return {
-      department: {
-        code: dept
-      },
-      courseNumber: num
-    }
-  })
+  // const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
+  //   const [dept, num] = course.split(" ")
+  //   return {
+  //     department: {
+  //       code: dept
+  //     },
+  //     courseNumber: num
+  //   }
+  // })
 
-  const { schedule, allCourses, missingCourses } = await getDegreeData(deptCourses)
+  const courses: Prisma.CourseWhereInput[] = [
+    {
+      id: "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
+    }
+  ]
+
+  const { schedule, allCourses } = await getDegreeData(courses)
 
   return (
     <>
@@ -40,11 +46,7 @@ export default async function Page() {
                   <ul>
                     {semester.map((course, j) => {
                       const courseData = allCourses.find(c => c.id === course)
-                      return (
-                        <li key={j}>
-                          {courseData?.department?.code} {courseData?.courseNumber}
-                        </li>
-                      )
+                      return <li key={j}>{courseData?.name}</li>
                     })}
                   </ul>
                 </li>
