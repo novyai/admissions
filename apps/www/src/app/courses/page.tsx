@@ -18,19 +18,19 @@ export default async function Page({
   const { skip, take, q, orderBy } = searchParams
   const filters = q?.length
     ? {
-      OR: [
-        {
-          courseSubject: {
-            contains: q
+        OR: [
+          {
+            courseSubject: {
+              contains: q
+            }
+          },
+          {
+            name: {
+              contains: q
+            }
           }
-        },
-        {
-          name: {
-            contains: q
-          }
-        }
-      ]
-    }
+        ]
+      }
     : undefined
 
   const { courses, total } = await getAllCourses({

@@ -36,7 +36,7 @@ export function Chat({ studentId }: { studentId: string }) {
       currentBotMessage.current = currentBotMessage.current += content ?? ""
 
       const updatedMessages = [
-        ...lastMessages?.current,
+        ...lastMessages.current,
         {
           content: currentBotMessage.current,
           role: "assistant"
@@ -52,7 +52,7 @@ export function Chat({ studentId }: { studentId: string }) {
         role: "assistant"
       }
 
-      const updatedMessages = [...lastMessages?.current, responseMessage]
+      const updatedMessages = [...lastMessages.current, responseMessage]
 
       // @ts-ignore
       setMessages(updatedMessages)
@@ -66,7 +66,7 @@ export function Chat({ studentId }: { studentId: string }) {
   const sendMessage = async content => {
     if (!content.length || loading) return
     const updatedMessages = [
-      ...lastMessages?.current,
+      ...lastMessages.current,
       {
         content,
         role: "user"
@@ -100,7 +100,7 @@ export function Chat({ studentId }: { studentId: string }) {
 
   return (
     <main
-      className="relative flex-1 h-full w-full relative overflow-hidden max-h-[50vh]"
+      className="relative flex-1 h-full w-full overflow-hidden max-h-[50vh]"
       // @ts-ignore
       ref={setMainChatRef}
     >
