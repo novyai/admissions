@@ -116,6 +116,48 @@ const printPrereqs = (graph: Map<string, CourseNode>) => {
   }
 }
 
+const getDegree = async (profile: Profile) {
+
+  const { prereqMap, dependentMap, allCourses } = await getDegreeData([
+    {
+      id: {
+        equals: profile.requiredCourses[0]
+      }
+    }
+  ])
+
+  const graph = new Map<string, CourseNode>()
+
+  for (const course of allCourses) {
+    graph.set(course.id, {
+      id: course.id,
+      earliestFinish: undefined,
+      latestFinish: undefined,
+      dependents: Array.from(new Set(dependentMap.get(course.id) ?? [])),
+      prerequisites: Array.from(new Set(prereqMap.get(course.id) ?? [])),
+      name: course.name
+    })
+  }
+
+  for (const course of profile.requiredCourses) {
+    calculateEarliestFinish(course, graph, profile)
+    calculateLatestFinish(course, graph, profile)
+  }
+
+  console.log("the goal is to complete course: ", graph.get(profile.requiredCourses[0]!)?.name)
+  console.log(
+    "so far you have completed: ",
+    profile.completedCourses.map(course => graph.get(course)?.name) + "\n\n"
+  )
+
+  printPrereqs(graph)
+
+  console.log("\n\n")
+
+  console.log(graph)
+
+}
+
 const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
 const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
 const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
@@ -127,40 +169,5 @@ const profile: Profile = {
   timeToGraduate: 4
 }
 
-const { prereqMap, dependentMap, allCourses } = await getDegreeData([
-  {
-    id: {
-      equals: profile.requiredCourses[0]
-    }
-  }
-])
+await getDegree(profile)
 
-const graph = new Map<string, CourseNode>()
-
-for (const course of allCourses) {
-  graph.set(course.id, {
-    id: course.id,
-    earliestFinish: undefined,
-    latestFinish: undefined,
-    dependents: Array.from(new Set(dependentMap.get(course.id) ?? [])),
-    prerequisites: Array.from(new Set(prereqMap.get(course.id) ?? [])),
-    name: course.name
-  })
-}
-
-for (const course of profile.requiredCourses) {
-  calculateEarliestFinish(course, graph, profile)
-  calculateLatestFinish(course, graph, profile)
-}
-
-console.log("the goal is to complete course: ", graph.get(profile.requiredCourses[0]!)?.name)
-console.log(
-  "so far you have completed: ",
-  profile.completedCourses.map(course => graph.get(course)?.name) + "\n\n"
-)
-
-printPrereqs(graph)
-
-console.log("\n\n")
-
-console.log(graph)
