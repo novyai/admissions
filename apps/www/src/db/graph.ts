@@ -27,6 +27,12 @@ function isEligibleForCourse(course: CourseNode, completedCourses: string[]): bo
   return isEligible
 }
 
+/**
+ * Returns all of the courses that depend on the given course
+ * @param course Course to get all required courses for
+ * @param graph Map of all courses
+ * @returns Array of all required courses for the given course
+ */
 function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
   const requiredCourses = new Set<string>()
 
