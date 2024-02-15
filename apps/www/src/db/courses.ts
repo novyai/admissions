@@ -1,4 +1,4 @@
-import { HydratedCourse, HydratedCourseWithPrereqs } from "@/types"
+import { HydratedCourse } from "@/types"
 import { db } from "@db/client"
 
 export const getAllCourses = async ({
@@ -57,13 +57,7 @@ export const getCourses = async (courseIds: string[]): Promise<HydratedCourse[]>
   }
 }
 
-export const getCourseWithPrereqs = async (
-  courseId: string,
-  queriedCourses: string[]
-): Promise<{
-  course: HydratedCourseWithPrereqs
-  prereqMap: Map<string, string[]>
-}> => {
+export const getCourseWithPrereqs = async (courseId: string, queriedCourses: string[]) => {
   // pull in current course
   const course = await db.course.findUnique({
     where: {
@@ -93,13 +87,16 @@ export const getCourseWithPrereqs = async (
   )
 
   // remove circular dependencies from the query
-  const filteredPrereqsCourses = [...prereqsCourses].filter(c => !queriedCourses.includes(c))
+  const filteredPrereqsCourses = new Set(
+    [...prereqsCourses].filter(c => !queriedCourses.includes(c))
+  )
 
-  const prereqMap = new Map([[course.id, filteredPrereqsCourses]])
-  if (filteredPrereqsCourses.length === 0) {
+  const prereqMap = new Map([[course.id, Array.from(filteredPrereqsCourses)]])
+  if (filteredPrereqsCourses.size === 0) {
     return {
       course,
-      prereqMap
+      prereqMap,
+      dependentMap: new Map<string, string[]>()
     }
   }
 
@@ -112,8 +109,16 @@ export const getCourseWithPrereqs = async (
     }
   }
 
+  const dependentMap = new Map<string, string[]>()
+  for (const [key, value] of prereqMap) {
+    for (const course of value) {
+      dependentMap.set(course, Array.from(new Set([...(dependentMap.get(course) || []), key])))
+    }
+  }
+
   return {
     course,
-    prereqMap
+    prereqMap,
+    dependentMap
   }
 }

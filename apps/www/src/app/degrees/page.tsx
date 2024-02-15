@@ -1,6 +1,8 @@
-import { getDegreeData } from "@/db/degree"
-import { Prisma } from "@db/client"
+import { getDegree, StudentProfile } from "@/db/graph"
+import { db, Prisma } from "@db/client"
 import cseDegree from "@db/data/test.json"
+
+import { ScheduleTable } from "@/components/schedule-table"
 
 export default async function Page() {
   const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
@@ -13,46 +15,31 @@ export default async function Page() {
     }
   })
 
-  const { schedule, allCourses, missingCourses } = await getDegreeData(deptCourses)
+  const requiredCourses = await db.course.findMany({
+    where: {
+      OR: deptCourses
+    },
+    select: {
+      id: true,
+      name: true
+    }
+  })
+
+  console.log(requiredCourses.map(course => course.name))
+
+  const cseProfile: StudentProfile = {
+    requiredCourses: requiredCourses.map(course => course.id),
+    completedCourses: [],
+    timeToGraduate: 8
+  }
+
+  const graph = await getDegree(cseProfile)
 
   return (
-    <>
-      <h1 className="text-3xl font-bold mb-4">Degree</h1>
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Courses</h2>
-          <p>
-            total courses: {allCourses.length} | missing courses: {missingCourses.length}
-          </p>
+    <div className="p-4">
+      <h1 className="text-3xl font-bold">Degree</h1>
 
-          {/* <p>course with dependencies as graph</p> */}
-          {/* <pre>{JSON.stringify(graph, null, 2)}</pre> */}
-
-          {/* <pre>{JSON.stringify(schedule, null, 2)}</pre> */}
-
-          <p>Schedule</p>
-
-          <ul>
-            {schedule.map((semester, i) => {
-              return (
-                <li key={i}>
-                  <h3>Semester {i + 1}</h3>
-                  <ul>
-                    {semester.map((course, j) => {
-                      const courseData = allCourses.find(c => c.id === course)
-                      return (
-                        <li key={j}>
-                          {courseData?.department?.code} {courseData?.courseNumber}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </div>
-    </>
+      <ScheduleTable graph={graph} profile={cseProfile} />
+    </div>
   )
 }
