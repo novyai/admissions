@@ -1,12 +1,14 @@
 import { getDegreeData } from "./degree"
 
-type CourseNode = {
+export type CourseNode = {
   id: string
   name: string
-  earliestFinish?: number
-  latestFinish?: number
   dependents: string[]
   prerequisites: string[]
+
+  earliestFinish?: number
+  latestFinish?: number
+  fanOut?: number // Number of courses that depend on this course
 }
 
 export type StudentProfile = {
@@ -33,7 +35,7 @@ function isEligibleForCourse(course: CourseNode, completedCourses: string[]): bo
  * @param graph Map of all courses
  * @returns Array of all required courses for the given course
  */
-function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
+export function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
   const requiredCourses = new Set<string>()
 
   const node = graph.get(course)
@@ -130,6 +132,24 @@ function calculateLatestFinish(
   return node.latestFinish
 }
 
+/**
+ * Returns the number of courses that depend on the given course
+ * @param course Course to get the number of dependents for
+ * @param graph Map of all courses
+ * @returns Number of courses that depend on the given course
+ */
+function calculateFanOut(course: string, graph: Map<string, CourseNode>): number {
+  const node = graph.get(course)
+  if (!node) throw new Error("Course not found")
+
+  const fanOut = node.dependents
+    .map(dependent => calculateFanOut(dependent, graph) + 1)
+    .reduce((acc, val) => acc + val, 0)
+
+  node.fanOut = fanOut
+  return fanOut
+}
+
 export const getDegree = async (profile: StudentProfile) => {
   const { prereqMap, dependentMap, allCourses } = await getDegreeData([
     {
@@ -153,6 +173,7 @@ export const getDegree = async (profile: StudentProfile) => {
   }
 
   for (const course of allCourses) {
+    calculateFanOut(course.id, graph)
     calculateEarliestFinish(course.id, graph, profile)
     calculateLatestFinish(course.id, graph, profile)
   }
