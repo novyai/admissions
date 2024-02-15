@@ -1,4 +1,4 @@
-import { HydratedCourse, HydratedCourseWithPrereqs } from "@/types"
+import { HydratedCourse } from "@/types"
 import { db } from "@db/client"
 
 export const getAllCourses = async ({

@@ -1,9 +1,5 @@
 import { db, Prisma } from "@db/client"
 
-import "./courses"
-
-import { HydratedCourse } from "@/types"
-
 import { getCourseWithPrereqs } from "./courses"
 
 const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => {
@@ -39,81 +35,33 @@ const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => 
   return { prereqMap: overallPrereqMap, dependentMap: overallDependentMap }
 }
 
-async function topologicalSort(prereqMap: Map<string, string[]>): Promise<string[]> {
-  let visited = new Set<string>()
-  let visiting = new Set<string>()
-  let stack: string[] = []
-
-  function visit(courseId: string) {
-    if (visiting.has(courseId)) {
-      throw new Error(
-        `The graph has a cycle and cannot be topologically sorted. ${courseId}, ${stack}`
-      )
-    }
-    if (visited.has(courseId)) return
-
-    visiting.add(courseId)
-
-    // Recursively visit all the prerequisites
-    const prerequisites = prereqMap.get(courseId) || []
-    prerequisites.forEach(prereq => visit(prereq))
-
-    // Mark the current node as visited and remove it from the visiting set
-    visiting.delete(courseId)
-    visited.add(courseId)
-    stack.push(courseId)
-  }
-
-  const allKeys = [...prereqMap.keys()]
-
-  allKeys.forEach(courseId => {
-    if (!visited.has(courseId)) {
-      visit(courseId)
-    }
-  })
-
-  return stack
-}
-
-const planSchedule = (sortedCourses: string[], coursesPerSemester: number): string[][] => {
-  const schedule: string[][] = []
-
-  for (let i = 0; i < sortedCourses.length; i += coursesPerSemester) {
-    schedule.push(sortedCourses.slice(i, i + coursesPerSemester))
-  }
-
-  return schedule
-}
-
 export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
   const { prereqMap, dependentMap } = await getRequiredCoursesMap(deptCourses)
 
-  const sortedCourses = await topologicalSort(prereqMap)
+  const allCourseIds = Array.from(
+    new Set([
+      ...prereqMap.keys(),
+      ...[...prereqMap.values()].flat(),
+      ...dependentMap.keys(),
+      ...[...dependentMap.values()].flat()
+    ])
+  )
 
-  const schedule = planSchedule(sortedCourses, 4)
-
-  const allCourses: HydratedCourse[] = await db.course.findMany({
+  const allCourses = await db.course.findMany({
     where: {
       id: {
-        in: sortedCourses
+        in: allCourseIds
       }
     },
-    include: {
-      department: true,
-      prerequisites: true,
-      conditions: true
+    select: {
+      id: true,
+      name: true
     }
   })
 
-  const missingCourses = sortedCourses.filter(
-    courseId => !allCourses.find(course => course.id === courseId)
-  )
-
   return {
-    schedule,
-    allCourses,
     prereqMap,
-    missingCourses,
+    allCourses,
     dependentMap
   }
 }

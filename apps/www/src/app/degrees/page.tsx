@@ -1,25 +1,44 @@
 import { getDegreeData } from "@/db/degree"
-import { Prisma } from "@db/client"
+import { getDegree, StudentProfile } from "@/db/graph"
+import { db, Prisma } from "@db/client"
 import cseDegree from "@db/data/test.json"
 
 export default async function Page() {
-  // const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
-  //   const [dept, num] = course.split(" ")
-  //   return {
-  //     department: {
-  //       code: dept
-  //     },
-  //     courseNumber: num
-  //   }
-  // })
-
-  const courses: Prisma.CourseWhereInput[] = [
-    {
-      id: "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
+  const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
+    const [dept, num] = course.split(" ")
+    return {
+      department: {
+        code: dept
+      },
+      courseNumber: num
     }
-  ]
+  })
 
-  const { schedule, allCourses } = await getDegreeData(courses)
+  const requiredCourses = await db.course.findMany({
+    where: {
+      OR: deptCourses
+    },
+    select: {
+      id: true,
+      name: true
+    }
+  })
+
+  console.log(requiredCourses.map(course => course.name))
+
+  const cseProfile: StudentProfile = {
+    requiredCourses: requiredCourses.map(course => course.id),
+    completedCourses: [],
+    timeToGraduate: 8
+  }
+
+  const graph = await getDegree(cseProfile)
+
+  const sortedCourses = Array.from(graph.values()).sort(
+    (a, b) => a.earliestFinish! - b.earliestFinish!
+  )
+
+  const showPrereqs = true
 
   return (
     <>
@@ -27,9 +46,9 @@ export default async function Page() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h2 className="text-2xl font-bold mb-4">Courses</h2>
-          <p>
+          {/* <p>
             total courses: {allCourses.length} | missing courses: {missingCourses.length}
-          </p>
+          </p> */}
 
           {/* <p>course with dependencies as graph</p> */}
           {/* <pre>{JSON.stringify(graph, null, 2)}</pre> */}
@@ -38,7 +57,31 @@ export default async function Page() {
 
           <p>Schedule</p>
 
-          <ul>
+          <ul className="pl-4">
+            <li>name | slack | earliest finish | latest finish</li>
+            {sortedCourses.map((course, i) => {
+              return (
+                <li key={i}>
+                  {course.name} - {course.latestFinish! - course.earliestFinish!} -{" "}
+                  {course.earliestFinish!} - {course.latestFinish!}
+                  <br />
+                  {showPrereqs &&
+                    course.prerequisites.map(p => {
+                      const prereq = graph.get(p)
+                      return (
+                        <span className="pl-2" key={p}>
+                          {prereq?.name} - {prereq?.latestFinish! - prereq?.earliestFinish!} -{" "}
+                          {prereq?.earliestFinish!} - {prereq?.latestFinish!}
+                          <br />
+                        </span>
+                      )
+                    })}
+                </li>
+              )
+            })}
+          </ul>
+
+          {/* <ul>
             {schedule.map((semester, i) => {
               return (
                 <li key={i}>
@@ -52,7 +95,7 @@ export default async function Page() {
                 </li>
               )
             })}
-          </ul>
+          </ul> */}
         </div>
       </div>
     </>
