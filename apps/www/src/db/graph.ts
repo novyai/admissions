@@ -42,11 +42,11 @@ function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
 }
 
 /**
- * Checks if the course is the last required course for graduation
+ * Checks if the course doesn't have any other required courses that depend on it to graduate
  * @param node Class Node to check if it is the last required course
  * @param profile Profile of the student and degree
  * @param graph Map of all courses
- * @returns true if the course is the last required course for graduation, false otherwise
+ * @returns true if no other required courses depend on this course to graduate, false otherwise
  */
 function isLastClassRequired(
   node: CourseNode,
