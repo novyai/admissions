@@ -38,11 +38,11 @@ export default async function Page({
                 <h3 className="text-lg">{`${level}: ${course?.department.code} ${course?.courseNumber}`}</h3>
                 <p className="pl-2">
                   {preq && preq.length > 0
-                    ? Array.from(preq).map(preq => {
-                      const course = allCourses.find(course => course.id === preq)
+                    ? Array.from(preq).map(p => {
+                      const course = allCourses.find(course => course.id === p)
                       return (
                         <p
-                          key={preq}
+                          key={p}
                           className="text-md"
                         >{`${course?.department.code} ${course?.courseNumber} - ${course?.name}`}</p>
                       )
