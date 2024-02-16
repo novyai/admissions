@@ -1,32 +1,51 @@
 "use client"
 
-import { CourseNode, getAllRequiredCourses, StudentProfile } from "@/db/graph"
+import { useEffect, useState } from "react"
+import { getDegree } from "@/app/degrees/action"
+import {
+  CourseNode,
+  getAllRequiredCourses,
+  getUnmetCourseRequirements,
+  StudentProfile
+} from "@/db/graph"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
 import { Checkbox } from "@ui/components/ui/checkbox"
 
-export const ScheduleTable = ({
-  graph,
-  profile
-}: {
-  graph: Map<string, CourseNode>
-  profile: StudentProfile
-}) => {
+export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentProfile }) => {
+  const [graph, setGraph] = useState<Map<string, CourseNode>>(new Map())
+  const [profile, setProfile] = useState(initialProfile)
+
+  useEffect(() => {
+    getDegree(profile).then(setGraph)
+  }, [profile])
+
   const columns: ColumnDef<CourseNode>[] = [
     {
       id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title="Completed" />
+      },
       cell: ({ row }) => (
         <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={value => row.toggleSelected(!!value)}
+          checked={
+            profile.completedCourses.includes(row.original.id) ||
+            profile.completedCourses
+              .map(c => {
+                return getAllRequiredCourses(c, graph)
+              })
+              .flat()
+              .includes(row.original.id)
+          }
+          onCheckedChange={checked => {
+            setProfile(currentProfile => ({
+              ...currentProfile,
+              completedCourses: checked
+                ? [...currentProfile.completedCourses, row.original.id]
+                : currentProfile.completedCourses.filter(p => p !== row.original.id)
+            }))
+          }}
           aria-label="Select row"
         />
       ),
@@ -83,6 +102,23 @@ export const ScheduleTable = ({
       }
     },
     {
+      id: "unmet prereqs",
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title="Unmet Prerequisites" />
+      },
+      cell: ({ row }) => {
+        return (
+          <div>
+            {getUnmetCourseRequirements(row.original.id, profile, graph)
+              .filter(p => !profile.completedCourses.includes(p))
+              .filter(p => p !== row.original.id)
+              .map(p => graph.get(p)?.name)
+              .join(", ")}
+          </div>
+        )
+      }
+    },
+    {
       id: "required for",
       header: ({ column }) => {
         return <DataTableColumnHeader column={column} title="Required To Take" />
@@ -98,24 +134,6 @@ export const ScheduleTable = ({
         )
       }
     }
-    // {
-    //   id: "prerequisites",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Prerequisites" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return <div>{row.original.prerequisites.map(p => graph.get(p)?.name).join(", ")}</div>
-    //   }
-    // },
-    // {
-    //   id: "dependents",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Dependents" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return <div>{row.original.dependents.map(p => graph.get(p)?.name).join(", ")}</div>
-    //   }
-    // }
   ]
 
   const courses = Array.from(graph.values())
