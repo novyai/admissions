@@ -1,4 +1,4 @@
-import { getCourseWithPrereqs } from "@/db/courses"
+import { getCourses, getCourseWithPrereqs } from "@/db/courses"
 
 export default async function Page({
   params: { courseId }
@@ -9,7 +9,7 @@ export default async function Page({
 }) {
   const { course, prereqMap } = await getCourseWithPrereqs(courseId, [])
   console.log(prereqMap)
-  // const allCourses = await getCourses(Array.from(prereqMap.keys()))
+  const allCourses = await getCourses(Array.from(prereqMap.keys()))
 
   return (
     <div className="w-full h-full overflow-y-auto py-6 px-6">
@@ -27,7 +27,7 @@ export default async function Page({
           <pre>{JSON.stringify(course, null, 2)}</pre>
 
           <br />
-          {/* <h2>Prerequisites</h2>
+          <h2>Prerequisites</h2>
           {Array.from(prereqMap.keys()).map((courseId, level) => {
             const course = allCourses.find(course => course.id === courseId)
             if (!course) return null
@@ -39,19 +39,19 @@ export default async function Page({
                 <p className="pl-2">
                   {preq && preq.length > 0
                     ? Array.from(preq).map(p => {
-                      const course = allCourses.find(course => course.id === p)
-                      return (
-                        <p
-                          key={p}
-                          className="text-md"
-                        >{`${course?.department.code} ${course?.courseNumber} - ${course?.name}`}</p>
-                      )
-                    })
+                        const course = allCourses.find(course => course.id === p)
+                        return (
+                          <p
+                            key={p}
+                            className="text-md"
+                          >{`${course?.department.code} ${course?.courseNumber} - ${course?.name}`}</p>
+                        )
+                      })
                     : "No prerequisites found."}
                 </p>
               </div>
             )
-          })} */}
+          })}
         </div>
       </div>
     </div>
