@@ -29,10 +29,10 @@ export default async function Page() {
   //   timeToGraduate: 8
   // }
 
-  const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
-  const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
+  // const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
+  // const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
   const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
-  const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
+  // const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
 
   const mathProfile: StudentProfile = {
     requiredCourses: [calc3],
