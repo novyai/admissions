@@ -1,5 +1,3 @@
-import { getDegreeData } from "./degree"
-
 export type CourseNode = {
   id: string
   name: string
@@ -17,7 +15,7 @@ export type StudentProfile = {
   timeToGraduate: number // in semesters
 }
 
-function isEligibleForCourse(course: CourseNode, completedCourses: string[]): boolean {
+export function isEligibleForCourse(course: CourseNode, completedCourses: string[]): boolean {
   // If the course has no prerequisites, then you can take it immediately
   if (course.prerequisites.length === 0) return true
 
@@ -56,7 +54,7 @@ export function getAllRequiredCourses(course: string, graph: Map<string, CourseN
  * @param graph Map of all courses
  * @returns true if no other required courses depend on this course to graduate, false otherwise
  */
-function isLastClassRequired(
+export function isLastClassRequired(
   node: CourseNode,
   profile: StudentProfile,
   graph: Map<string, CourseNode>
@@ -74,7 +72,7 @@ function isLastClassRequired(
   return false
 }
 
-function calculateEarliestFinish(
+export function calculateEarliestFinish(
   course: string,
   graph: Map<string, CourseNode>,
   profile: StudentProfile
@@ -104,7 +102,7 @@ function calculateEarliestFinish(
   return node.earliestFinish
 }
 
-function calculateLatestFinish(
+export function calculateLatestFinish(
   course: string,
   graph: Map<string, CourseNode>,
   profile: StudentProfile
@@ -138,7 +136,7 @@ function calculateLatestFinish(
  * @param graph Map of all courses
  * @returns Number of courses that depend on the given course
  */
-function calculateFanOut(course: string, graph: Map<string, CourseNode>): number {
+export function calculateFanOut(course: string, graph: Map<string, CourseNode>): number {
   const node = graph.get(course)
   if (!node) throw new Error("Course not found")
 
@@ -150,35 +148,32 @@ function calculateFanOut(course: string, graph: Map<string, CourseNode>): number
   return fanOut
 }
 
-export const getDegree = async (profile: StudentProfile) => {
-  const { prereqMap, dependentMap, allCourses } = await getDegreeData([
-    {
-      id: {
-        in: profile.requiredCourses
-      }
-    }
-  ])
+export function getUnmetCourseRequirements(
+  course: string,
+  profile: StudentProfile,
+  graph: Map<string, CourseNode>
+): string[] {
+  const node = graph.get(course)
+  if (!node) throw new Error("Course not found")
 
-  const graph = new Map<string, CourseNode>()
+  // two base cases:
+  // 1. if the course is already completed, return an empty array
+  // 2. if the student is eligible to take the course, return an empty array
 
-  for (const course of allCourses) {
-    graph.set(course.id, {
-      id: course.id,
-      earliestFinish: undefined,
-      latestFinish: undefined,
-      dependents: Array.from(new Set(dependentMap.get(course.id) ?? [])),
-      prerequisites: Array.from(new Set(prereqMap.get(course.id) ?? [])),
-      name: course.name
-    })
+  if (profile.completedCourses.includes(node.id)) {
+    return []
   }
 
-  for (const course of allCourses) {
-    calculateFanOut(course.id, graph)
-    calculateEarliestFinish(course.id, graph, profile)
-    calculateLatestFinish(course.id, graph, profile)
+  if (isEligibleForCourse(node, profile.completedCourses)) {
+    console.log("Course is eligible", node.name)
+    return []
   }
 
-  return graph
+  const unmetPrerequisites = node.prerequisites.map(prerequisite => {
+    return getUnmetCourseRequirements(prerequisite, profile, graph)
+  })
+
+  return [course, ...unmetPrerequisites.flat()]
 }
 
 // const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
