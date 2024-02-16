@@ -1,7 +1,6 @@
 import { db, Prisma } from "@db/client"
 
 import { getCourseWithPrereqs } from "./courses"
-import { CourseNode } from "./graph"
 
 const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => {
   const degreeCourses = await db.course.findMany({
