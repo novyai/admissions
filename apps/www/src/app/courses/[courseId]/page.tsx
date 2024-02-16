@@ -1,4 +1,4 @@
-import { getCourses, getCourseWithPrereqs } from "@/db/courses"
+import { getCourseWithPrereqs } from "@/db/courses"
 
 export default async function Page({
   params: { courseId }
@@ -9,7 +9,7 @@ export default async function Page({
 }) {
   const { course, prereqMap } = await getCourseWithPrereqs(courseId, [])
   console.log(prereqMap)
-  const allCourses = await getCourses(Array.from(prereqMap.keys()))
+  // const allCourses = await getCourses(Array.from(prereqMap.keys()))
 
   return (
     <div className="w-full h-full overflow-y-auto py-6 px-6">
