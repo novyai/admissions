@@ -33,26 +33,18 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
             profile.completedCourses.includes(row.original.id) ||
             profile.completedCourses
               .map(c => {
-                const required = getAllRequiredCourses(c, graph)
-                if (required.includes(row.original.id)) {
-                  return true
-                }
-                false
+                return getAllRequiredCourses(c, graph)
               })
-              .includes(true)
+              .flat()
+              .includes(row.original.id)
           }
-          onCheckedChange={value => {
-            if (value) {
-              setProfile({
-                ...profile,
-                completedCourses: [...profile.completedCourses, row.original.id]
-              })
-            } else {
-              setProfile({
-                ...profile,
-                completedCourses: profile.completedCourses.filter(p => p !== row.original.id)
-              })
-            }
+          onCheckedChange={checked => {
+            setProfile(currentProfile => ({
+              ...currentProfile,
+              completedCourses: checked
+                ? [...currentProfile.completedCourses, row.original.id]
+                : currentProfile.completedCourses.filter(p => p !== row.original.id)
+            }))
           }}
           aria-label="Select row"
         />
@@ -142,24 +134,6 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
         )
       }
     }
-    // {
-    //   id: "prerequisites",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Prerequisites" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return <div>{row.original.prerequisites.map(p => graph.get(p)?.name).join(", ")}</div>
-    //   }
-    // },
-    // {
-    //   id: "dependents",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Dependents" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return <div>{row.original.dependents.map(p => graph.get(p)?.name).join(", ")}</div>
-    //   }
-    // }
   ]
 
   const courses = Array.from(graph.values())
