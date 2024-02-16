@@ -27,7 +27,7 @@ export default async function Page({
           <pre>{JSON.stringify(course, null, 2)}</pre>
 
           <br />
-          <h2>Prerequisites</h2>
+          {/* <h2>Prerequisites</h2>
           {Array.from(prereqMap.keys()).map((courseId, level) => {
             const course = allCourses.find(course => course.id === courseId)
             if (!course) return null
@@ -51,7 +51,7 @@ export default async function Page({
                 </p>
               </div>
             )
-          })}
+          })} */}
         </div>
       </div>
     </div>
