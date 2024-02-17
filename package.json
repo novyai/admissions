@@ -23,9 +23,10 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {},
+  "dependencies": { "reactflow": "^11.10.4" },
   "packageManager": "bun@1.0.22",
   "workspaces": [
     "apps/*",
-    "packages/*"  ]
+    "packages/*"
+  ]
 }
