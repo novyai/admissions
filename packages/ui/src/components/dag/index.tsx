@@ -1,9 +1,11 @@
 "use client"
 
-import ReactFlow from "reactflow"
+import dagre from "dagre"
+import ReactFlow, { Background } from "reactflow"
 
 import "reactflow/dist/style.css"
 
+const dagreGraph = new dagre.graphlib.Graph()
 interface Node {
   id: string
   label: string
@@ -15,16 +17,44 @@ interface Edge {
 }
 
 export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
-  const reactFlowNodes = nodes.map(node => ({
-    id: node.id,
-    position: { x: 0, y: 0 },
-    data: { label: node.label }
-  }))
+  // render horizontally
+  dagreGraph.setGraph({ rankdir: "LR" })
+  // no edge labels
+  dagreGraph.setDefaultEdgeLabel(() => ({}))
+
   const reactFlowEdges = edges.map(edge => ({
     id: edge.source + edge.target,
     source: edge.source,
     target: edge.target
   }))
 
-  return <ReactFlow nodes={reactFlowNodes} edges={reactFlowEdges} />
+  reactFlowEdges.forEach(edge => {
+    dagreGraph.setEdge(edge.source, edge.target)
+  })
+
+  nodes.forEach(node => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight })
+  })
+
+  dagre.layout(dagreGraph)
+
+  const reactFlowNodes = nodes.map(node => {
+    const layout = dagreGraph.node(node.id)
+    return {
+      id: node.id,
+      data: { label: node.label },
+      targetPositon: "left",
+      sourcePositon: "right",
+      position: {
+        x: layout.x,
+        y: layout.y
+      }
+    }
+  })
+
+  return (
+    <ReactFlow nodes={reactFlowNodes} edges={reactFlowEdges}>
+      <Background />
+    </ReactFlow>
+  )
 }
