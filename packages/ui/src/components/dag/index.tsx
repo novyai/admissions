@@ -33,7 +33,7 @@ export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
   })
 
   nodes.forEach(node => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight })
+    dagreGraph.setNode(node.id, { width: 100, height: 100 })
   })
 
   dagre.layout(dagreGraph)
