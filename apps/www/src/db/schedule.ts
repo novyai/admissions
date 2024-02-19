@@ -4,8 +4,7 @@ import cseDegree from "@db/test.json"
 
 import { CourseNode, getAllRequiredCourses, StudentProfile } from "./graph"
 
-const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
-
+// const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
 // const profile: StudentProfile = {
 //   requiredCourses: [calc3],
 //   completedCourses: [],
