@@ -13,6 +13,7 @@ export type StudentProfile = {
   completedCourses: string[]
   requiredCourses: string[]
   timeToGraduate: number // in semesters
+  coursePerSemester: number
 }
 
 export function isEligibleForCourse(course: CourseNode, completedCourses: string[]): boolean {
@@ -87,7 +88,6 @@ export function calculateEarliestFinish(
 
   const prerequisites = node.prerequisites
   if (isEligibleForCourse(node, profile.completedCourses)) {
-    console.log("EFT for: ", node.name, "is 1")
     node.earliestFinish = 1
     return node.earliestFinish
   }
@@ -165,7 +165,6 @@ export function getUnmetCourseRequirements(
   }
 
   if (isEligibleForCourse(node, profile.completedCourses)) {
-    console.log("Course is eligible", node.name)
     return []
   }
 

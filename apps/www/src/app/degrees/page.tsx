@@ -37,7 +37,8 @@ export default async function Page() {
   const mathProfile: StudentProfile = {
     requiredCourses: [calc3],
     completedCourses: [],
-    timeToGraduate: 6
+    timeToGraduate: 6,
+    coursePerSemester: 4
   }
 
   return (
