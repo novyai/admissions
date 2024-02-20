@@ -24,48 +24,50 @@ export function addToSemester(course: CourseNode, semester: number, profile: Stu
 /**
  * Checks if a course can be moved to a different semester without violating prerequisites and graduation time.
  * @param courseId The ID of the course to move.
- * @param fromSemester The current semester index of the course.
  * @param toSemester The target semester index to move the course to.
- * @param semesters The current schedule of semesters.
- * @param degreeData The degree data containing course prerequisites.
+ * @param profile The student's profile.
  * @returns {boolean} True if the course can be moved, false otherwise.
  */
 export function canMoveCourse(
   courseId: string,
-  fromSemester: number,
   toSemester: number,
-  degreeData: Map<string, CourseNode>,
   profile: StudentProfile
-): boolean {
+): string {
   if (toSemester >= profile.timeToGraduate) {
-    console.error("Cannot move course beyond the student's time to graduate.")
-    return false
+    return "Cannot move course beyond the student's time to graduate."
   }
 
+  // find course name in the graph:
+  const course = [...profile.graph.values()].find(c => c.name == courseId)
+  console.log("course", course)
+  if (!course) {
+    return `Course ${courseId} not found in the student's schedule.`
+  }
+
+  // Does the course exist in the profile?
+  const fromSemester = profile.semesters.findIndex(s => s.some(c => c.id === course.id))
+
   // Ensure the course exists in the fromSemester
-  if (!profile.semesters[fromSemester]?.find(c => c.id === courseId)) {
-    console.error("Course not found in the specified fromSemester.")
-    return false
+  if (fromSemester === -1) {
+    return "Course not found in the student's schedule."
   }
 
   // Check if moving the course violates any prerequisite requirements
-  const coursePrerequisites = getAllRequiredCourses(courseId, degreeData)
+  const coursePrerequisites = getAllRequiredCourses(course.id, profile.graph)
   for (const prereqId of coursePrerequisites) {
     // Find the semester of the prerequisite course
     const prereqSemesterIndex = profile.semesters.findIndex(semester =>
       semester.some(c => c.id === prereqId)
     )
     if (prereqSemesterIndex >= toSemester) {
-      console.error("Moving the course violates prerequisite requirements.")
-      return false
+      return "Moving the course violates prerequisite requirements."
     }
   }
 
   // Check if the target semester has space
   if ((profile.semesters[toSemester]?.length ?? 0) >= 4) {
-    console.error("The target semester is full.")
-    return false
+    return "The target semester is full."
   }
 
-  return true
+  return `Course ${courseId} can be moved to semester ${toSemester}.`
 }

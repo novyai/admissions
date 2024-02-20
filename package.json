@@ -23,9 +23,10 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {},
+  "dependencies": { "zod-stream": "^0.0.7" },
   "packageManager": "bun@1.0.22",
   "workspaces": [
     "apps/*",
-    "packages/*"  ]
+    "packages/*"
+  ]
 }

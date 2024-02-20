@@ -8,6 +8,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
+import { ScheduleChat } from "./schedule-chat"
 
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
@@ -140,9 +141,3 @@ const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
 }
 
 
-const ScheduleChat = ({ profile }: { profile: StudentProfile }) => {
-
-  return <p>
-    This is a chat about the schedule
-  </p>
-}
