@@ -53,15 +53,25 @@ export function canMoveCourse(
   }
 
   // Check if moving the course violates any prerequisite requirements
-  const coursePrerequisites = getAllRequiredCourses(course.id, profile.graph)
+  const coursePrerequisites = getAllRequiredCourses(course.id, profile.graph).filter(
+    c => c !== course.id
+  )
+
+  const beforePrereqs: string[] = []
   for (const prereqId of coursePrerequisites) {
     // Find the semester of the prerequisite course
     const prereqSemesterIndex = profile.semesters.findIndex(semester =>
       semester.some(c => c.id === prereqId)
     )
     if (prereqSemesterIndex >= toSemester) {
-      return "Moving the course violates prerequisite requirements."
+      beforePrereqs.push(prereqId)
     }
+  }
+
+  if (beforePrereqs.length > 0) {
+    return `Course ${courseId} cannot be moved to semester ${toSemester} because the following prerequisites are not met: ${beforePrereqs.map(
+      prereqId => `\n- ${profile.graph.get(prereqId)?.name}`
+    )}.`
   }
 
   // Check if the target semester has space

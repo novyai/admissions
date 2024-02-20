@@ -1,5 +1,4 @@
 import testData from "@db/data/test.json"
-import { z } from "zod"
 import { createAgent } from "zod-stream"
 
 import { oai } from "@/lib/oai"

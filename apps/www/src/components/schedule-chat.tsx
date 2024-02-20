@@ -76,10 +76,16 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
 
   return (
     <>
-      <pre>{JSON.stringify(result.data, null, 2)}</pre>
       <div>
-        {!loading &&
-          canMoveCourse(result.data.course_name ?? "", result.data.toSemester ?? -1, profile)}
+        <p>
+          Trying to move {result.data.course_name} to semester: {result.data.toSemester}
+        </p>
+        <br />
+        {!loading && (
+          <pre>
+            {canMoveCourse(result.data.course_name ?? "", result.data.toSemester ?? -1, profile)}
+          </pre>
+        )}
       </div>
       <div className="w-full max-w-lg mx-auto">
         <PromptComposer

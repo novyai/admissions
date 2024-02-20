@@ -1,5 +1,5 @@
-import { BaseStudentProfile, StudentProfile } from "@/db/graph"
-import { db } from "@db/client"
+import { BaseStudentProfile } from "@/db/graph"
+import { db, Prisma } from "@db/client"
 import cseDegree from "@db/test.json"
 
 import { ScheduleTable } from "@/components/schedule-table"
