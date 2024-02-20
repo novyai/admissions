@@ -15,10 +15,6 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
     prompt: string
     data: Partial<z.infer<typeof rescheduleCourseAgent>>
   }>({ prompt: "", data: {} })
-  const [completedResults, setCompletedResults] = useState<
-    { prompt: string; data: Partial<z.infer<typeof rescheduleCourseAgent>> }[]
-  >([])
-  const [searchMode, setSearchMode] = useState(false)
 
   const lastPromptRef = useRef<string>("")
 
@@ -31,23 +27,12 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
       }))
     },
     onEnd: data => {
-      setCompletedResults(prevResults => {
-        return [
-          ...prevResults,
-          {
-            prompt: lastPromptRef.current,
-            data: data
-          }
-        ]
-      })
-
       setResult({ prompt: "", data: data })
     }
   })
 
   const submitMessage = async () => {
     lastPromptRef.current = prompt
-    setSearchMode(true)
 
     try {
       setResult({
@@ -62,6 +47,12 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
         body: {
           prompt,
           messages: [
+            {
+              role: "user",
+              content: `
+              Current Schedule:
+              ${JSON.stringify(profile.semesters, null, 2)}`
+            },
             {
               content: prompt,
               role: "user"
