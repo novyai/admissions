@@ -9,20 +9,27 @@ export type CourseNode = {
   fanOut?: number // Number of courses that depend on this course
 }
 
-export type StudentProfile = {
-  completedCourses: string[]
+export type BaseStudentProfile = {
   requiredCourses: string[]
   timeToGraduate: number // in semesters
   coursePerSemester: number
 }
 
-export function isEligibleForCourse(course: CourseNode, completedCourses: string[]): boolean {
+export type StudentProfile = BaseStudentProfile & {
+  semesters: CourseNode[][]
+  graph: Map<string, CourseNode>
+}
+
+export function isEligibleForCourse(course: CourseNode, semesters: CourseNode[][]): boolean {
   // If the course has no prerequisites, then you can take it immediately
   if (course.prerequisites.length === 0) return true
 
   // If the student has already completed the prerequisites, then they are eligible
   const isEligible = course.prerequisites.every(prerequisite =>
-    completedCourses.includes(prerequisite)
+    semesters
+      .flat()
+      .map(c => c.id)
+      .includes(prerequisite)
   )
 
   return isEligible
@@ -55,16 +62,12 @@ export function getAllRequiredCourses(course: string, graph: Map<string, CourseN
  * @param graph Map of all courses
  * @returns true if no other required courses depend on this course to graduate, false otherwise
  */
-export function isLastClassRequired(
-  node: CourseNode,
-  profile: StudentProfile,
-  graph: Map<string, CourseNode>
-): boolean {
+export function isLastClassRequired(node: CourseNode, profile: StudentProfile): boolean {
   // checks if course is the prereq for any other required course
   if (profile.requiredCourses.includes(node.id)) {
     for (const course of profile.requiredCourses) {
       if (course === node.id) continue
-      if (getAllRequiredCourses(course, graph).includes(node.id)) {
+      if (getAllRequiredCourses(course, profile.graph).includes(node.id)) {
         return false
       }
     }
@@ -73,12 +76,8 @@ export function isLastClassRequired(
   return false
 }
 
-export function calculateEarliestFinish(
-  course: string,
-  graph: Map<string, CourseNode>,
-  profile: StudentProfile
-) {
-  const node = graph.get(course)
+export function calculateEarliestFinish(course: string, profile: StudentProfile) {
+  const node = profile.graph.get(course)
   if (!node) {
     throw new Error("Course not found")
   }
@@ -87,7 +86,7 @@ export function calculateEarliestFinish(
   if (node?.earliestFinish !== undefined) return node.earliestFinish
 
   const prerequisites = node.prerequisites
-  if (isEligibleForCourse(node, profile.completedCourses)) {
+  if (isEligibleForCourse(node, profile.semesters)) {
     node.earliestFinish = 1
     return node.earliestFinish
   }
@@ -95,19 +94,15 @@ export function calculateEarliestFinish(
   // Calculate the EFT for each prerequisite
   node.earliestFinish = Math.max(
     ...prerequisites.map(prerequisite => {
-      return calculateEarliestFinish(prerequisite, graph, profile) + 1
+      return calculateEarliestFinish(prerequisite, profile) + 1
     })
   )
 
   return node.earliestFinish
 }
 
-export function calculateLatestFinish(
-  course: string,
-  graph: Map<string, CourseNode>,
-  profile: StudentProfile
-) {
-  const node = graph.get(course)
+export function calculateLatestFinish(course: string, profile: StudentProfile) {
+  const node = profile.graph.get(course)
   if (!node) throw new Error("Course not found")
   if (node?.latestFinish !== undefined) {
     return node.latestFinish
@@ -115,15 +110,15 @@ export function calculateLatestFinish(
 
   const dependents = node.dependents
 
-  if (isLastClassRequired(node, profile, graph)) {
+  if (isLastClassRequired(node, profile)) {
     node.latestFinish = profile.timeToGraduate
     return node.latestFinish
   }
 
   node.latestFinish = Math.min(
     ...dependents.map(dependent => {
-      const dependentNode = graph.get(dependent)
-      return calculateLatestFinish(dependentNode?.id ?? "none", graph, profile) - 1
+      const dependentNode = profile.graph.get(dependent)
+      return calculateLatestFinish(dependentNode?.id ?? "none", profile) - 1
     })
   )
 
@@ -136,40 +131,41 @@ export function calculateLatestFinish(
  * @param graph Map of all courses
  * @returns Number of courses that depend on the given course
  */
-export function calculateFanOut(course: string, graph: Map<string, CourseNode>): number {
-  const node = graph.get(course)
+export function calculateFanOut(course: string, profile: StudentProfile): number {
+  const node = profile.graph.get(course)
   if (!node) throw new Error("Course not found")
 
   const fanOut = node.dependents
-    .map(dependent => calculateFanOut(dependent, graph) + 1)
+    .map(dependent => calculateFanOut(dependent, profile) + 1)
     .reduce((acc, val) => acc + val, 0)
 
   node.fanOut = fanOut
   return fanOut
 }
 
-export function getUnmetCourseRequirements(
-  course: string,
-  profile: StudentProfile,
-  graph: Map<string, CourseNode>
-): string[] {
-  const node = graph.get(course)
+export function getUnmetCourseRequirements(course: string, profile: StudentProfile): string[] {
+  const node = profile.graph.get(course)
   if (!node) throw new Error("Course not found")
 
   // two base cases:
   // 1. if the course is already completed, return an empty array
   // 2. if the student is eligible to take the course, return an empty array
 
-  if (profile.completedCourses.includes(node.id)) {
+  if (
+    profile.semesters
+      .flat()
+      .map(c => c.id)
+      .includes(node.id)
+  ) {
     return []
   }
 
-  if (isEligibleForCourse(node, profile.completedCourses)) {
+  if (isEligibleForCourse(node, profile.semesters)) {
     return []
   }
 
   const unmetPrerequisites = node.prerequisites.map(prerequisite => {
-    return getUnmetCourseRequirements(prerequisite, profile, graph)
+    return getUnmetCourseRequirements(prerequisite, profile)
   })
 
   return [course, ...unmetPrerequisites.flat()]

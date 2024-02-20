@@ -1,6 +1,8 @@
-import { StudentProfile } from "@/db/graph"
+import { BaseStudentProfile, StudentProfile } from "@/db/graph"
 
 import { ScheduleTable } from "@/components/schedule-table"
+
+import { getStudentProfile } from "./action"
 
 export default async function Page() {
   // const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
@@ -34,18 +36,19 @@ export default async function Page() {
   const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
   // const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
 
-  const mathProfile: StudentProfile = {
+  const mathProfile: BaseStudentProfile = {
     requiredCourses: [calc3],
-    completedCourses: [],
     timeToGraduate: 6,
     coursePerSemester: 4
   }
+
+  const profile = await getStudentProfile(mathProfile)
 
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Degree</h1>
 
-      <ScheduleTable profile={mathProfile} />
+      <ScheduleTable profile={profile} />
     </div>
   )
 }
