@@ -1,14 +1,13 @@
 "use client"
 
-import {
-  CourseNode,
-  getAllRequiredCourses,
-  StudentProfile
-} from "@/db/graph"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
+
+import { getAllRequiredCourses } from "@/lib/schedule/graph"
+
 import { ScheduleChat } from "./schedule-chat"
+import { CourseNode, StudentProfile } from "@/lib/schedule/types"
 
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
@@ -129,7 +128,6 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   )
 }
 
-
 const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
   return (
     <div>
@@ -139,5 +137,3 @@ const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
     </div>
   )
 }
-
-

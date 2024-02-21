@@ -1,16 +1,15 @@
 "use server"
 
 import { getDegreeData } from "@/db/degree"
+
 import {
-  BaseStudentProfile,
   calculateEarliestFinish,
   calculateFanOut,
   calculateLatestFinish,
-  CourseNode,
-  getAllRequiredCourses,
-  StudentProfile
-} from "@/db/graph"
-import { addToSemester } from "@/db/schedule"
+  getAllRequiredCourses
+} from "@/lib/schedule/graph"
+import { addToSemester } from "@/lib/schedule/schedule"
+import { BaseStudentProfile, CourseNode, StudentProfile } from "@/lib/schedule/types"
 
 export const getDegree = async (profile: StudentProfile) => {
   const { prereqMap, dependentMap, allCourses } = await getDegreeData([
