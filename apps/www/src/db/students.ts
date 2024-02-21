@@ -23,7 +23,29 @@ export const getAllStudents = async ({
       db.student.findMany({
         skip,
         take,
-        where,
+        where: {
+          universityGrades: {
+            some: {
+              course: {
+                department: {
+                  OR: [
+                    { code: "CAP" },
+                    {
+                      code: "CDA"
+                    },
+                    {
+                      code: "COT"
+                    },
+                    {
+                      code: "CIS"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          ...where
+        },
         orderBy,
         include: {
           user: true,
