@@ -23,7 +23,12 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": { "zod-stream": "^0.0.7" },
+  "dependencies": {
+    "@types/dagre": "^0.7.52",
+    "dagre": "^0.8.5",
+    "reactflow": "^11.10.4",
+    "zod-stream": "^0.0.7"
+  },
   "packageManager": "bun@1.0.22",
   "workspaces": [
     "apps/*",
