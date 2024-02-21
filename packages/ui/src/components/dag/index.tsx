@@ -33,7 +33,7 @@ export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
   })
 
   nodes.forEach(node => {
-    dagreGraph.setNode(node.id, { width: 100, height: 100 })
+    dagreGraph.setNode(node.id, { width: 200, height: 200 })
   })
 
   dagre.layout(dagreGraph)
@@ -43,8 +43,8 @@ export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
     return {
       id: node.id,
       data: { label: node.label },
-      targetPositon: "left",
-      sourcePositon: "right",
+      targetPosition: "left",
+      sourcePosition: "right",
       position: {
         x: layout.x,
         y: layout.y

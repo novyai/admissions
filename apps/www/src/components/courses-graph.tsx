@@ -1,11 +1,12 @@
 "use client"
 
-import { HydratedCourse } from "@/types"
+import { CourseNode } from "@/db/graph"
 import { DAG } from "@ui/components/dag"
 
 import "reactflow/dist/style.css"
 
-export function CoursesGraph({ courses }: { courses: HydratedCourse[] }) {
+export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
+  const courses = Array.from(graph.values())
   const nodes = courses.map(course => ({
     id: course.id,
     label: course.name
@@ -15,10 +16,10 @@ export function CoursesGraph({ courses }: { courses: HydratedCourse[] }) {
     return (
       course.prerequisites
         //we only need to render the edges when the prereq course is also going to be rendered
-        .filter(prereq => nodes.find(node => node.id === prereq.id))
+        .filter(prereq => nodes.find(node => node.id === prereq))
         .map(prereq => {
           return {
-            source: prereq.id,
+            source: prereq,
             target: course.id
           }
         })

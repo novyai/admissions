@@ -1,7 +1,7 @@
-import { getCourses } from "@/db/courses"
-
 import { CoursesGraph } from "@/components/courses-graph"
 import { ScheduleTable } from "@/components/schedule-table"
+
+import { getDegree } from "./action"
 
 export default async function Page() {
   //const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
@@ -41,13 +41,13 @@ export default async function Page() {
     timeToGraduate: 6
   }
 
-  const hydratedCourses = await getCourses(profile.requiredCourses)
+  const graph = await getDegree(profile)
 
   return (
     <div className="p-4">
       <h1 className="text-3xl font-bold">Degree</h1>
       <ScheduleTable profile={profile} />
-      <CoursesGraph courses={hydratedCourses} />
+      <CoursesGraph graph={graph} />
     </div>
   )
 }
