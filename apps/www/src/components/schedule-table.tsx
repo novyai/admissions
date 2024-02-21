@@ -1,57 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { getDegree } from "@/app/degrees/action"
-import {
-  CourseNode,
-  getAllRequiredCourses,
-  getUnmetCourseRequirements,
-  StudentProfile
-} from "@/db/graph"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
-import { Checkbox } from "@ui/components/ui/checkbox"
 
-export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentProfile }) => {
-  const [graph, setGraph] = useState<Map<string, CourseNode>>(new Map())
-  const [profile, setProfile] = useState(initialProfile)
+import { getAllRequiredCourses } from "@/lib/schedule/graph"
 
-  useEffect(() => {
-    getDegree(profile).then(setGraph)
-  }, [profile])
+import { ScheduleChat } from "./schedule-chat"
+import { CourseNode, StudentProfile } from "@/lib/schedule/types"
 
+export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
-    {
-      id: "select",
-      header: ({ column }) => {
-        return <DataTableColumnHeader column={column} title="Completed" />
-      },
-      cell: ({ row }) => (
-        <Checkbox
-          checked={
-            profile.completedCourses.includes(row.original.id) ||
-            profile.completedCourses
-              .map(c => {
-                return getAllRequiredCourses(c, graph)
-              })
-              .flat()
-              .includes(row.original.id)
-          }
-          onCheckedChange={checked => {
-            setProfile(currentProfile => ({
-              ...currentProfile,
-              completedCourses: checked
-                ? [...currentProfile.completedCourses, row.original.id]
-                : currentProfile.completedCourses.filter(p => p !== row.original.id)
-            }))
-          }}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false
-    },
     {
       id: "name",
       accessorKey: "name",
@@ -61,6 +20,22 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
       cell: ({ row }) => {
         return <div>{row.original.name}</div>
       }
+    },
+    {
+      id: "scheduled",
+      header: ({ column }) => {
+        return <DataTableColumnHeader column={column} title="Scheduled" />
+      },
+      cell: ({ row }) => {
+        const semesterScheduled = profile.semesters.findIndex(s =>
+          s.map(c => c.id).includes(row.original.id)
+        )
+        return <div>{semesterScheduled + 1}</div>
+      },
+      accessorFn: row => {
+        return profile.semesters.findIndex(s => s.map(c => c.id).includes(row.id)) + 1
+      },
+      enableSorting: true
     },
     {
       id: "earliestFinish",
@@ -101,23 +76,29 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
         return <div>{row.original.fanOut}</div>
       }
     },
-    {
-      id: "unmet prereqs",
-      header: ({ column }) => {
-        return <DataTableColumnHeader column={column} title="Unmet Prerequisites" />
-      },
-      cell: ({ row }) => {
-        return (
-          <div>
-            {getUnmetCourseRequirements(row.original.id, profile, graph)
-              .filter(p => !profile.completedCourses.includes(p))
-              .filter(p => p !== row.original.id)
-              .map(p => graph.get(p)?.name)
-              .join(", ")}
-          </div>
-        )
-      }
-    },
+    // {
+    //   id: "unmet prereqs",
+    //   header: ({ column }) => {
+    //     return <DataTableColumnHeader column={column} title="Unmet Prerequisites" />
+    //   },
+    //   cell: ({ row }) => {
+    //     return (
+    //       <div>
+    //         {getUnmetCourseRequirements(row.original.id, profile)
+    //           .filter(
+    //             p =>
+    //               !profile.semesters
+    //                 .flat()
+    //                 .map(c => c.id)
+    //                 .includes(p)
+    //           )
+    //           .filter(p => p !== row.original.id)
+    //           .map(p => profile.graph.get(p)?.name)
+    //           .join(", ")}
+    //       </div>
+    //     )
+    //   }
+    // },
     {
       id: "required for",
       header: ({ column }) => {
@@ -126,9 +107,9 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
       cell: ({ row }) => {
         return (
           <div>
-            {getAllRequiredCourses(row.original.id, graph)
+            {getAllRequiredCourses(row.original.id, profile.graph)
               .filter(p => p !== row.original.id)
-              .map(p => graph.get(p)?.name)
+              .map(p => profile.graph.get(p)?.name)
               .join(", ")}
           </div>
         )
@@ -136,7 +117,23 @@ export const ScheduleTable = ({ profile: initialProfile }: { profile: StudentPro
     }
   ]
 
-  const courses = Array.from(graph.values())
+  const courses = Array.from(profile.graph.values())
 
-  return <DataTable columns={columns} data={courses} rowCount={courses.length} />
+  return (
+    <>
+      <StudentProfile profile={profile} />
+      <DataTable columns={columns} data={courses} rowCount={courses.length} />
+      <ScheduleChat profile={profile} />
+    </>
+  )
+}
+
+const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
+  return (
+    <div>
+      <h2>Student Profile</h2>
+      <div>Time to Graduate: {profile.timeToGraduate}</div>
+      <div>Course Per Semester: {profile.coursePerSemester}</div>
+    </div>
+  )
 }

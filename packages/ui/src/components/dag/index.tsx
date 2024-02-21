@@ -1,7 +1,7 @@
 "use client"
 
 import dagre from "dagre"
-import ReactFlow, { Background } from "reactflow"
+import ReactFlow, { Background, Position, Node as ReactFlowNode } from "reactflow"
 
 import "reactflow/dist/style.css"
 
@@ -38,13 +38,13 @@ export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
 
   dagre.layout(dagreGraph)
 
-  const reactFlowNodes = nodes.map(node => {
+  const reactFlowNodes: ReactFlowNode[] = nodes.map(node => {
     const layout = dagreGraph.node(node.id)
     return {
       id: node.id,
       data: { label: node.label },
-      targetPosition: "left",
-      sourcePosition: "right",
+      targetPosition: Position.Left,
+      sourcePosition: Position.Right,
       position: {
         x: layout.x,
         y: layout.y

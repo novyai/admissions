@@ -1,7 +1,8 @@
 "use client"
 
-import { CourseNode } from "@/db/graph"
 import { DAG } from "@ui/components/dag"
+
+import { CourseNode } from "@/lib/schedule/types"
 
 import "reactflow/dist/style.css"
 
