@@ -28,7 +28,18 @@ export const getAllStudents = async ({
             some: {
               course: {
                 department: {
-                  code: "CAP"
+                  OR: [
+                    { code: "CAP" },
+                    {
+                      code: "CDA"
+                    },
+                    {
+                      code: "COT"
+                    },
+                    {
+                      code: "CIS"
+                    }
+                  ]
                 }
               }
             }
