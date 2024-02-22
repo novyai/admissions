@@ -1,9 +1,9 @@
 {
-  "name": "base-web",
+  "name": "admin",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings 0",
