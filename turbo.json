@@ -48,7 +48,7 @@
     "db:seed": {
       "cache": false
     },
-    "studio": {},
+    "db:studio": {},
     "db:reset": {
       "cache": false
     },
