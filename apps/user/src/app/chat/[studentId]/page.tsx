@@ -45,20 +45,16 @@ export default async function Page({ params }: { params: { studentId: string } }
   const studentProfile = await getStudentProfile(baseProfile)
 
   return (
-    <div className="overflow-y-scroll p-4">
-      <p>{`Chat for student ${student?.studentId}`}</p>
-
-      <pre>
-        {JSON.stringify(
-          {
-            ...student,
-            timeToGraduate: studentProfile.timeToGraduate,
-            coursePerSemester: studentProfile.coursePerSemester
-          },
-          null,
-          2
-        )}
-      </pre>
+    <div>
+      <div className="flex items-center justify-between p-4 border-b-2">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {student.firstName} {student.lastName}
+          </h1>
+          <p>{student.studentId}</p>
+        </div>
+        <p>{student.email}</p>
+      </div>
 
       <Chat student={student} studentProfile={studentProfile} />
       {/* <CoursesGraph graph={studentProfile.graph} /> */}

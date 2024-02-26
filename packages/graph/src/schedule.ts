@@ -1,5 +1,6 @@
 import { getAllRequiredCourses } from "@graph/graph"
 import { CourseNode, StudentProfile } from "@graph/types"
+import { getCourseFromNameOrCode } from "./course"
 
 /**
  * Add a course to a semester, or a future semester if the current semester is full
@@ -33,15 +34,18 @@ export function canMoveCourse(
   courseId: string,
   toSemester: number,
   profile: StudentProfile
-): string {
+): { canMove: false; reason: string } | { canMove: true } {
   if (toSemester >= profile.timeToGraduate) {
-    return "Cannot move course beyond the student's time to graduate."
+    return {
+      canMove: false,
+      reason: "Cannot move course beyond the student's time to graduate."
+    }
   }
 
   // find course name in the graph:
-  const course = [...profile.graph.values()].find(c => c.name == courseId)
+  const course = getCourseFromNameOrCode(profile, courseId)
   if (!course) {
-    return `Course ${courseId} not found in the student's schedule.`
+    return { canMove: false, reason: `Course ${courseId} not found in the student's schedule.` }
   }
 
   // Does the course exist in the profile?
@@ -49,7 +53,7 @@ export function canMoveCourse(
 
   // Ensure the course exists in the fromSemester
   if (fromSemester === -1) {
-    return "Course not found in the student's schedule."
+    return { canMove: false, reason: "Course not found in the student's schedule." }
   }
 
   // Check if moving the course violates any prerequisite requirements
@@ -69,15 +73,50 @@ export function canMoveCourse(
   }
 
   if (beforePrereqs.length > 0) {
-    return `Course ${courseId} cannot be moved to semester ${toSemester} because the following prerequisites are not met: ${beforePrereqs.map(
-      prereqId => `\n- ${profile.graph.get(prereqId)?.name}`
-    )}.`
+    return {
+      canMove: false, reason: `Course ${courseId} cannot be moved to semester ${toSemester} because the following prerequisites are not met: ${beforePrereqs.map(
+        prereqId => `\n- ${profile.graph.get(prereqId)?.name}`
+      )}.`
+    }
   }
 
   // Check if the target semester has space
   if ((profile.semesters[toSemester]?.length ?? 0) >= 4) {
-    return "The target semester is full."
+    return { canMove: false, reason: "The target semester is full." }
   }
 
-  return `Course ${courseId} can be moved to semester ${toSemester}.`
+  return { canMove: true }
+}
+
+/**
+ * SHOULD NOT BE USED DIRECTLY. Use the moveCourse function instead. If we need to move a course, we should check if it can be moved first.
+ * @param course 
+ * @param profile 
+ * @returns 
+ */
+const removeFromSemester = (course: CourseNode, profile: StudentProfile) => {
+  const semesterIndex = profile.semesters.findIndex(s => s.some(c => c.id === course.id))
+  if (semesterIndex === -1) {
+    return
+  }
+
+  const filtered = profile.semesters[semesterIndex]?.filter(c => c.id !== course.id) ?? []
+  profile.semesters[semesterIndex] = filtered
+
+
+}
+
+export function moveCourse(courseId: string, toSemester: number, profile: StudentProfile) {
+  const canMove = canMoveCourse(courseId, toSemester, profile)
+  if (canMove) {
+    // find course name in the graph:
+    const course = getCourseFromNameOrCode(profile, courseId)
+    if (!course) {
+      throw new Error(`Course ${courseId} not found in the student's schedule.`)
+    }
+
+    removeFromSemester(course, profile)
+    addToSemester(course, toSemester, profile)
+  }
+  return profile
 }

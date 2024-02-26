@@ -3,18 +3,22 @@
 import { useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
-import { canMoveCourse } from "@graph/schedule"
+import { getCourseFromNameOrCode } from "@graph/course"
+import { getAllRequiredCourses } from "@graph/graph"
+import { canMoveCourse, moveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { DataTable } from "@ui/components/table"
+import { Button } from "@ui/components/ui/button"
 import OpenAI from "openai"
 import { useJsonStream } from "stream-hooks"
 
-import { getScheduleTableColumns } from "./schedule-table"
+import { getScheduleTableColumns, ScheduleTable } from "./schedule-table"
 
 type CustomMessage = {
   role: OpenAI.ChatCompletionMessageParam["role"]
   content: unknown
+  show?: boolean
 }
 
 export function Chat({
@@ -26,6 +30,8 @@ export function Chat({
 }) {
   const [messages, setMessages] = useState<CustomMessage[]>([])
   const [prompt, setPrompt] = useState("")
+
+  const [profile, setProfile] = useState(studentProfile)
 
   const [partial, setPartial] = useState<Partial<AdvisorAgent> | null>({})
 
@@ -52,7 +58,6 @@ export function Chat({
     lastPromptRef.current = prompt
 
     try {
-      console.log(prompt, messages)
       startStream({
         url: "/api/ai/chat",
         method: "POST",
@@ -66,6 +71,11 @@ export function Chat({
                   content: JSON.stringify(content)
                 }) as OpenAI.ChatCompletionMessageParam
             ),
+
+            // {
+            //   content: "Current Schedule: " + JSON.stringify(studentProfile.semesters),
+            //   role: "assistant"
+            // },
             {
               content: prompt,
               role: "user"
@@ -88,35 +98,58 @@ export function Chat({
 
   return (
     <>
-      <p>{`Chat for student ${student.studentId}`}</p>
-      <div>
-        {messages.map((message, index) => (
-          <Message key={index} message={message} studentProfile={studentProfile} />
-        ))}
-        {partial && (
+      <div className="mb-20">
+        {messages
+          .filter(message => message?.show ?? true)
+          .map((message, index) => (
+            <Message
+              key={index}
+              message={message}
+              studentProfile={profile}
+              setStudentProfile={setProfile}
+            />
+          ))}
+        {Object.keys(partial ?? {}).length > 0 && (
           <div>
             <strong>Assistant:</strong>
             <pre>{JSON.stringify(partial)}</pre>
           </div>
         )}
       </div>
-      <PromptComposer
-        jumbo
-        prompt={prompt}
-        loading={loading}
-        onSubmit={submitMessage}
-        onChange={(value: string) => setPrompt(value)}
-        onCancel={stopStream}
-      />
+      <div className="fixed bottom-0 p-4 w-full flex gap-4 items-center">
+        <PromptComposer
+          jumbo
+          prompt={prompt}
+          loading={loading}
+          onSubmit={submitMessage}
+          onChange={(value: string) => setPrompt(value)}
+          onCancel={stopStream}
+        />
+        <Button
+          size="lg"
+          onClick={() => {
+            setMessages(prevMessages => [
+              ...prevMessages.map(message => ({
+                ...message,
+                show: false
+              }))
+            ])
+          }}
+        >
+          Clear
+        </Button>
+      </div>
     </>
   )
 }
 
 const Message = ({
   message,
-  studentProfile
+  studentProfile,
+  setStudentProfile
 }: {
   studentProfile: StudentProfile
+  setStudentProfile: (profile: StudentProfile) => void
   message: {
     role: OpenAI.ChatCompletionMessageParam["role"]
     content: unknown
@@ -138,19 +171,12 @@ const Message = ({
 
       if (advisor_output.type === "rescheduleCourse") {
         return (
-          <p>
-            <strong>Assistant:</strong>{" "}
-            {`Lets check if we can ${advisor_output.course_name} to semester ${advisor_output.toSemester}`}
-            {canMoveCourse(
-              advisor_output.course_name,
-              advisor_output.toSemester,
-              studentProfile
-            ) ? (
-              <span>Yes, we can move the course</span>
-            ) : (
-              <span>No, we cannot move the course</span>
-            )}
-          </p>
+          <RescheduleCourse
+            courseName={advisor_output.course_name}
+            toSemester={advisor_output.toSemester}
+            profile={studentProfile}
+            setProfile={setStudentProfile}
+          />
         )
       } else if (advisor_output.type === "conversation") {
         return (
@@ -164,15 +190,13 @@ const Message = ({
         return (
           <div>
             <strong>Assistant:</strong> {`Displaying semester ${advisor_output.semester}`}
-            <SemesterDisplay semester={advisor_output.semester} profile={studentProfile} />
+            <SemesterDisplay semester={advisor_output.semester - 1} profile={studentProfile} />
           </div>
         )
-      } else {
-        return (
-          <p>
-            <strong>Assistant:</strong> {advisor_output.type} {JSON.stringify(advisor_output)}
-          </p>
-        )
+      } else if (advisor_output.type === "display-course") {
+        return <CourseDisplay course={advisor_output.course_name} profile={studentProfile} />
+      } else if (advisor_output.type === "4-year-plan") {
+        return ScheduleTable({ profile: studentProfile })
       }
     } else {
       return <p>{`Assistant Error: COULD NOT PARSE ${JSON.stringify(content)}`}</p>
@@ -194,5 +218,58 @@ const SemesterDisplay = ({ semester, profile }: { semester: number; profile: Stu
       rowCount={semesterCourses.length}
       search={false}
     />
+  )
+}
+
+const CourseDisplay = ({ course, profile }: { course: string; profile: StudentProfile }) => {
+  console.log("displaying course", course)
+  const courseNode = getCourseFromNameOrCode(profile, course)
+
+  if (!courseNode) {
+    return <div>Course {course} not found</div>
+  }
+
+  return (
+    <div>
+      <h2>{courseNode.name}</h2>
+      <p>Earliest Finish: {courseNode.earliestFinish}</p>
+      <p>Latest Finish: {courseNode.latestFinish}</p>
+      <p>Slack: {courseNode.latestFinish! - courseNode.earliestFinish!}</p>
+      <p>Required For: {getAllRequiredCourses(courseNode.id, profile.graph).join(", ")}</p>
+      <p>Semester: {profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id)) + 1}</p>
+      <p>Direct Prerequisites: {courseNode.prerequisites.join(", ")}</p>
+    </div>
+  )
+}
+
+const RescheduleCourse = ({
+  courseName,
+  toSemester,
+  profile,
+  setProfile
+}: {
+  courseName: string
+  toSemester: number
+  profile: StudentProfile
+  setProfile: (profile: StudentProfile) => void
+}) => {
+  const canMove = canMoveCourse(courseName, toSemester, profile)
+  return (
+    <div>
+      <strong>Assistant:</strong>
+      {`Checking if we can ${courseName} to semester ${toSemester}`}
+      <br />
+      {canMove.canMove ? (
+        <Button
+          onClick={() => {
+            setProfile(moveCourse(courseName, toSemester, profile))
+          }}
+        >
+          Confirm Move
+        </Button>
+      ) : (
+        <p className="text-red-500">{`Cannot move course: ${canMove.reason}`}</p>
+      )}
+    </div>
   )
 }

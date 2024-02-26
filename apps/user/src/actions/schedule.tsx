@@ -56,11 +56,8 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
     if (a.earliestFinish === b.earliestFinish) {
       const aslack = a.latestFinish! - a.earliestFinish!
       const bslack = b.latestFinish! - b.earliestFinish!
-      if (aslack === bslack) {
-        return a.fanOut! - b.fanOut!
-      } else {
-        return aslack - bslack
-      }
+
+      return aslack - bslack
     }
     return 0
   })

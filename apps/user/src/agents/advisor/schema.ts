@@ -43,6 +43,18 @@ export const advisorAgentSchema = z.object({
       ),
       z.object(
         {
+          type: z.literal("display-course"),
+          course_name: z.string({
+            description: "The name of the course to display. Put the actual name not the code"
+          })
+        },
+        {
+          description:
+            "An action that displays a singular course. Do not worry about having access to the data"
+        }
+      ),
+      z.object(
+        {
           type: z.literal("display-semester"),
           semester: z.number({
             description: "The semester to display"

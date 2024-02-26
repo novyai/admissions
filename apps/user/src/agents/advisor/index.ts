@@ -33,6 +33,7 @@ Your correct actions are as follows:
 - **error**: The action we do not have the ability to process yet
 - **4-year-plan**: An action that displays the users 4 year plan. Do not worry about having access to the data
 - **display-semester**: An action that displays a singular semester. Do not worry about having access to the data
+- **display-course**: An action that displays a singular course. Do not worry about having access to the data
 `
 
 export const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
