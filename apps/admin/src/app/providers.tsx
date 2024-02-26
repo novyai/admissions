@@ -5,7 +5,7 @@ import { Toaster } from "@ui/components/ui/toaster"
 import { ThemeProvider } from "next-themes"
 
 export const AppContext = createContext({
-  setData: () => {},
+  setData: () => { },
   data: {}
 } as {
   setData: Dispatch<SetStateAction<{}>>

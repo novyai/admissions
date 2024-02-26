@@ -4,10 +4,10 @@ import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
 
-import { getAllRequiredCourses } from "@/lib/schedule/graph"
+import { getAllRequiredCourses } from "@graph/graph"
 
 import { ScheduleChat } from "./schedule-chat"
-import { CourseNode, StudentProfile } from "@/lib/schedule/types"
+import { CourseNode, StudentProfile } from "@graph/types"
 
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [

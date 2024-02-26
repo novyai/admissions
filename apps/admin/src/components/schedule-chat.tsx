@@ -5,8 +5,8 @@ import { PromptComposer } from "@repo/ui/components/prompt-composer"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
-import { canMoveCourse } from "@/lib/schedule/schedule"
-import { StudentProfile } from "@/lib/schedule/types"
+import { canMoveCourse } from "@graph/schedule"
+import { StudentProfile } from "@graph/types"
 import { rescheduleCourseAgent } from "@/ai/agents/schema"
 
 export function ScheduleChat({ profile }: { profile: StudentProfile }) {

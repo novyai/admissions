@@ -15,6 +15,7 @@
     "@hackdance/hooks": "^4.0.0",
     "@next/eslint-plugin-next": "^14.0.2",
     "@repo/db": "workspace:*",
+    "@repo/graph": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",

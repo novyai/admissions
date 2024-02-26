@@ -1,5 +1,5 @@
-import { getAllRequiredCourses } from "./graph"
-import { CourseNode, StudentProfile } from "./types"
+import { getAllRequiredCourses } from "@graph/graph"
+import { CourseNode, StudentProfile } from "@graph/types"
 
 /**
  * Add a course to a semester, or a future semester if the current semester is full

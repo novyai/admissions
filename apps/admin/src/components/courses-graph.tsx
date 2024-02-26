@@ -2,7 +2,7 @@
 
 import { DAG } from "@ui/components/dag"
 
-import { CourseNode } from "@/lib/schedule/types"
+import { CourseNode } from "@graph/types"
 
 import "reactflow/dist/style.css"
 

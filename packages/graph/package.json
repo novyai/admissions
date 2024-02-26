@@ -1,0 +1,23 @@
+{
+  "name": "@repo/graph",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    "./*": {
+      "import": [
+        "./src/*.tsx",
+        "./src/*.ts"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

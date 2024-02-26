@@ -1,4 +1,4 @@
-import { CourseNode, StudentProfile } from "./types"
+import { CourseNode, StudentProfile } from "@graph/types"
 
 export function isEligibleForCourse(course: CourseNode, semesters: CourseNode[][]): boolean {
   // If the course has no prerequisites, then you can take it immediately

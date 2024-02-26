@@ -16,6 +16,9 @@
       "@db/*": [
         "../../packages/db/src/*"
       ],
+      "@graph/*": [
+        "../../packages/graph/src/*"
+      ],
     },
     "baseUrl": ".",
     "declaration": false,
