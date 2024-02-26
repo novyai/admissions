@@ -41,7 +41,7 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
       })
 
       setPrompt("")
-      await startStream({
+      startStream({
         url: "/api/ai/agents/schedule",
         method: "POST",
         body: {
