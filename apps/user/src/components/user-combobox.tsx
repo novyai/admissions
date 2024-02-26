@@ -1,6 +1,7 @@
 "use client"
 
-import * as React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { User } from "@db/client"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
 import { Button } from "@ui/components/ui/button"
@@ -15,8 +16,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/ui/popov
 import { cn } from "@ui/lib/utils"
 
 export function SelectUser({ users }: { users: User[] }) {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState("")
+
+  const router = useRouter()
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -44,6 +47,7 @@ export function SelectUser({ users }: { users: User[] }) {
                   console.log("currentValue", currentValue)
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
+                  router.push(`/chat/${currentValue}`)
                 }}
               >
                 {u.studentId}
