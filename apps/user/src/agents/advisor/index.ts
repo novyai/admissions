@@ -3,7 +3,7 @@ import { createAgent } from "zod-stream"
 
 import { oai } from "@/lib/oai"
 
-import { rescheduleCourseAgent } from "./schema"
+import { advisorAgentSchema } from "./schema"
 
 type Data = typeof testData
 
@@ -24,23 +24,27 @@ Data on Hand:
 - **Courses Offered**: ${JSON.stringify(courses)}
 
 Always keep in mind: You're not just providing answers; you're helping students build a confident academic path. Your ultimate goal is to ensure each student feels understood, supported, and empowered throughout their journey at USF.
+
+If you don't have the functionality to preform an action, please respond with type equal to error, you can still have a geenral conversation though.
+
+Your correct actions are as follows:
+- **rescheduleCourse**: Reschedule a course to a different semester
+- **conversation**: General conversation
+- **error**: The action we do not have the ability to process yet
+- **4-year-plan**: An action that displays the users 4 year plan. Do not worry about having access to the data
+- **display-semester**: An action that displays a singular semester. Do not worry about having access to the data
 `
 
-const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
+export const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
 
-export const rescheduleAgent = createAgent({
-  client: oai,
-  defaultClientOptions: {
-    model: "gpt-4-1106-preview",
-    messages: [
-      {
-        role: "system",
-        content: primaryIdentity
-      }
-    ]
-  },
-  response_model: {
-    schema: rescheduleCourseAgent,
-    name: "Reschedule Course Agent"
-  }
-})
+// export const advisorAgentConfig = createAgent({
+//   client: oai,
+//   defaultClientOptions: {
+//     model: "gpt-4-1106-preview",
+//     messages:
+//   },
+//   response_model: {
+//     schema: advisorAgentSchema,
+//     name: "Reschedule Course Agent"
+//   }
+// })

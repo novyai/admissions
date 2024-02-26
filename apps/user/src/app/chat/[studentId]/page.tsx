@@ -39,7 +39,7 @@ export default async function Page({ params }: { params: { studentId: string } }
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
     timeToGraduate: 10,
-    coursePerSemester: 5
+    coursePerSemester: 6
   }
 
   const studentProfile = await getStudentProfile(baseProfile)
@@ -48,10 +48,21 @@ export default async function Page({ params }: { params: { studentId: string } }
     <div className="overflow-y-scroll p-4">
       <p>{`Chat for student ${student?.studentId}`}</p>
 
-      {/* <pre>{JSON.stringify(student, null, 2)}</pre> */}
-      {/* <Chat student={student} studentProfile={studentProfile} /> */}
+      <pre>
+        {JSON.stringify(
+          {
+            ...student,
+            timeToGraduate: studentProfile.timeToGraduate,
+            coursePerSemester: studentProfile.coursePerSemester
+          },
+          null,
+          2
+        )}
+      </pre>
+
+      <Chat student={student} studentProfile={studentProfile} />
       {/* <CoursesGraph graph={studentProfile.graph} /> */}
-      <ScheduleTable profile={studentProfile} />
+      {/* <ScheduleTable profile={studentProfile} /> */}
     </div>
   )
 }

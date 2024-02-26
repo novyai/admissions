@@ -1,14 +1,21 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { rescheduleCourseAgent } from "@/agents/rescheduler/schema"
+import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
 import { canMoveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
+import { DataTable } from "@ui/components/table"
 import OpenAI from "openai"
 import { useJsonStream } from "stream-hooks"
-import { z } from "zod"
+
+import { getScheduleTableColumns } from "./schedule-table"
+
+type CustomMessage = {
+  role: OpenAI.ChatCompletionMessageParam["role"]
+  content: unknown
+}
 
 export function Chat({
   studentProfile,
@@ -17,30 +24,24 @@ export function Chat({
   studentProfile: StudentProfile
   student: User
 }) {
-  const [messages, setMessages] = useState<OpenAI.ChatCompletionMessageParam[]>([])
+  const [messages, setMessages] = useState<CustomMessage[]>([])
   const [prompt, setPrompt] = useState("")
-  const [result, setResult] = useState<{
-    prompt: string
-    data: Partial<z.infer<typeof rescheduleCourseAgent>>
-  }>({ prompt: "", data: {} })
+
+  const [partial, setPartial] = useState<Partial<AdvisorAgent> | null>({})
 
   const lastPromptRef = useRef<string>("")
 
   const { startStream, stopStream, loading } = useJsonStream({
-    schema: rescheduleCourseAgent,
-    onReceive: data => {
-      setResult(prevResult => ({
-        prompt: prevResult.prompt,
-        data
-      }))
+    schema: advisorAgentSchema,
+    onReceive: (data: Partial<AdvisorAgent>) => {
+      setPartial(data)
     },
     onEnd: data => {
-      setResult({ prompt: "", data: data })
-
+      setPartial(null)
       setMessages(prevMessages => [
         ...prevMessages,
         {
-          content: data.course_name ?? "unknown",
+          content: data,
           role: "assistant"
         }
       ])
@@ -50,33 +51,21 @@ export function Chat({
   const submitMessage = async () => {
     lastPromptRef.current = prompt
 
-    setMessages(prevMessages => [
-      ...prevMessages,
-      {
-        content: prompt,
-        role: "user"
-      }
-    ])
-
     try {
-      setResult({
-        prompt,
-        data: {}
-      })
-
-      setPrompt("")
-      await startStream({
+      console.log(prompt, messages)
+      startStream({
         url: "/api/ai/chat",
         method: "POST",
         body: {
           prompt,
           messages: [
-            {
-              role: "user",
-              content: `
-              Current Schedule:
-              ${JSON.stringify(studentProfile.semesters, null, 2)}`
-            },
+            ...messages.map(
+              ({ role, content }) =>
+                ({
+                  role,
+                  content: JSON.stringify(content)
+                }) as OpenAI.ChatCompletionMessageParam
+            ),
             {
               content: prompt,
               role: "user"
@@ -84,6 +73,14 @@ export function Chat({
           ]
         }
       })
+      setMessages(prevMessages => [
+        ...prevMessages,
+        {
+          content: prompt,
+          role: "user"
+        }
+      ])
+      setPrompt("")
     } catch (e) {
       console.error(e)
     }
@@ -94,25 +91,13 @@ export function Chat({
       <p>{`Chat for student ${student.studentId}`}</p>
       <div>
         {messages.map((message, index) => (
-          <div key={index} className={message.role}>
-            {message.content as string}
-          </div>
+          <Message key={index} message={message} studentProfile={studentProfile} />
         ))}
-      </div>
-      <div>
-        <p>
-          Trying to move {result.data.course_name ?? "unknown"} to semester:{" "}
-          {result.data.toSemester ?? "unknown"}
-        </p>
-        <br />
-        {!loading && (
-          <pre>
-            {canMoveCourse(
-              result.data.course_name ?? "",
-              result.data.toSemester ?? -1,
-              studentProfile
-            )}
-          </pre>
+        {partial && (
+          <div>
+            <strong>Assistant:</strong>
+            <pre>{JSON.stringify(partial)}</pre>
+          </div>
         )}
       </div>
       <PromptComposer
@@ -124,5 +109,90 @@ export function Chat({
         onCancel={stopStream}
       />
     </>
+  )
+}
+
+const Message = ({
+  message,
+  studentProfile
+}: {
+  studentProfile: StudentProfile
+  message: {
+    role: OpenAI.ChatCompletionMessageParam["role"]
+    content: unknown
+  }
+}) => {
+  const { role, content } = message
+
+  if (role === "user") {
+    return (
+      <p>
+        <strong>User:</strong> {content as string}
+      </p>
+    )
+  } else {
+    const output = advisorAgentSchema.safeParse(content as string)
+
+    if (output.success) {
+      const advisor_output = output.data.advisor_output
+
+      if (advisor_output.type === "rescheduleCourse") {
+        return (
+          <p>
+            <strong>Assistant:</strong>{" "}
+            {`Lets check if we can ${advisor_output.course_name} to semester ${advisor_output.toSemester}`}
+            {canMoveCourse(
+              advisor_output.course_name,
+              advisor_output.toSemester,
+              studentProfile
+            ) ? (
+              <span>Yes, we can move the course</span>
+            ) : (
+              <span>No, we cannot move the course</span>
+            )}
+          </p>
+        )
+      } else if (advisor_output.type === "conversation") {
+        return (
+          <p>
+            <strong>Assistant:</strong> {advisor_output.response}
+          </p>
+        )
+      } else if (advisor_output.type === "error") {
+        return <p className="text-red-500">{`Assistant Error: ${advisor_output.error}`}</p>
+      } else if (advisor_output.type === "display-semester") {
+        return (
+          <div>
+            <strong>Assistant:</strong> {`Displaying semester ${advisor_output.semester}`}
+            <SemesterDisplay semester={advisor_output.semester} profile={studentProfile} />
+          </div>
+        )
+      } else {
+        return (
+          <p>
+            <strong>Assistant:</strong> {advisor_output.type} {JSON.stringify(advisor_output)}
+          </p>
+        )
+      }
+    } else {
+      return <p>{`Assistant Error: COULD NOT PARSE ${JSON.stringify(content)}`}</p>
+    }
+  }
+}
+
+const SemesterDisplay = ({ semester, profile }: { semester: number; profile: StudentProfile }) => {
+  const semesterCourses = profile.semesters[semester]
+
+  if (!semesterCourses) {
+    return <div>No courses in this semester</div>
+  }
+
+  return (
+    <DataTable
+      columns={getScheduleTableColumns(profile)}
+      data={semesterCourses}
+      rowCount={semesterCourses.length}
+      search={false}
+    />
   )
 }

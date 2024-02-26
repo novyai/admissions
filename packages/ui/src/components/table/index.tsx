@@ -31,12 +31,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   rowCount: number
+  search?: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  rowCount
+  rowCount,
+  search = true
 }: DataTableProps<TData, TValue>) {
   const router = useRouter()
   const pathname = usePathname()
@@ -99,17 +101,19 @@ export function DataTable<TData, TValue>({
 
   return (
     <>
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter conversations..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={event => {
-            const target = event.target as HTMLInputElement
-            table.getColumn("name")?.setFilterValue(target?.value)
-          }}
-          className="max-w-sm"
-        />
-      </div>
+      {search && (
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Filter conversations..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={event => {
+              const target = event.target as HTMLInputElement
+              table.getColumn("name")?.setFilterValue(target?.value)
+            }}
+            className="max-w-sm"
+          />
+        </div>
+      )}
 
       <div className="rounded-md border">
         <Table>
