@@ -3,24 +3,25 @@
 import { useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
-import { getCourseFromNameOrCode } from "@graph/course"
-import { getAllRequiredCourses } from "@graph/graph"
-import { canMoveCourse, moveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
-import { DataTable } from "@ui/components/table"
 import { Button } from "@ui/components/ui/button"
 import OpenAI from "openai"
 import { useJsonStream } from "stream-hooks"
 
 import { ChatMessage } from "./chat-message"
-import { getScheduleTableColumns, ScheduleTable } from "./schedule-table"
 
-type CustomMessage = {
-  role: OpenAI.ChatCompletionMessageParam["role"]
-  content: unknown
-  show?: boolean
-}
+export type CustomMessage =
+  | {
+      role: "user"
+      content: string
+      show?: boolean
+    }
+  | {
+      role: "assistant"
+      content: AdvisorAgent["advisor_output"]
+      show?: boolean
+    }
 
 export function Chat({
   studentProfile,
@@ -48,9 +49,9 @@ export function Chat({
       setMessages(prevMessages => [
         ...prevMessages,
         {
-          content: data,
+          content: data.advisor_output,
           role: "assistant"
-        }
+        } as CustomMessage
       ])
     }
   })
@@ -114,7 +115,7 @@ export function Chat({
           <ChatMessage
             message={{
               role: "assistant",
-              content: partial
+              content: partial?.advisor_output
             }}
             partial={true}
             studentProfile={profile}

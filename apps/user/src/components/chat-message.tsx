@@ -1,14 +1,14 @@
 import { ReactNode } from "react"
-import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
-import { $Enums, User } from "@db/client"
+import { AdvisorAgent } from "@/agents/advisor/schema"
+import { User } from "@db/client"
 import { getCourseFromNameOrCode } from "@graph/course"
 import { getAllRequiredCourses } from "@graph/graph"
 import { canMoveCourse, moveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { DataTable } from "@ui/components/table"
 import { Button } from "@ui/components/ui/button"
-import OpenAI from "openai"
 
+import { CustomMessage } from "./chat"
 import { getScheduleTableColumns, ScheduleTable } from "./schedule-table"
 
 type ChatMessageSubType = AdvisorAgent["advisor_output"]["type"]
@@ -62,46 +62,50 @@ const chatMessageHandler: ChatMessageHandler = {
 }
 
 export const ChatMessage = ({
-  partial = false,
+  partial,
   message,
   studentProfile,
   setStudentProfile
-}: {
-  partial?: boolean
-  studentProfile: StudentProfile
-  setStudentProfile: (profile: StudentProfile) => void
-  message: {
-    role: OpenAI.ChatCompletionMessageParam["role"]
-    content: unknown
-  }
-}) => {
+}:
+  | {
+      partial?: false
+      studentProfile: StudentProfile
+      setStudentProfile: (profile: StudentProfile) => void
+      message: CustomMessage
+    }
+  | {
+      partial: true
+      message: CustomMessage & {
+        content: AdvisorAgent["advisor_output"] | null | undefined
+      }
+      studentProfile: StudentProfile
+      setStudentProfile: (profile: StudentProfile) => void
+    }) => {
   const { role, content } = message
+
+  if (partial) {
+    return (
+      <p>
+        <strong>Assistant:</strong> {`Loading...`}
+      </p>
+    )
+  }
 
   if (role === "user") {
     return (
       <p>
-        <strong>User:</strong> {content as string}
+        <strong>User:</strong> {content}
       </p>
     )
   } else {
-    const output = advisorAgentSchema.safeParse(content as string)
+    const handler = chatMessageHandler[content.type]
 
-    if (output.success) {
-      const advisor_output = output.data.advisor_output
-      const handler = chatMessageHandler[advisor_output.type]
-
-      return handler({
-        // @ts-expect-error - safe because we are using the handler to determine the type
-        advisor_output,
-        studentProfile,
-        setStudentProfile
-      })
-    } else {
-      // don't show parsing errors for partial responses
-      if (partial) return null
-
-      return <p> {`Assistant Error: COULD NOT PARSE ${JSON.stringify(content)}`}</p>
-    }
+    return handler({
+      // @ts-expect-error - safe because we are using the handler to determine the type
+      content,
+      studentProfile,
+      setStudentProfile
+    })
   }
 }
 
