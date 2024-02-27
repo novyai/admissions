@@ -1,9 +1,4 @@
 import testData from "@db/data/test.json"
-import { createAgent } from "zod-stream"
-
-import { oai } from "@/lib/oai"
-
-import { advisorAgentSchema } from "./schema"
 
 type Data = typeof testData
 
