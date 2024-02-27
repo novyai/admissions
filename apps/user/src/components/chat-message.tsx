@@ -91,6 +91,7 @@ export const ChatMessage = ({
     if (!partialOutput.success) {
       return null
     } else {
+      // TODO: handle partial output
       return (
         <p>
           <strong>Assistant:</strong> {`Partial: ${partialOutput.data}`}
