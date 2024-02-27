@@ -1,0 +1,23 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@graph/*": [
+        "./src/*"
+      ],
+      "@db/*": [
+        "../db/src/*"
+      ],
+    },
+    "baseUrl": "."
+  },
+  "include": [
+    "src/*.ts",
+    "next-env.d.ts",
+    "tsup.config.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
