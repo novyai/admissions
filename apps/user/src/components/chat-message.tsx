@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import { AdvisorAgent } from "@/agents/advisor/schema"
+import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
 import { getCourseFromNameOrCode } from "@graph/course"
 import { getAllRequiredCourses } from "@graph/graph"
@@ -60,35 +60,49 @@ const chatMessageHandler: ChatMessageHandler = {
     )
   }
 }
+function isAdvisorOutputType<T extends AdvisorAgent["advisor_output"]["type"]>(
+  advisorOutput: AdvisorAgent["advisor_output"],
+  type: T
+): advisorOutput is Extract<AdvisorAgent["advisor_output"], { type: T }> {
+  return advisorOutput.type === type
+}
 
 export const ChatMessage = ({
-  partial,
+  partial = false,
   message,
+  student,
   studentProfile,
   setStudentProfile
 }:
   | {
-      partial?: false
-      studentProfile: StudentProfile
-      setStudentProfile: (profile: StudentProfile) => void
-      message: CustomMessage
-    }
+    partial?: false
+    student: User
+    studentProfile: StudentProfile
+    setStudentProfile: (profile: StudentProfile) => void
+    message: CustomMessage
+  }
   | {
-      partial: true
-      message: CustomMessage & {
-        content: AdvisorAgent["advisor_output"] | null | undefined
-      }
-      studentProfile: StudentProfile
-      setStudentProfile: (profile: StudentProfile) => void
-    }) => {
+    partial: true
+    student: User
+    message: CustomMessage & {
+      content: Partial<AdvisorAgent["advisor_output"]>
+    }
+    studentProfile: StudentProfile
+    setStudentProfile: (profile: StudentProfile) => void
+  }) => {
   const { role, content } = message
 
-  if (partial) {
-    return (
-      <p>
-        <strong>Assistant:</strong> {`Loading...`}
-      </p>
-    )
+  if (partial == true || content === null || content === undefined) {
+    const partialOutput = advisorAgentSchema.safeParse(JSON.stringify(content))
+    if (!partialOutput.success) {
+      return null
+    } else {
+      return (
+        <p>
+          <strong>Assistant:</strong> {`Partial: ${partialOutput.data}`}
+        </p>
+      )
+    }
   }
 
   if (role === "user") {
@@ -97,16 +111,18 @@ export const ChatMessage = ({
         <strong>User:</strong> {content}
       </p>
     )
-  } else {
-    const handler = chatMessageHandler[content.type]
-
-    return handler({
-      // @ts-expect-error - safe because we are using the handler to determine the type
-      content,
-      studentProfile,
-      setStudentProfile
-    })
   }
+
+  console.log("content", content)
+  const handler = chatMessageHandler[content.type]
+
+  return handler({
+    studentProfile,
+    setStudentProfile,
+    student: student,
+    // @ts-expect-error
+    advisor_output: content
+  })
 }
 
 const SemesterDisplay = ({ semester, profile }: { semester: number; profile: StudentProfile }) => {

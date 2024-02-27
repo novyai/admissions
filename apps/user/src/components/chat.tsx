@@ -13,15 +13,15 @@ import { ChatMessage } from "./chat-message"
 
 export type CustomMessage =
   | {
-      role: "user"
-      content: string
-      show?: boolean
-    }
+    role: "user"
+    content: string
+    show?: boolean
+  }
   | {
-      role: "assistant"
-      content: AdvisorAgent["advisor_output"]
-      show?: boolean
-    }
+    role: "assistant"
+    content: AdvisorAgent["advisor_output"]
+    show?: boolean
+  }
 
 export function Chat({
   studentProfile,
@@ -105,17 +105,25 @@ export function Chat({
           .filter(message => message?.show ?? true)
           .map((message, index) => (
             <ChatMessage
+              student={student}
               key={index}
               message={message}
               studentProfile={profile}
               setStudentProfile={setProfile}
             />
           ))}
-        {Object.keys(partial ?? {}).length > 0 && (
+        {partial !== null && (
           <ChatMessage
+            student={student}
             message={{
               role: "assistant",
-              content: partial?.advisor_output
+              content:
+                partial?.advisor_output === undefined
+                  ? {
+                    type: "error",
+                    error: "Error parsing partial output"
+                  }
+                  : partial.advisor_output
             }}
             partial={true}
             studentProfile={profile}
