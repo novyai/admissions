@@ -18,7 +18,7 @@ export const RescheduleCourse = ({
 }) => {
   const [confirmed, setConfirmed] = useState(false)
 
-  const canMove = canMoveCourse(courseName, toSemester, profile)
+  const canMove = canMoveCourse(courseName, toSemester - 1, profile)
   return (
     <div>
       <strong>Assistant:</strong>
@@ -28,7 +28,7 @@ export const RescheduleCourse = ({
         <Button
           disabled={confirmed}
           onClick={() => {
-            setProfile(moveCourse(courseName, toSemester, profile))
+            setProfile(moveCourse(courseName, toSemester - 1, profile))
             setConfirmed(true)
           }}
         >

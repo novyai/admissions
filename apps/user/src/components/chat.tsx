@@ -70,7 +70,16 @@ export function Chat({
               ({ role, content }) =>
                 ({
                   role,
-                  content: JSON.stringify(content)
+                  content:
+                    role == "user"
+                      ? JSON.stringify(content)
+                      : `
+                
+                ${content.response}
+
+                Your current semester is ${studentProfile.currentSemester} and you have ${studentProfile.timeToGraduate - studentProfile.currentSemester} semesters left.
+                Your current schedule is: ${studentProfile.semesters.map((semester, index) => `Semester ${index + 1}: ${semester.map(course => course.name).join(", ")}`).join("\n")}
+                `
                 }) as OpenAI.ChatCompletionMessageParam
             ),
 
@@ -101,7 +110,7 @@ export function Chat({
   return (
     <>
       <div className="mb-20 m-4 gap-4">
-        {<pre>{JSON.stringify(messages, null, 2)}</pre>}
+        {/* {<pre>{JSON.stringify(messages, null, 2)}</pre>} */}
         {messages
           .filter(message => message?.show ?? true)
           .map((message, index) => (
