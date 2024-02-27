@@ -53,10 +53,6 @@ export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
         in: allCourseIds
       }
     },
-    select: {
-      id: true,
-      name: true
-    }
   })
 
   return {

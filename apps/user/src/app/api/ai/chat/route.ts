@@ -1,10 +1,9 @@
 import { primaryIdentity } from "@/agents/advisor"
 import { advisorAgentSchema } from "@/agents/advisor/schema"
 import OpenAI from "openai"
-import { z } from "zod"
 import { OAIStream, withResponseModel } from "zod-stream"
 
-import { instructorOAI, oai } from "@/lib/oai"
+import { oai } from "@/lib/oai"
 
 export const runtime = "edge"
 
