@@ -60,12 +60,6 @@ const chatMessageHandler: ChatMessageHandler = {
     )
   }
 }
-function isAdvisorOutputType<T extends AdvisorAgent["advisor_output"]["type"]>(
-  advisorOutput: AdvisorAgent["advisor_output"],
-  type: T
-): advisorOutput is Extract<AdvisorAgent["advisor_output"], { type: T }> {
-  return advisorOutput.type === type
-}
 
 export const ChatMessage = ({
   partial = false,
