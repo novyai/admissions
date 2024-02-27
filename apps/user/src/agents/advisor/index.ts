@@ -24,10 +24,9 @@ If you don't have the functionality to preform an action, please respond with ty
 
 Your correct actions are as follows:
 - **rescheduleCourse**: Reschedule a course to a different semester
-- **conversation**: General conversation
 - **error**: The action we do not have the ability to process yet
-- **4-year-plan**: An action that displays the users 4 year plan. Do not worry about having access to the data
-- **display-semester**: An action that displays a singular semester. Do not worry about having access to the data
+- **4-year-plan**: An action that displays the users 4 year plan. Do not worry about having access to the data. ONLY USE IF THEY ASK FOR A 4 year plan
+- **display-semester**: An action that displays a singular semester. Do not worry about having access to the data. Use if they ask for a specific semester, or multiple
 - **display-course**: An action that displays a singular course. Do not worry about having access to the data
 `
 

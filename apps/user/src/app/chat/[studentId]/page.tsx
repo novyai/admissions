@@ -4,8 +4,6 @@ import { db, Prisma } from "@db/client"
 import { BaseStudentProfile } from "@graph/types"
 
 import { Chat } from "@/components/chat"
-import { CoursesGraph } from "@/components/courses-graph"
-import { ScheduleTable } from "@/components/schedule-table"
 
 export default async function Page({ params }: { params: { studentId: string } }) {
   const student = await db.user.findUnique({
@@ -39,7 +37,8 @@ export default async function Page({ params }: { params: { studentId: string } }
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
     timeToGraduate: 10,
-    coursePerSemester: 6
+    coursePerSemester: 6,
+    currentSemester: 0
   }
 
   const studentProfile = await getStudentProfile(baseProfile)
@@ -53,7 +52,10 @@ export default async function Page({ params }: { params: { studentId: string } }
           </h1>
           <p>{student.studentId}</p>
         </div>
-        <p>{student.email}</p>
+        <div>
+          <h2 className="text-xl font-semibold">{student.email}</h2>
+          <p>Current Semester: {studentProfile.currentSemester}</p>
+        </div>
       </div>
 
       <Chat student={student} studentProfile={studentProfile} />

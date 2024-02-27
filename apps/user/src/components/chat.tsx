@@ -100,7 +100,8 @@ export function Chat({
 
   return (
     <>
-      <div className="mb-20">
+      <div className="mb-20 m-4 gap-4">
+        {<pre>{JSON.stringify(messages, null, 2)}</pre>}
         {messages
           .filter(message => message?.show ?? true)
           .map((message, index) => (
@@ -117,13 +118,10 @@ export function Chat({
             student={student}
             message={{
               role: "assistant",
-              content:
-                partial?.advisor_output === undefined
-                  ? {
-                    type: "error",
-                    error: "Error parsing partial output"
-                  }
-                  : partial.advisor_output
+              content: partial?.advisor_output ?? {
+                response: "Loading...",
+                actions: []
+              }
             }}
             partial={true}
             studentProfile={profile}

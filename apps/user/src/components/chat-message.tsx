@@ -2,22 +2,21 @@ import { ReactNode } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
 import { getCourseFromNameOrCode } from "@graph/course"
-import { getAllRequiredCourses } from "@graph/graph"
-import { canMoveCourse, moveCourse } from "@graph/schedule"
+import { getAllDependents, getAllPrereqs } from "@graph/graph"
 import { StudentProfile } from "@graph/types"
 import { DataTable } from "@ui/components/table"
-import { Button } from "@ui/components/ui/button"
 
 import { CustomMessage } from "./chat"
-import { getScheduleTableColumns, ScheduleTable } from "./schedule-table"
+import { RescheduleCourse } from "./messageHandlers/reschedule-course"
+import { getScheduleTableColumns, ScheduleTable } from "./messageHandlers/schedule-table"
 
-type ChatMessageSubType = AdvisorAgent["advisor_output"]["type"]
+type ChatMessageSubType = AdvisorAgent["advisor_output"]["actions"][number]["type"]
 
 type HandleChatMessage<T extends ChatMessageSubType> = (params: {
   studentProfile: StudentProfile
   setStudentProfile: (profile: StudentProfile) => void
   student: User
-  advisor_output: Extract<AdvisorAgent["advisor_output"], { type: T }>
+  advisor_output: Extract<AdvisorAgent["advisor_output"]["actions"][number], { type: T }>
 }) => ReactNode
 
 type ChatMessageHandler = {
@@ -33,13 +32,6 @@ const chatMessageHandler: ChatMessageHandler = {
   },
   "error": ({ advisor_output }) => {
     return <p className="text-red-500">{`Assistant Error: ${advisor_output.error}`}</p>
-  },
-  "conversation": ({ advisor_output }) => {
-    return (
-      <p>
-        <strong>Assistant:</strong> {advisor_output.response}
-      </p>
-    )
   },
   "rescheduleCourse": ({ advisor_output, studentProfile, setStudentProfile }) => {
     return (
@@ -87,15 +79,25 @@ export const ChatMessage = ({
   const { role, content } = message
 
   if (partial == true || content === null || content === undefined) {
-    const partialOutput = advisorAgentSchema.safeParse(JSON.stringify(content))
+    const partialOutput = advisorAgentSchema.safeParse({
+      advisor_output: content
+    })
     if (!partialOutput.success) {
-      return null
-    } else {
-      // TODO: handle partial output
+      // we can probably just return null here
       return (
         <p>
-          <strong>Assistant:</strong> {`Partial: ${partialOutput.data}`}
+          <strong>Partial Assistant:</strong> Error parsing partial output{" "}
+          {JSON.stringify(partialOutput?.error)}
         </p>
+      )
+    } else {
+      return (
+        <MessageBody
+          advisor_output={partialOutput.data.advisor_output}
+          studentProfile={studentProfile}
+          setStudentProfile={setStudentProfile}
+          student={student}
+        />
       )
     }
   }
@@ -108,16 +110,14 @@ export const ChatMessage = ({
     )
   }
 
-  console.log("content", content)
-  const handler = chatMessageHandler[content.type]
-
-  return handler({
-    studentProfile,
-    setStudentProfile,
-    student: student,
-    // @ts-expect-error
-    advisor_output: content
-  })
+  return (
+    <MessageBody
+      advisor_output={content}
+      studentProfile={studentProfile}
+      setStudentProfile={setStudentProfile}
+      student={student}
+    />
+  )
 }
 
 const SemesterDisplay = ({ semester, profile }: { semester: number; profile: StudentProfile }) => {
@@ -151,41 +151,59 @@ const CourseDisplay = ({ course, profile }: { course: string; profile: StudentPr
       <p>Earliest Finish: {courseNode.earliestFinish}</p>
       <p>Latest Finish: {courseNode.latestFinish}</p>
       <p>Slack: {courseNode.latestFinish! - courseNode.earliestFinish!}</p>
-      <p>Required For: {getAllRequiredCourses(courseNode.id, profile.graph).join(", ")}</p>
+      <p>
+        All Prerequisites:
+        {getAllPrereqs(courseNode.id, profile)
+          .filter(c => c.id !== courseNode.id)
+          .map(c => c.name)
+          .join(", ")}
+      </p>
       <p>Semester: {profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id)) + 1}</p>
-      <p>Direct Prerequisites: {courseNode.prerequisites.join(", ")}</p>
+      <p>
+        Needed to take before:{" "}
+        {getAllDependents(courseNode.id, profile)
+          .map(c => c.name)
+          .filter(c => c !== courseNode.name)
+          .join(", ")}
+      </p>
     </div>
   )
 }
 
-const RescheduleCourse = ({
-  courseName,
-  toSemester,
-  profile,
-  setProfile
+const MessageBody = ({
+  advisor_output,
+  ...params
 }: {
-  courseName: string
-  toSemester: number
-  profile: StudentProfile
-  setProfile: (profile: StudentProfile) => void
+  advisor_output: AdvisorAgent["advisor_output"]
+  studentProfile: StudentProfile
+  setStudentProfile: (profile: StudentProfile) => void
+  student: User
 }) => {
-  const canMove = canMoveCourse(courseName, toSemester, profile)
   return (
-    <div>
-      <strong>Assistant:</strong>
-      {`Checking if we can ${courseName} to semester ${toSemester}`}
-      <br />
-      {canMove.canMove ? (
-        <Button
-          onClick={() => {
-            setProfile(moveCourse(courseName, toSemester, profile))
-          }}
-        >
-          Confirm Move
-        </Button>
-      ) : (
-        <p className="text-red-500">{`Cannot move course: ${canMove.reason}`}</p>
-      )}
-    </div>
+    <>
+      <p>
+        <strong>Assistant:</strong> {advisor_output.response}
+        <br />
+        <small className="text-gray-500">
+          {advisor_output.actions.map(action => action.type).join(", ")}
+        </small>
+      </p>
+      <div>
+        {advisor_output.actions.map((action, i) => {
+          const Handler = chatMessageHandler[action.type]
+
+          return (
+            <Handler
+              key={i}
+              // @ts-expect-error
+              advisor_output={action}
+              studentProfile={params.studentProfile}
+              setStudentProfile={params.setStudentProfile}
+              student={params.student}
+            />
+          )
+        })}
+      </div>
+    </>
   )
 }

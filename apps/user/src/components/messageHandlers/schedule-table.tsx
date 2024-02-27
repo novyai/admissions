@@ -1,12 +1,10 @@
 "use client"
 
+import { getAllRequiredCourses } from "@graph/graph"
+import { CourseNode, StudentProfile } from "@graph/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"
-
-import { getAllRequiredCourses } from "@graph/graph"
-
-import { CourseNode, StudentProfile } from "@graph/types"
 
 export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<CourseNode>[] => [
   {
@@ -16,10 +14,15 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
       return <DataTableColumnHeader column={column} title="Name" />
     },
     cell: ({ row }) => {
-      return <div>{row.original.name}
-        <small className="text-gray-400"> ({row.original.raw_course.courseSubject} {row.original.raw_course.courseNumber})</small>
-      </div>
-
+      return (
+        <div>
+          {row.original.name}
+          <small className="text-gray-400">
+            {" "}
+            ({row.original.raw_course.courseSubject} {row.original.raw_course.courseNumber})
+          </small>
+        </div>
+      )
     }
   },
   {
@@ -95,27 +98,14 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
   }
 ]
 
-
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
-
-
   const courses = Array.from(profile.graph.values())
 
   return (
-    <>
-      <StudentProfile profile={profile} />
-      <DataTable columns={getScheduleTableColumns(profile)} data={courses} rowCount={courses.length} />
-    </>
-  )
-}
-
-const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
-  return (
-    <div>
-      <h2>Student Profile</h2>
-      <div>Time to Graduate: {profile.timeToGraduate}</div>
-      <div>Total courses: {profile.graph.size}</div>
-      <div>Course Per Semester: {profile.coursePerSemester}</div>
-    </div>
+    <DataTable
+      columns={getScheduleTableColumns(profile)}
+      data={courses}
+      rowCount={courses.length}
+    />
   )
 }

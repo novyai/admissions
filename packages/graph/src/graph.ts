@@ -151,6 +151,38 @@ export function getUnmetCourseRequirements(course: string, profile: StudentProfi
   return [course, ...unmetPrerequisites.flat()]
 }
 
+
+
+export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
+  const course = profile.graph.get(courseId)
+  if (!course) {
+    return []
+  }
+
+  const prereqs = course.prerequisites
+  if (prereqs.length === 0) {
+    return [course]
+  }
+  const prereqCourses = prereqs.map(p => getAllPrereqs(p, profile)).flat()
+
+  return [course, ...prereqCourses]
+}
+
+export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
+  const course = profile.graph.get(courseId)
+  if (!course) {
+    return []
+  }
+
+  const dependents = course.dependents
+  if (dependents.length === 0) {
+    return [course]
+  }
+  const dependentCourses = dependents.map(p => getAllDependents(p, profile)).flat()
+
+  return [course, ...dependentCourses]
+}
+
 // const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
 // const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
 // const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
