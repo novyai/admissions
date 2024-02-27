@@ -74,7 +74,7 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
         <br />
         {!loading && (
           <pre>
-            {canMoveCourse(result.data.course_name ?? "", result.data.toSemester ?? -1, profile)}
+            {canMoveCourse(result.data.course_name ?? "", result.data.toSemester ?? -1, profile).canMove ? "Can move" : "Can't move"}
           </pre>
         )}
       </div>

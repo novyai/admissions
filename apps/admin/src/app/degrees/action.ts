@@ -27,7 +27,8 @@ export const getDegree = async (profile: StudentProfile) => {
       latestFinish: undefined,
       dependents: Array.from(new Set(dependentMap.get(course.id) ?? [])),
       prerequisites: Array.from(new Set(prereqMap.get(course.id) ?? [])),
-      name: course.name
+      name: course.name,
+      raw_course: course
     })
   }
 
