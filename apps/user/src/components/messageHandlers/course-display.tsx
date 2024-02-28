@@ -1,36 +1,38 @@
-import { getCourseFromNameOrCode } from "@graph/course"
+import { getCourseFromIdNameCode } from "@graph/course"
 import { getAllDependents, getAllPrereqs } from "@graph/graph"
 import { StudentProfile } from "@graph/types"
 
+import { MdxContent } from "../mdxContent"
+
 export const CourseDisplay = ({ course, profile }: { course: string; profile: StudentProfile }) => {
   console.log("displaying course", course)
-  const courseNode = getCourseFromNameOrCode(profile, course)
+  const courseNode = getCourseFromIdNameCode(profile, course)
 
   if (!courseNode) {
     return <div>Course {course} not found</div>
   }
 
+  const preqs = getAllPrereqs(courseNode.id, profile).filter(p => p.id !== courseNode.id)
+  const dependents = getAllDependents(courseNode.id, profile).filter(p => p.id !== courseNode.id)
+
   return (
-    <div>
-      <h2>{courseNode.name}</h2>
-      <p>Earliest Finish: {courseNode.earliestFinish}</p>
-      <p>Latest Finish: {courseNode.latestFinish}</p>
-      <p>Slack: {courseNode.latestFinish! - courseNode.earliestFinish!}</p>
-      <p>
-        All Prerequisites:
-        {getAllPrereqs(courseNode.id, profile)
-          .filter(c => c.id !== courseNode.id)
-          .map(c => c.name)
-          .join(", ")}
-      </p>
-      <p>Semester: {profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id)) + 1}</p>
-      <p>
-        Needed to take before:{" "}
-        {getAllDependents(courseNode.id, profile)
-          .map(c => c.name)
-          .filter(c => c !== courseNode.name)
-          .join(", ")}
-      </p>
-    </div>
+    <MdxContent
+      content={`
+### ${courseNode.name}
+
+#### Prerequisites
+${preqs.length > 0 ? preqs.map(p => ` - ${profile.graph.get(p.id)?.name}`).join("\n") : "No required courses"}
+
+#### Dependents
+${
+  dependents.length > 0
+    ? dependents.map(p => ` - ${profile.graph.get(p.id)?.name}`).join("\n")
+    : "No courses depend on this course"
+}
+
+#### Description
+A course about ${courseNode.name}
+`}
+    />
   )
 }

@@ -5,6 +5,7 @@
   "arrowParens": "avoid",
   "singleQuote": false,
   "tabWidth": 2,
+  "useTabs": true,
   "importOrder": [
     "^(react/(.*)$)|^(react$)",
     "^(next/(.*)$)|^(next$)",
@@ -23,7 +24,11 @@
     "",
     "^[./]"
   ],
-  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
+  "importOrderParserPlugins": [
+    "typescript",
+    "jsx",
+    "decorators-legacy"
+  ],
   "plugins": [
     "@ianvs/prettier-plugin-sort-imports"
   ],
