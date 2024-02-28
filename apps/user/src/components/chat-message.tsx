@@ -1,9 +1,11 @@
-import { ReactNode } from "react"
+import React, { ReactNode } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
 import { StudentProfile } from "@graph/types"
+import { cn } from "@ui/lib/utils"
 
 import { CustomMessage } from "./chat"
+import { MdxContent } from "./mdxContent"
 import { CourseDisplay } from "./messageHandlers/course-display"
 import { RescheduleCourse } from "./messageHandlers/reschedule-course"
 import { ScheduleTable } from "./messageHandlers/schedule-table"
@@ -74,43 +76,75 @@ export const ChatMessage = ({
       advisor_output: content
     })
     if (!partialOutput.success) {
-      return (
-        <p>
-          <strong>Partial Assistant:</strong> Error parsing partial output{" "}
-          {JSON.stringify(partialOutput?.error)}
-        </p>
-      )
+      return null
     } else {
       return (
-        <MessageBody
-          advisor_output={partialOutput.data.advisor_output}
-          studentProfile={studentProfile}
-          setStudentProfile={setStudentProfile}
-          student={student}
-        />
+        <MessageWrapper message={message}>
+          <AdvisorMessageBody
+            advisor_output={partialOutput.data.advisor_output}
+            studentProfile={studentProfile}
+            setStudentProfile={setStudentProfile}
+            student={student}
+          />
+        </MessageWrapper>
       )
     }
   }
 
   if (role === "user") {
     return (
-      <p>
-        <strong>User:</strong> {content}
-      </p>
+      <MessageWrapper message={message}>
+        <MdxContent content={message.content} />
+      </MessageWrapper>
     )
   }
 
   return (
-    <MessageBody
-      advisor_output={content}
-      studentProfile={studentProfile}
-      setStudentProfile={setStudentProfile}
-      student={student}
-    />
+    <MessageWrapper message={message}>
+      <AdvisorMessageBody
+        advisor_output={content}
+        studentProfile={studentProfile}
+        setStudentProfile={setStudentProfile}
+        student={student}
+      />
+    </MessageWrapper>
   )
 }
 
-const MessageBody = ({
+export const MessageWrapper = React.memo(function MessageWrapper({
+  children,
+  className = "",
+  message
+}: {
+  children: React.ReactNode
+  className?: string
+  message: Partial<CustomMessage>
+}) {
+  return (
+    <div
+      className={cn(`relative text-foreground/90`, className, {
+        "bg-transparent dark:bg-transparent text-foreground/90": message.role === "assistant",
+        "mx-0 flex pt-4": message.role === "user"
+      })}
+    >
+      <div>
+        <strong className="text-xs font-okineMedium tracking-widest text-accent-foreground">
+          {message.role === "user" ? "YOU" : "Advisor"}
+        </strong>
+        <div
+          className={cn("mt-2 pl-2", {
+            "bg-[#e5dbff59] dark:bg-[#ad8eff7d] rounded-3xl border-2 border-accent py-2 px-4 flex gap-2":
+              message.role === "user"
+          })}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+})
+
+const AdvisorMessageBody = ({
   advisor_output,
   ...params
 }: {
@@ -121,15 +155,13 @@ const MessageBody = ({
 }) => {
   return (
     <>
-      <p>
-        <strong>Assistant:</strong> {advisor_output.response}
-        <br />
-        <small className="text-gray-500">
-          {advisor_output.actions.map(action => action.type).join(", ")}
-        </small>
-      </p>
+      <MdxContent content={advisor_output.response} />
+      <small className="text-gray-500">
+        {advisor_output.actions?.map(action => action.type).join(", ")}
+      </small>
+
       <div>
-        {advisor_output.actions.map((action, i) => {
+        {advisor_output?.actions?.map((action, i) => {
           const Handler = chatMessageHandler[action.type]
 
           return (

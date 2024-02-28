@@ -51,7 +51,6 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 
   // I want to sort all courses by earliest finish time, then slack
 
-  // sort by fanout if earliest finish and slack are the same
   const sortedCourses = allCourses.sort((a, b) => {
     if (a.earliestFinish === b.earliestFinish) {
       const aslack = a.latestFinish! - a.earliestFinish!
@@ -59,7 +58,7 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 
       return aslack - bslack
     }
-    return 0
+    return a.earliestFinish! - b.earliestFinish!
   })
 
   const queue = [...sortedCourses]

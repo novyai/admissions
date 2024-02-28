@@ -1,0 +1,164 @@
+[
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "COT",
+    "course_code": "3100",
+    "course_name": "Introduction to Discrete Structures"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "MAC",
+    "course_code": "2281",
+    "course_name": "Engineering Calculus I"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "MAC",
+    "course_code": "2282",
+    "course_name": "Engineering Calculus II"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "PHY",
+    "course_code": "2048",
+    "course_name": "General Physics I - Calculus Based"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "PHY",
+    "course_code": "2048L",
+    "course_name": "General Physics I Laboratory"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "PHY",
+    "course_code": "2049",
+    "course_name": "General Physics II - Calculus Based"
+  },
+  {
+    "label": "MATH AND SCIENCE COURSES",
+    "course_dept": "PHY",
+    "course_code": "2049L",
+    "course_name": "General Physics II Laboratory"
+  },
+  {
+    "label": "BASIC ENGINEERING COURSES",
+    "course_dept": "EGN",
+    "course_code": "3000",
+    "course_name": "Foundations of Engineering"
+  },
+  {
+    "label": "BASIC ENGINEERING COURSES",
+    "course_dept": "EGN",
+    "course_code": "3000L",
+    "course_name": "Foundations of Engineering Lab"
+  },
+  {
+    "label": "BASIC ENGINEERING COURSES",
+    "course_dept": "EGN",
+    "course_code": "3443",
+    "course_name": "Probability and Statistics for Engineers"
+  },
+  {
+    "label": "BASIC ENGINEERING COURSES",
+    "course_dept": "EGN",
+    "course_code": "4450",
+    "course_name": "Introduction to Linear Systems"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "COP",
+    "course_code": "2510",
+    "course_name": "Programming Concepts"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "COP",
+    "course_code": "3514",
+    "course_name": "Program Design"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "COP",
+    "course_code": "4530",
+    "course_name": "Data Structures"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "COP",
+    "course_code": "4600",
+    "course_name": "Operating Systems"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CDA",
+    "course_code": "3103",
+    "course_name": "Computer Organization"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CDA",
+    "course_code": "3201",
+    "course_name": "Computer Logic and Design"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CDA",
+    "course_code": "3201L",
+    "course_name": "Computer Logic and Design Lab"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CDA",
+    "course_code": "4205",
+    "course_name": "Computer Architecture"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CDA",
+    "course_code": "4205L",
+    "course_name": "Computer Architecture Lab"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CEN",
+    "course_code": "4020",
+    "course_name": "Software Engineering"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "COT",
+    "course_code": "4400",
+    "course_name": "Analysis of Algorithms"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CNT",
+    "course_code": "4419",
+    "course_name": "Secure Coding"
+  },
+  {
+    "label": "SPECIALIZATION COURSES",
+    "course_dept": "CIS",
+    "course_code": "4250",
+    "course_name": "Ethical Issues and Professional Conduct"
+  },
+  {
+    "label": "COMPOSITION AND TECHNICAL WRITING COURSES",
+    "course_dept": "ENC",
+    "course_code": "1101",
+    "course_name": "Composition I"
+  },
+  {
+    "label": "COMPOSITION AND TECHNICAL WRITING COURSES",
+    "course_dept": "ENC",
+    "course_code": "1102",
+    "course_name": "Composition II"
+  },
+  {
+    "label": "COMPOSITION AND TECHNICAL WRITING COURSES",
+    "course_dept": "ENC",
+    "course_code": "3246",
+    "course_name": "Communication for Engineers"
+  }
+]

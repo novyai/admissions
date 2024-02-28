@@ -81,10 +81,8 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
       <div className="w-full max-w-lg mx-auto">
         <PromptComposer
           jumbo
-          prompt={prompt}
           loading={loading}
           onSubmit={submitMessage}
-          onChange={(value: string) => setPrompt(value)}
           onCancel={stopStream}
         />
       </div>

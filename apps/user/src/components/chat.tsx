@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
 import { StudentProfile } from "@graph/types"
@@ -31,11 +31,12 @@ export function Chat({
   student: User
 }) {
   const [messages, setMessages] = useState<CustomMessage[]>([])
-  const [prompt, setPrompt] = useState("")
 
   const [profile, setProfile] = useState(studentProfile)
 
   const [partial, setPartial] = useState<Partial<AdvisorAgent> | null>({})
+
+  const [suggestedResponses, setSuggestedResponses] = useState<string[]>([])
 
   const lastPromptRef = useRef<string>("")
 
@@ -43,6 +44,7 @@ export function Chat({
     schema: advisorAgentSchema,
     onReceive: (data: Partial<AdvisorAgent>) => {
       setPartial(data)
+      setSuggestedResponses(data.advisor_output?.suggestedResponses ?? [])
     },
     onEnd: data => {
       setPartial(null)
@@ -53,10 +55,12 @@ export function Chat({
           role: "assistant"
         } as CustomMessage
       ])
+
+      setSuggestedResponses(data.advisor_output.suggestedResponses)
     }
   })
 
-  const submitMessage = async () => {
+  const submitMessage = async (prompt: string) => {
     lastPromptRef.current = prompt
 
     try {
@@ -64,32 +68,17 @@ export function Chat({
         url: "/api/ai/chat",
         method: "POST",
         body: {
-          prompt,
           messages: [
             ...messages.map(
               ({ role, content }) =>
                 ({
                   role,
-                  content:
-                    role == "user"
-                      ? JSON.stringify(content)
-                      : `
-                
-                ${content.response}
-
-                Your current semester is ${studentProfile.currentSemester} and you have ${studentProfile.timeToGraduate - studentProfile.currentSemester} semesters left.
-                Your current schedule is: ${studentProfile.semesters.map((semester, index) => `Semester ${index + 1}: ${semester.map(course => course.name).join(", ")}`).join("\n")}
-                `
+                  content: role == "user" ? content : content.response
                 }) as OpenAI.ChatCompletionMessageParam
             ),
-
-            // {
-            //   content: "Current Schedule: " + JSON.stringify(studentProfile.semesters),
-            //   role: "assistant"
-            // },
             {
-              content: prompt,
-              role: "user"
+              role: "user",
+              content: prompt
             }
           ]
         }
@@ -101,11 +90,33 @@ export function Chat({
           role: "user"
         }
       ])
-      setPrompt("")
+
+      setSuggestedResponses([])
     } catch (e) {
       console.error(e)
     }
   }
+
+  useEffect(() => {
+    // I want to generate a introductory message for the user
+    startStream({
+      url: "/api/ai/chat",
+      method: "POST",
+      body: {
+        messages: [
+          {
+            role: "user",
+            content: `The user is an incoming freshman and they are majoring in Computer Science and don't know anything about the degree. 
+            
+            Be friendly and engaging to try and learn more about the user. Tell them about the degree and what they can expect.
+            
+            Be concise.
+            `
+          }
+        ]
+      }
+    })
+  }, [])
 
   return (
     <>
@@ -115,21 +126,22 @@ export function Chat({
           .filter(message => message?.show ?? true)
           .map((message, index) => (
             <ChatMessage
-              student={student}
               key={index}
+              student={student}
               message={message}
               studentProfile={profile}
               setStudentProfile={setProfile}
             />
           ))}
-        {partial !== null && (
+        {partial && Object.keys(partial).length > 0 && (
           <ChatMessage
             student={student}
             message={{
               role: "assistant",
               content: partial?.advisor_output ?? {
-                response: "Loading...",
-                actions: []
+                response: "loading...",
+                actions: [],
+                suggestedResponses: []
               }
             }}
             partial={true}
@@ -138,28 +150,31 @@ export function Chat({
           />
         )}
       </div>
-      <div className="fixed bottom-0 p-4 w-full flex gap-4 items-center">
-        <PromptComposer
-          jumbo
-          prompt={prompt}
-          loading={loading}
-          onSubmit={submitMessage}
-          onChange={(value: string) => setPrompt(value)}
-          onCancel={stopStream}
-        />
-        <Button
-          size="lg"
-          onClick={() => {
-            setMessages(prevMessages => [
-              ...prevMessages.map(message => ({
-                ...message,
-                show: false
-              }))
-            ])
-          }}
-        >
-          Clear
-        </Button>
+
+      <div className="fixed bottom-0 p-4 flex flex-col w-full">
+        <div className="flex flex-wrap gap-2 mt-2">
+          {suggestedResponses?.map((response, index) => (
+            <Button key={index} size="sm" onClick={() => submitMessage(response)}>
+              {response}
+            </Button>
+          ))}
+        </div>
+        <div className="flex w-full gap-4 items-center p-4">
+          <PromptComposer jumbo loading={loading} onSubmit={submitMessage} onCancel={stopStream} />
+          <Button
+            size="lg"
+            onClick={() => {
+              setMessages(prevMessages => [
+                ...prevMessages.map(message => ({
+                  ...message,
+                  show: false
+                }))
+              ])
+            }}
+          >
+            Clear
+          </Button>
+        </div>
       </div>
     </>
   )
