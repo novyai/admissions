@@ -12,7 +12,7 @@ import { FloatingChat } from "@/components/floating-chat"
 export function Chat({ studentId }: { studentId: string }) {
   // @ts-ignore
   const [_mainChatRef, setMainChatRef] = useState<HTMLElement>(null)
-  const [prompt, setPrompt] = useState("")
+  const [_prompt, setPrompt] = useState("")
   const [messages, setMessages] = useState([])
 
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
@@ -86,12 +86,12 @@ export function Chat({ studentId }: { studentId: string }) {
     setPrompt(value ?? "")
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!event.shiftKey && event.key === "Enter") {
-      event.preventDefault()
-      sendMessage(prompt)
-    }
-  }
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  //   if (!event.shiftKey && event.key === "Enter") {
+  //     event.preventDefault()
+  //     sendMessage(prompt)
+  //   }
+  // }
 
   useEffect(() => {
     scrollToEnd({ now: true })
