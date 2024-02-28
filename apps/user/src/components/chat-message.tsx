@@ -17,14 +17,14 @@ type HandleChatMessage<T extends ChatMessageSubType> = (params: {
   studentProfile: StudentProfile
   setStudentProfile: (profile: StudentProfile) => void
   student: User
-  advisor_output: Extract<AdvisorAgent["advisor_output"]["actions"][number], { type: T }>
+  action: Extract<AdvisorAgent["advisor_output"]["actions"][number], { type: T }>
 }) => ReactNode
 
 type ChatMessageHandler = {
   [K in ChatMessageSubType]: HandleChatMessage<K>
 }
 
-type ChatMesssageParams = {
+type ChatMessageParams = {
   partial?: boolean
   student: User
   studentProfile: StudentProfile
@@ -36,23 +36,23 @@ const chatMessageHandler: ChatMessageHandler = {
   "4-year-plan": ({ studentProfile }) => {
     return <ScheduleTable profile={studentProfile} />
   },
-  "display-course": ({ advisor_output, studentProfile }) => {
-    return <CourseDisplay course={advisor_output.course_name} profile={studentProfile} />
+  "display-course": ({ action, studentProfile }) => {
+    return <CourseDisplay course={action.course_name} profile={studentProfile} />
   },
-  "error": ({ advisor_output }) => {
-    return <p className="text-red-500">{`Assistant Error: ${advisor_output.error}`}</p>
+  "error": ({ action }) => {
+    return <p className="text-red-500">{`Assistant Error: ${action.error}`}</p>
   },
-  "rescheduleCourse": ({ advisor_output, studentProfile, setStudentProfile }) => {
+  "rescheduleCourse": ({ action, studentProfile, setStudentProfile }) => {
     return (
       <RescheduleCourse
-        courseName={advisor_output.course_name}
-        toSemester={advisor_output.toSemester}
+        courseName={action.course_name}
+        toSemester={action.toSemester}
         profile={studentProfile}
         setProfile={setStudentProfile}
       />
     )
   },
-  "display-semester": ({ advisor_output, studentProfile }) => {
+  "display-semester": ({ action: advisor_output, studentProfile }) => {
     return (
       <div>
         <strong>Assistant:</strong> {`Displaying semester ${advisor_output.semester}`}
@@ -68,7 +68,7 @@ export const ChatMessage = ({
   student,
   studentProfile,
   setStudentProfile
-}: ChatMesssageParams) => {
+}: ChatMessageParams) => {
   const { role, content } = message
 
   if (partial == true || content === null || content === undefined) {
@@ -79,7 +79,7 @@ export const ChatMessage = ({
       return null
     } else {
       return (
-        <MessageWrapper message={message}>
+        <MessageWrapper role={message.role}>
           <AdvisorMessageBody
             advisor_output={partialOutput.data.advisor_output}
             studentProfile={studentProfile}
@@ -93,14 +93,14 @@ export const ChatMessage = ({
 
   if (role === "user") {
     return (
-      <MessageWrapper message={message}>
+      <MessageWrapper role={message.role}>
         <MdxContent content={message.content} />
       </MessageWrapper>
     )
   }
 
   return (
-    <MessageWrapper message={message}>
+    <MessageWrapper role={message.role}>
       <AdvisorMessageBody
         advisor_output={content}
         studentProfile={studentProfile}
@@ -114,27 +114,27 @@ export const ChatMessage = ({
 export const MessageWrapper = React.memo(function MessageWrapper({
   children,
   className = "",
-  message
+  role
 }: {
   children: React.ReactNode
   className?: string
-  message: Partial<CustomMessage>
+  role: CustomMessage["role"]
 }) {
   return (
     <div
       className={cn(`relative text-foreground/90`, className, {
-        "bg-transparent dark:bg-transparent text-foreground/90": message.role === "assistant",
-        "mx-0 flex pt-4": message.role === "user"
+        "bg-transparent dark:bg-transparent text-foreground/90": role === "assistant",
+        "mx-0 flex pt-4": role === "user"
       })}
     >
       <div>
         <strong className="text-xs font-okineMedium tracking-widest text-accent-foreground">
-          {message.role === "user" ? "YOU" : "Advisor"}
+          {role === "user" ? "YOU" : "Advisor"}
         </strong>
         <div
           className={cn("mt-2 pl-2", {
             "bg-[#e5dbff59] dark:bg-[#ad8eff7d] rounded-3xl border-2 border-accent py-2 px-4 flex gap-2":
-              message.role === "user"
+              role === "user"
           })}
         >
           {children}
@@ -167,8 +167,8 @@ const AdvisorMessageBody = ({
           return (
             <Handler
               key={i}
-              // @ts-expect-error
-              advisor_output={action}
+              // @ts-ignore
+              action={action}
               studentProfile={params.studentProfile}
               setStudentProfile={params.setStudentProfile}
               student={params.student}
