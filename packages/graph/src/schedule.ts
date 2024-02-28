@@ -1,6 +1,6 @@
 import { getAllRequiredCourses } from "@graph/graph"
 import { CourseNode, StudentProfile } from "@graph/types"
-import { getCourseFromNameOrCode } from "./course"
+import { getCourseFromIdNameCode } from "./course"
 
 /**
  * Add a course to a semester, or a future semester if the current semester is full
@@ -43,7 +43,7 @@ export function canMoveCourse(
   }
 
   // find course name in the graph:
-  const course = getCourseFromNameOrCode(profile, courseId)
+  const course = getCourseFromIdNameCode(profile, courseId)
   if (!course) {
     return { canMove: false, reason: `Course ${courseId} not found in the student's schedule.` }
   }
@@ -110,7 +110,7 @@ export function moveCourse(courseId: string, toSemester: number, profile: Studen
   const canMove = canMoveCourse(courseId, toSemester, profile)
   if (canMove) {
     // find course name in the graph:
-    const course = getCourseFromNameOrCode(profile, courseId)
+    const course = getCourseFromIdNameCode(profile, courseId)
     if (!course) {
       throw new Error(`Course ${courseId} not found in the student's schedule.`)
     }
