@@ -13,7 +13,7 @@ const actionSchema = z.discriminatedUnion(
           description: "The course name to reschedule. Do not use the course ID. USE THE FULL NAME"
         })
       },
-      { description: "Reshedule Course Agent" }
+      { description: "Reschedule Course Agent" }
     ),
     z.object(
       {
@@ -63,15 +63,28 @@ const actionSchema = z.discriminatedUnion(
   }
 )
 
+const suggestedResponsesSchema = z
+  .array(z.string())
+  .describe(
+    "Short and concise suggested responses or follow-up questions for the user to ask the assistant."
+  )
+  .min(0)
+  .max(3)
+
 export const advisorAgentSchema = z.object({
   advisor_output: z.object({
     response: z.string({
-      description: "The text response from the agent"
-    }),
-    actions: z.array(actionSchema, {
       description:
-        "The actions the agent can perform. If you are just conversing, this will be an empty array."
-    })
+        "The text response from the agent. You should use actions instead of listing out courses. "
+    }),
+    actions: z
+      .array(actionSchema, {
+        description:
+          "The actions the agent can perform. If you are just conversing, this will be an empty array."
+      })
+      .min(0)
+      .max(2),
+    suggestedResponses: suggestedResponsesSchema
   })
 })
 

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@ui/components/ui/button"
 import { Input, InputProps } from "@ui/components/ui/input"
 import { cn } from "@ui/lib/utils"
@@ -7,8 +7,6 @@ import { Loader2 } from "lucide-react"
 import { AnimatedBorderWrapper } from "./animated-border-wrapper"
 
 export interface PromptComposerProps {
-  prompt: string
-  onChange: (event: string) => void
   onSubmit: (value: string) => void
   loading: boolean
   onCancel?: () => void
@@ -27,9 +25,7 @@ export interface PromptComposerProps {
  * @returns {React.ReactElement} The rendered `PromptComposer` component.
  */
 export function PromptComposer({
-  prompt = "",
   placeholder,
-  onChange,
   onSubmit,
   onCancel,
   loading = false,
@@ -38,6 +34,8 @@ export function PromptComposer({
   jumbo = false,
   className
 }: PromptComposerProps) {
+  const [prompt, setPrompt] = useState<string>("")
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
     if (event.key === "Enter") {
       event.preventDefault()
@@ -46,13 +44,16 @@ export function PromptComposer({
   }
 
   return (
-    <AnimatedBorderWrapper enabled={animatedLoading && loading} className={cn(className)}>
+    <AnimatedBorderWrapper
+      enabled={animatedLoading && loading}
+      className={cn(className, "flex flex-col")}
+    >
       <div className="flex h-auto flex-row items-center relative w-full gap-4">
         <Input
           {...inputProps}
           disabled={loading}
           autoFocus
-          onChange={event => onChange(event.target.value)}
+          onChange={event => setPrompt(event.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder ?? "Ask me anything..."}
           value={prompt}

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ChatScrollAnchor } from "@ui/components/chat-scroll-anchor"
-import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollToBottom } from "@ui/components/scroll-to-bottom"
 import { motion } from "framer-motion"
 
@@ -13,7 +12,7 @@ import { FloatingChat } from "@/components/floating-chat"
 export function Chat({ studentId }: { studentId: string }) {
   // @ts-ignore
   const [_mainChatRef, setMainChatRef] = useState<HTMLElement>(null)
-  const [prompt, setPrompt] = useState("")
+  const [_prompt, setPrompt] = useState("")
   const [messages, setMessages] = useState([])
 
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
@@ -87,12 +86,12 @@ export function Chat({ studentId }: { studentId: string }) {
     setPrompt(value ?? "")
   }
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (!event.shiftKey && event.key === "Enter") {
-      event.preventDefault()
-      sendMessage(prompt)
-    }
-  }
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  //   if (!event.shiftKey && event.key === "Enter") {
+  //     event.preventDefault()
+  //     sendMessage(prompt)
+  //   }
+  // }
 
   useEffect(() => {
     scrollToEnd({ now: true })
@@ -125,14 +124,14 @@ export function Chat({ studentId }: { studentId: string }) {
             <ScrollToBottom scrollerRef={ChatScrollerRef} />
           </>
         )}
-        <PromptComposer
+        {/* <PromptComposer
           loading={loading}
           onChange={handleInput}
           // @ts-ignore
           onKeyDown={handleKeyDown}
           onSubmit={() => sendMessage(prompt)}
           prompt={prompt}
-        />
+        /> */}
       </div>
     </main>
   )

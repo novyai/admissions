@@ -10,17 +10,15 @@ export const runtime = "edge"
 export async function POST(request: Request): Promise<Response> {
   const {
     messages
-    // prompt
   }: {
     messages: OpenAI.ChatCompletionCreateParams["messages"]
-    prompt: string
   } = await request.json()
 
   try {
     const params = withResponseModel({
       response_model: {
         schema: advisorAgentSchema,
-        name: "Reschedule Course Agent"
+        name: "USF CSE Advisor"
       },
       params: {
         messages: [
@@ -30,7 +28,7 @@ export async function POST(request: Request): Promise<Response> {
           },
           ...messages
         ],
-        model: "gpt-4"
+        model: "gpt-4-turbo-preview"
       },
       mode: "TOOLS"
     })
