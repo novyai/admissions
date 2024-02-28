@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import { ChatScrollAnchor } from "@ui/components/chat-scroll-anchor"
-import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollToBottom } from "@ui/components/scroll-to-bottom"
 import { motion } from "framer-motion"
 
@@ -125,14 +124,14 @@ export function Chat({ studentId }: { studentId: string }) {
             <ScrollToBottom scrollerRef={ChatScrollerRef} />
           </>
         )}
-        <PromptComposer
+        {/* <PromptComposer
           loading={loading}
           onChange={handleInput}
           // @ts-ignore
           onKeyDown={handleKeyDown}
           onSubmit={() => sendMessage(prompt)}
           prompt={prompt}
-        />
+        /> */}
       </div>
     </main>
   )
