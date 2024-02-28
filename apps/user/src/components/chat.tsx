@@ -13,15 +13,15 @@ import { ChatMessage } from "./chat-message"
 
 export type CustomMessage =
   | {
-    role: "user"
-    content: string
-    show?: boolean
-  }
+      role: "user"
+      content: string
+      show?: boolean
+    }
   | {
-    role: "assistant"
-    content: AdvisorAgent["advisor_output"]
-    show?: boolean
-  }
+      role: "assistant"
+      content: AdvisorAgent["advisor_output"]
+      show?: boolean
+    }
 
 export function Chat({
   studentProfile,
@@ -116,6 +116,7 @@ export function Chat({
         ]
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
