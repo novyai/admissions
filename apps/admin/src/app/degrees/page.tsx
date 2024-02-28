@@ -1,5 +1,5 @@
 import { db, Prisma } from "@db/client"
-import cseDegree from "./cse_requirments.json"
+import cseDegree from "@db/test.json"
 
 import { BaseStudentProfile } from "@graph/types"
 import { CoursesGraph } from "@/components/courses-graph"
@@ -8,12 +8,13 @@ import { ScheduleTable } from "@/components/schedule-table"
 import { getStudentProfile } from "./action"
 
 export default async function Page() {
-  const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
+  const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
+    const [dept, num] = course.split(" ")
     return {
       department: {
-        code: course.course_dept
+        code: dept
       },
-      courseNumber: course.course_code
+      courseNumber: num
     }
   })
 
@@ -22,15 +23,15 @@ export default async function Page() {
       OR: deptCourses
     },
     select: {
-      id: true
+      id: true,
+      name: true
     }
   })
 
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
-
     timeToGraduate: 8,
-    coursePerSemester: 6,
+    coursePerSemester: 4,
     currentSemester: 0
   }
 
