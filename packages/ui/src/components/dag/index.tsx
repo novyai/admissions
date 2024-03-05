@@ -1,7 +1,17 @@
 "use client"
 
 import dagre from "dagre"
-import ReactFlow, { Background, Position, Node as ReactFlowNode } from "reactflow"
+import ReactFlow, {
+	Background,
+	Controls,
+	MiniMap,
+	NodeProps,
+	Position,
+	Edge as ReactFlowEdge,
+	Node as ReactFlowNode,
+	useEdgesState,
+	useNodesState
+} from "reactflow"
 
 import "reactflow/dist/style.css"
 
@@ -16,7 +26,7 @@ interface Edge {
 	target: string
 }
 
-export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
+export function LayoutedDAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
 	// render horizontally
 	dagreGraph.setGraph({ rankdir: "LR" })
 	// no edge labels
@@ -55,6 +65,33 @@ export function DAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
 	return (
 		<ReactFlow nodes={reactFlowNodes} edges={reactFlowEdges}>
 			<Background />
+		</ReactFlow>
+	)
+}
+
+export function DAG({
+	nodes: initialNodes,
+	edges: initialEdges,
+	customNodes = {}
+}: {
+	nodes: ReactFlowNode[]
+	edges: ReactFlowEdge[]
+	customNodes?: Record<string, React.ComponentType<NodeProps>>
+}) {
+	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
+	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+
+	return (
+		<ReactFlow
+			nodeTypes={customNodes}
+			nodes={nodes}
+			edges={edges}
+			onNodesChange={onNodesChange}
+			onEdgesChange={onEdgesChange}
+		>
+			<Background />
+			<MiniMap />
+			<Controls />
 		</ReactFlow>
 	)
 }

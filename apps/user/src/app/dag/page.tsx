@@ -4,6 +4,7 @@ import { db, Prisma } from "@db/client"
 import { BaseStudentProfile } from "@graph/types"
 
 import { CoursesGraph } from "@/components/courses-graph"
+import { SemesterDAG } from "@/components/semester-dag"
 
 export default async function Page() {
 	const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
@@ -33,5 +34,5 @@ export default async function Page() {
 
 	const studentProfile = await getStudentProfile(baseProfile)
 
-	return <CoursesGraph graph={studentProfile.graph} />
+	return <SemesterDAG graph={studentProfile.graph} semesters={studentProfile.semesters} />
 }
