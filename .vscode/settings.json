@@ -1,5 +1,4 @@
 {
-  "editor.defaultFormatter": "vscode.typescript-language-features",
   "editor.tabSize": 2,
   "editor.formatOnType": true,
   "editor.formatOnPaste": true,
@@ -11,9 +10,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": "always",
     "source.fixAll.eslint": "always"
-  },
-  "[html]": {
-    "editor.defaultFormatter": "GitHub.copilot"
   },
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
@@ -62,6 +58,5 @@
   },
   "[typescript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
-  },
-  "svg.preview.background": "white"
+  }
 }

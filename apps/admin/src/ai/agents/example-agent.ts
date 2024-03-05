@@ -25,22 +25,22 @@ Always keep in mind: You're not just providing answers; you're helping students 
 `
 
 const primaryIdentity = generatePrimaryIdentity(
-  testData.Program,
-  testData.Courses,
-  testData.semester_schedule,
-  testData.Electives
+	testData.Program,
+	testData.Courses,
+	testData.semester_schedule,
+	testData.Electives
 )
 
 export const exampleAgent = createChatAgent({
-  config: {
-    model: "gpt-4",
-    max_tokens: 2000,
-    temperature: 0.7
-  },
-  identityMessages: [
-    {
-      role: "system",
-      content: primaryIdentity
-    }
-  ]
+	config: {
+		model: "gpt-4",
+		max_tokens: 2000,
+		temperature: 0.7
+	},
+	identityMessages: [
+		{
+			role: "system",
+			content: primaryIdentity
+		}
+	]
 })
