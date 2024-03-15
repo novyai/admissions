@@ -31,7 +31,7 @@ export default async function Page() {
 	const baseProfile: BaseStudentProfile = {
 		requiredCourses: requiredCourses.map(course => course.id),
 		timeToGraduate: 8,
-		coursePerSemester: 4,
+		coursePerSemester: 5,
 		currentSemester: 0
 	}
 
