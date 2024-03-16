@@ -1,7 +1,8 @@
 "use client"
 
 import { CourseNode } from "@graph/types"
-import { LayoutedDAG, Edge, Node } from "@ui/components/dag"
+import { Edge, LayoutedDAG, Node } from "@ui/components/dag"
+
 import "reactflow/dist/style.css"
 
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {

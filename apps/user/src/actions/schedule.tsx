@@ -19,43 +19,45 @@ export const getDegree = async (profile: StudentProfile) => {
 		}
 	])
 
-	const coursesToExclude = new Set<string>();
+	const coursesToExclude = new Set<string>()
 
 	for (const transferCreditId of profile.transferCredits) {
-
-		const prerequisites = new Set<string>();
+		const prerequisites = new Set<string>()
 		const explore = (id: string) => {
 			if (prereqMap.has(id)) {
 				for (const prereq of prereqMap.get(id)!) {
 					if (!prerequisites.has(prereq)) {
-						prerequisites.add(prereq);
-						explore(prereq);
+						prerequisites.add(prereq)
+						explore(prereq)
 					}
 				}
 			}
-		};
-		explore(transferCreditId);
+		}
+		explore(transferCreditId)
 		coursesToExclude.add(transferCreditId)
-		prerequisites.forEach(prerequisite => coursesToExclude.add(prerequisite));
-
+		prerequisites.forEach(prerequisite => coursesToExclude.add(prerequisite))
 	}
 
-	const filteredAllCourses = allCourses.filter(course =>
-		!coursesToExclude.has(course.id)
-	)
+	const filteredAllCourses = allCourses.filter(course => !coursesToExclude.has(course.id))
 
 	for (const course of allCourses) {
-
 		const n: CourseNode = {
 			id: course.id,
 			earliestFinish: undefined,
 			latestFinish: undefined,
-			dependents: Array.from(new Set(dependentMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? [])),
-			prerequisites: Array.from(new Set(prereqMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? [])),
+			dependents: Array.from(
+				new Set(
+					dependentMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? []
+				)
+			),
+			prerequisites: Array.from(
+				new Set(
+					prereqMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? []
+				)
+			),
 			name: course.name,
 			raw_course: course
 		}
-
 
 		profile.graph.set(course.id, n)
 	}
@@ -80,7 +82,6 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 	}
 
 	await getDegree(fullProfile)
-
 
 	// I want to sort all courses by earliest finish time, then slack
 

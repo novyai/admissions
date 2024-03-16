@@ -1,7 +1,6 @@
 import { CourseNode } from "@graph/types"
 import { LayoutedDAG } from "@ui/components/dag"
 
-
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
 	const courses = Array.from(graph.values())
 	const nodes = courses.map(course => ({

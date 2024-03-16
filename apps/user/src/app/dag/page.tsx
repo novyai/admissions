@@ -36,8 +36,10 @@ export default async function Page() {
 
 	const studentProfile = await getStudentProfile(baseProfile)
 
-	return <>
-		<SemesterDAG studentProfile={studentProfile} />
-		{/* <DagChat studentProfile={studentProfile} /> */}
-	</>
+	return (
+		<>
+			<SemesterDAG studentProfile={studentProfile} />
+			{/* <DagChat studentProfile={studentProfile} /> */}
+		</>
+	)
 }

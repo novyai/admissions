@@ -48,7 +48,6 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 
 	await getDegree(fullProfile)
 
-
 	// I want to sort all courses by earliest finish time, then slack
 
 	const sortedCourses = fullProfile.allCourses.sort((a, b) => {
