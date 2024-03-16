@@ -15,6 +15,7 @@ export function SemesterDAG({ graph, semesters }: { graph: Map<string, CourseNod
       style: {
         backgroundColor: "aliceblue",
         borderRadius: "0.5rem",
+        zIndex: 1,
         width: 175,
         height: 600
       }
@@ -28,14 +29,16 @@ export function SemesterDAG({ graph, semesters }: { graph: Map<string, CourseNod
           id: `${course.id}`,
           parentNode: `semester-${semIndex}`,
           type: "courseNode",
-          position: { x: 0, y: 50 + courseIndex * 30 },
-          data: { semesterIndex: semIndex, ...course },
+          position: { x: 0, y: 50 + courseIndex * 50 },
+          data: { semesterIndex: semIndex + 1, ...course },
           style: {
             backgroundColor: "aliceblue",
             borderRadius: "0.5rem",
-            border: "1px solid black"
+            border: "1px solid black",
+            width: "auto",
+            zIndex: 2,
+            height: "auto"
           },
-          extent: "parent"
         }
       })
   )).flat()
@@ -50,9 +53,11 @@ export function SemesterDAG({ graph, semesters }: { graph: Map<string, CourseNod
         .filter(prereq => courses.find(node => node.id === prereq))
         .map(prereq => {
           return {
-            tyoe: "smoothstep",
+            id: `${prereq}-${course.id}`,
+            type: "default",
             source: prereq,
-            target: course.id
+            target: course.id,
+            zIndex: 2
           }
         })
     )

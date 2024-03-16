@@ -10,9 +10,9 @@ export type CourseNodeData = {
 export function CourseNode({ data, ...props }: NodeProps<CourseNodeData>) {
 
   return (
-    <div className='flex w-full h-full justify-center mt-2'>
+    <div className='flex min-w-0 min-h-0 w-full h-full justify-center m-2'>
       <Handle type='target' position={Position.Left} />
-      <p>{data.name}</p>
+      <p className='text-ellipsis'>{data.name}</p>
       <Handle type='source' position={Position.Right} />
     </div>
   );
