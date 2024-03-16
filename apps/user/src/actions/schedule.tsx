@@ -44,9 +44,7 @@ export const getDegree = async (profile: StudentProfile) => {
 		!coursesToExclude.has(course.id)
 	)
 
-
-
-	for (const course of filteredAllCourses) {
+	for (const course of allCourses) {
 
 		const n: CourseNode = {
 			id: course.id,
@@ -60,11 +58,11 @@ export const getDegree = async (profile: StudentProfile) => {
 
 
 		profile.graph.set(course.id, n)
-
-		profile.allCourses.push(n)
 	}
 
-
+	for (const course of filteredAllCourses) {
+		profile.allCourses.push(profile.graph.get(course.id)!)
+	}
 
 	for (const course of filteredAllCourses) {
 		calculateFanOut(course.id, profile)
