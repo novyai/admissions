@@ -25,8 +25,11 @@ export default async function Page() {
 		}
 	})
 
+	const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
+
 	const baseProfile: BaseStudentProfile = {
 		requiredCourses: requiredCourses.map(course => course.id),
+		transferCredits: [precalc],
 		timeToGraduate: 8,
 		coursePerSemester: 6,
 		currentSemester: 0

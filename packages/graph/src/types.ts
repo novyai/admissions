@@ -14,6 +14,7 @@ export type CourseNode = {
 
 export type BaseStudentProfile = {
 	requiredCourses: string[]
+	transferCredits: string[]
 	timeToGraduate: number // in semesters
 	currentSemester: number
 	coursePerSemester: number

@@ -19,19 +19,47 @@ export const getDegree = async (profile: StudentProfile) => {
 		}
 	])
 
-	for (const course of allCourses) {
+	const coursesToExclude = new Set<string>();
+
+	for (const transferCreditId of profile.transferCredits) {
+
+		const prerequisites = new Set<string>();
+		const explore = (id: string) => {
+			if (prereqMap.has(id)) {
+				for (const prereq of prereqMap.get(id)!) {
+					if (!prerequisites.has(prereq)) {
+						prerequisites.add(prereq);
+						explore(prereq);
+					}
+				}
+			}
+		};
+		explore(transferCreditId);
+		coursesToExclude.add(transferCreditId)
+		prerequisites.forEach(prerequisite => coursesToExclude.add(prerequisite));
+
+	}
+
+	const filteredAllCourses = allCourses.filter(course =>
+		!coursesToExclude.has(course.id)
+	)
+
+	for (const course of filteredAllCourses) {
+
 		profile.graph.set(course.id, {
 			id: course.id,
 			earliestFinish: undefined,
 			latestFinish: undefined,
-			dependents: Array.from(new Set(dependentMap.get(course.id) ?? [])),
-			prerequisites: Array.from(new Set(prereqMap.get(course.id) ?? [])),
+			dependents: Array.from(new Set(dependentMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? [])),
+			prerequisites: Array.from(new Set(prereqMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? [])),
 			name: course.name,
 			raw_course: course
 		})
 	}
 
-	for (const course of allCourses) {
+
+
+	for (const course of filteredAllCourses) {
 		calculateFanOut(course.id, profile)
 		calculateEarliestFinish(course.id, profile)
 		calculateLatestFinish(course.id, profile)
