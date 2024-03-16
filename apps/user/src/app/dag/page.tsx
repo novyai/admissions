@@ -3,7 +3,6 @@ import cseDegree from "@/cse_requirments.json"
 import { db, Prisma } from "@db/client"
 import { BaseStudentProfile } from "@graph/types"
 
-import { CoursesGraph } from "@/components/courses-graph"
 import { SemesterDAG } from "@/components/semester-dag"
 
 export default async function Page() {
@@ -37,5 +36,8 @@ export default async function Page() {
 
 	const studentProfile = await getStudentProfile(baseProfile)
 
-	return <SemesterDAG graph={studentProfile.graph} semesters={studentProfile.semesters} />
+	return <>
+		<SemesterDAG studentProfile={studentProfile} />
+		{/* <DagChat studentProfile={studentProfile} /> */}
+	</>
 }

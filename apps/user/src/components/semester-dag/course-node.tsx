@@ -1,11 +1,12 @@
 "use client"
 import { CourseNode } from '@graph/types';
-import { Handle, NodeProps, Position } from 'reactflow';
+import { Handle, NodeProps, Position, Node } from 'reactflow';
 
 export type CourseNodeData = {
   semesterIndex: number
 } & CourseNode
 
+export type CourseNodeType = Node<CourseNodeData>
 
 export function CourseNode({ data, ...props }: NodeProps<CourseNodeData>) {
 

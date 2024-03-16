@@ -44,9 +44,11 @@ export const getDegree = async (profile: StudentProfile) => {
 		!coursesToExclude.has(course.id)
 	)
 
+
+
 	for (const course of filteredAllCourses) {
 
-		profile.graph.set(course.id, {
+		const n: CourseNode = {
 			id: course.id,
 			earliestFinish: undefined,
 			latestFinish: undefined,
@@ -54,7 +56,12 @@ export const getDegree = async (profile: StudentProfile) => {
 			prerequisites: Array.from(new Set(prereqMap.get(course.id)?.filter((id): id is string => !coursesToExclude.has(id)) ?? [])),
 			name: course.name,
 			raw_course: course
-		})
+		}
+
+
+		profile.graph.set(course.id, n)
+
+		profile.allCourses.push(n)
 	}
 
 
@@ -70,16 +77,16 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 	const fullProfile: StudentProfile = {
 		...profile,
 		semesters: [],
+		allCourses: [], // all courses that are not transfer credits
 		graph: new Map<string, CourseNode>()
 	}
 
 	await getDegree(fullProfile)
 
-	const allCourses = Array.from(fullProfile.graph.values())
 
 	// I want to sort all courses by earliest finish time, then slack
 
-	const sortedCourses = allCourses.sort((a, b) => {
+	const sortedCourses = fullProfile.allCourses.sort((a, b) => {
 		if (a.earliestFinish === b.earliestFinish) {
 			const aslack = a.latestFinish! - a.earliestFinish!
 			const bslack = b.latestFinish! - b.earliestFinish!

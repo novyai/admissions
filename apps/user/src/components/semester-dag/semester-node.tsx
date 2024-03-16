@@ -1,15 +1,22 @@
 "use client"
-import { NodeProps } from 'reactflow';
+import { NodeProps, Node } from 'reactflow';
 
 export type SemesterNodeData = {
   semester: number;
+
+} | {
+  transfer: true
 };
 
-export function SemesterNode({ data, ...props }: NodeProps<SemesterNodeData>) {
+type SemesterNodeProps = NodeProps<SemesterNodeData>
+
+export type SemesterNodeType = Node<SemesterNodeData>;
+
+export function SemesterNode({ data, ...props }: SemesterNodeProps) {
 
   return (
     <div className='flex w-full h-full justify-center pt-2'>
-      <p>Semester {data.semester}</p>
+      <p>{"transfer" in data ? `Transfer Credits` : `Semester ${data.semester}`}</p>
     </div>
   );
 }
