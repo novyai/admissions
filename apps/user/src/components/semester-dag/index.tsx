@@ -1,5 +1,5 @@
 import { DAG } from "@ui/components/dag"
-import { CourseNode, StudentProfile } from "@graph/types"
+import { StudentProfile } from "@graph/types"
 import { Edge, Node } from "reactflow"
 import { SemesterNode, SemesterNodeType } from "./semester-node"
 import { CourseNode as CustomCourseNode, CourseNodeType } from "./course-node"

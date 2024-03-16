@@ -8,7 +8,7 @@ export type CourseNodeData = {
 
 export type CourseNodeType = Node<CourseNodeData>
 
-export function CourseNode({ data, ...props }: NodeProps<CourseNodeData>) {
+export function CourseNode({ data }: NodeProps<CourseNodeData>) {
 
   return (
     <div className='flex min-w-0 min-h-0 w-full h-full justify-center m-2'>

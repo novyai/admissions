@@ -16,12 +16,12 @@ import ReactFlow, {
 import "reactflow/dist/style.css"
 
 const dagreGraph = new dagre.graphlib.Graph()
-interface Node {
+export interface Node {
 	id: string
 	label: string
 }
 
-interface Edge {
+export interface Edge {
 	source: string
 	target: string
 }
@@ -78,8 +78,8 @@ export function DAG({
 	edges: ReactFlowEdge[]
 	customNodes?: Record<string, React.ComponentType<NodeProps>>
 }) {
-	const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-	const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+	const [nodes, _setNodes, onNodesChange] = useNodesState(initialNodes)
+	const [edges, _setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
 	return (
 		<ReactFlow

@@ -1,18 +1,17 @@
 "use client"
 
 import { CourseNode } from "@graph/types"
-import { DAG } from "@ui/components/dag"
-
+import { LayoutedDAG, Edge, Node } from "@ui/components/dag"
 import "reactflow/dist/style.css"
 
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
 	const courses = Array.from(graph.values())
-	const nodes = courses.map(course => ({
+	const nodes: Node[] = courses.map(course => ({
 		id: course.id,
 		label: course.name
 	}))
 
-	const edges = courses.flatMap(course => {
+	const edges: Edge[] = courses.flatMap(course => {
 		return (
 			course.prerequisites
 				//we only need to render the edges when the prereq course is also going to be rendered
@@ -28,7 +27,7 @@ export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
 
 	return (
 		<div style={{ width: "100vw", height: "100vh" }}>
-			<DAG nodes={nodes} edges={edges} />
+			<LayoutedDAG nodes={nodes} edges={edges} />
 		</div>
 	)
 }

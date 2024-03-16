@@ -12,7 +12,7 @@ type SemesterNodeProps = NodeProps<SemesterNodeData>
 
 export type SemesterNodeType = Node<SemesterNodeData>;
 
-export function SemesterNode({ data, ...props }: SemesterNodeProps) {
+export function SemesterNode({ data }: SemesterNodeProps) {
 
   return (
     <div className='flex w-full h-full justify-center pt-2'>
