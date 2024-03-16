@@ -1,0 +1,492 @@
+[
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3000",
+    "name": "Foundations of Engineering",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": null,
+            "prerequisites": [
+              {
+                "courseSubject": "EGN",
+                "courseNumber": "3000L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3000L",
+    "name": "Foundations of Engineering Lab",
+    "conditions": []
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "3100",
+    "name": "Intro to Discrete Structures",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "4400",
+    "name": "Analysis of Algorithms",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3103",
+    "name": "Computer Organization",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2510"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4250",
+    "name": "Ethical Issues/Professional Conduct",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": null,
+            "prerequisites": [
+              {
+                "courseSubject": "CIS",
+                "courseNumber": "4219"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4219",
+    "name": "Human Aspects of Cybersecurity",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CIS",
+                "courseNumber": "3363"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "3363",
+    "name": "IT Security Systems",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CIS",
+                "courseNumber": "3213"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2513"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAD",
+                "courseNumber": "2104"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CEN",
+    "courseNumber": "4020",
+    "name": "Software Engineering",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4530",
+    "name": "Data Structures",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3103"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "3514",
+    "name": "Program Design",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2510"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "2510",
+    "name": "Programming Concepts",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CNT",
+    "courseNumber": "4419",
+    "name": "Secure Coding",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "4450",
+    "name": "Introduction to Linear Systems",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4205",
+    "name": "Computer Architecture",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "4205L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4205L",
+    "name": "Computer Architecture Lab",
+    "conditions": []
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3201",
+    "name": "Computer Logic and Design",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3103"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3201L",
+    "name": "Computer Logic Design Lab",
+    "conditions": []
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4600",
+    "name": "Operating Systems",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
