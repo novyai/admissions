@@ -92,6 +92,7 @@ export const getCourseWithPrereqs = async (courseId: string, queriedCourses: str
 	)
 
 	const prereqMap = new Map([[course.id, Array.from(filteredPrereqsCourses)]])
+	// base case: no more prereqs that aren't already in the queried courses
 	if (filteredPrereqsCourses.size === 0) {
 		return {
 			course,
@@ -100,12 +101,13 @@ export const getCourseWithPrereqs = async (courseId: string, queriedCourses: str
 		}
 	}
 
+	// otherwise, get the prereqs for each prereq
 	let newQueriedCourses = [...queriedCourses, course.id]
 	for (const courseId of filteredPrereqsCourses) {
 		newQueriedCourses = [...queriedCourses, courseId]
 		const { prereqMap: prereqPrereqMap } = await getCourseWithPrereqs(courseId, newQueriedCourses)
 		for (const [key, value] of prereqPrereqMap) {
-			prereqMap.set(key, value)
+			prereqMap.set(key, [...prereqMap.get(key) ?? [], ...value])
 		}
 	}
 
