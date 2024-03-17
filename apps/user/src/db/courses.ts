@@ -107,7 +107,7 @@ export const getCourseWithPrereqs = async (courseId: string, queriedCourses: str
 		newQueriedCourses = [...queriedCourses, courseId]
 		const { prereqMap: prereqPrereqMap } = await getCourseWithPrereqs(courseId, newQueriedCourses)
 		for (const [key, value] of prereqPrereqMap) {
-			prereqMap.set(key, [...prereqMap.get(key) ?? [], ...value])
+			prereqMap.set(key, [...(prereqMap.get(key) ?? []), ...value])
 		}
 	}
 
