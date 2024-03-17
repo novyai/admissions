@@ -42,16 +42,15 @@ export const getStudentProfile = async (profile: BaseStudentProfile) => {
 	const fullProfile: StudentProfile = {
 		...profile,
 		semesters: [],
+		allCourses: [],
 		graph: new Map<string, CourseNode>()
 	}
 
 	await getDegree(fullProfile)
 
-	const allCourses = Array.from(fullProfile.graph.values())
-
 	// I want to sort all courses by earliest finish time, then slack
 
-	const sortedCourses = allCourses.sort((a, b) => {
+	const sortedCourses = fullProfile.allCourses.sort((a, b) => {
 		if (a.earliestFinish === b.earliestFinish) {
 			const aslack = a.latestFinish! - a.earliestFinish!
 			const bslack = b.latestFinish! - b.earliestFinish!

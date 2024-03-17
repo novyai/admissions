@@ -1,9 +1,5 @@
-"use client"
-
 import { CourseNode } from "@graph/types"
-import { DAG } from "@ui/components/dag"
-
-import "reactflow/dist/style.css"
+import { LayoutedDAG } from "@ui/components/dag"
 
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
 	const courses = Array.from(graph.values())
@@ -28,7 +24,7 @@ export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
 
 	return (
 		<div style={{ width: "100vw", height: "100vh" }}>
-			<DAG nodes={nodes} edges={edges} />
+			<LayoutedDAG nodes={nodes} edges={edges} />
 		</div>
 	)
 }

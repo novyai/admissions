@@ -36,6 +36,7 @@ export default async function Page({ params }: { params: { studentId: string } }
 
 	const baseProfile: BaseStudentProfile = {
 		requiredCourses: requiredCourses.map(course => course.id),
+		transferCredits: [],
 		timeToGraduate: 8,
 		coursePerSemester: 6,
 		currentSemester: 0

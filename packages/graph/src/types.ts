@@ -14,6 +14,7 @@ export type CourseNode = {
 
 export type BaseStudentProfile = {
 	requiredCourses: string[]
+	transferCredits: string[]
 	timeToGraduate: number // in semesters
 	currentSemester: number
 	coursePerSemester: number
@@ -22,4 +23,5 @@ export type BaseStudentProfile = {
 export type StudentProfile = BaseStudentProfile & {
 	semesters: CourseNode[][]
 	graph: Map<string, CourseNode>
+	allCourses: CourseNode[]
 }
