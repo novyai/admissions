@@ -2,7 +2,7 @@ import { db, Prisma } from "@db/client"
 
 import { getCourseWithPrereqs } from "./courses"
 
-const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => {
+const getCourseMap = async (deptCourses: Prisma.CourseWhereInput[]) => {
 	const degreeCourses = await db.course.findMany({
 		where: {
 			OR: deptCourses
@@ -36,7 +36,7 @@ const getRequiredCoursesMap = async (deptCourses: Prisma.CourseWhereInput[]) => 
 }
 
 export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
-	const { prereqMap, dependentMap } = await getRequiredCoursesMap(deptCourses)
+	const { prereqMap, dependentMap } = await getCourseMap(deptCourses)
 
 	const allCourseIds = Array.from(
 		new Set([

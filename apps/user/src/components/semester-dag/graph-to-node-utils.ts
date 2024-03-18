@@ -162,7 +162,6 @@ export const getUnassignedNodesAndEdges = async (
 	// console.log(coursesNotInSemesterOrTransferNode)
 	const unassignedNodes: CourseNodeType[] = coursesNotInSemesterOrTransferNode.map((course, i) => {
 		return getOutsideCourseNode(course, { x: -400 - 200 * i, y: 50 })
-
 	})
 
 	const prereqs = await Promise.all(

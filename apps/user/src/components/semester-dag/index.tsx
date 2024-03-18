@@ -6,8 +6,8 @@ import {
 	getTransferNodesAndEdges,
 	getUnassignedNodesAndEdges
 } from "./graph-to-node-utils"
-import { SemesterNode } from "./semester-node"
 import { SemesterDagChat } from "./semester-dag-chat"
+import { SemesterNode } from "./semester-node"
 
 export async function SemesterDAG({
 	studentProfile: { graph, semesters, transferCredits, allCourses }
@@ -15,7 +15,10 @@ export async function SemesterDAG({
 	studentProfile: StudentProfile
 }) {
 	// first we want to render the semesters, courses and their edges
-	const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(semesters, allCourses)
+	const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
+		semesters,
+		allCourses
+	)
 
 	// if there are transfer credits, we want to render them and their edges
 	if (transferCredits.length > 0) {
@@ -51,6 +54,5 @@ export async function SemesterDAG({
 			nodes={defaultNodes}
 			edges={defaultEdges}
 		/>
-
 	)
 }
