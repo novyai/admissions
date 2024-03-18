@@ -488,5 +488,59 @@
         ]
       }
     ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4034",
+    "name": "Computer Animation Fundamentals",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseNumber": "4103",
+    "courseSubject": "CAP",
+    "name": "Mobile Biometrics",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
