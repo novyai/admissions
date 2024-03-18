@@ -46,7 +46,7 @@ export function PromptComposer({
 	return (
 		<AnimatedBorderWrapper
 			enabled={animatedLoading && loading}
-			className={cn("flex flex-col", className)}
+			className={cn(className, "flex flex-col")}
 		>
 			<div className="flex h-auto flex-row items-center relative w-full gap-4">
 				<Input

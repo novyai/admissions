@@ -3,7 +3,7 @@ import { additionalCoursesSchema } from "@/agents/scheduler/schema"
 import { getDegreeData } from "@/db/degree"
 import { CourseNode } from "@graph/types"
 import OpenAI from "openai"
-import { Edge, Node } from "reactflow"
+import { Node } from "reactflow"
 
 import { instructorOAI } from "@/lib/oai"
 import { CourseNodeType } from "@/components/semester-dag/course-node"
