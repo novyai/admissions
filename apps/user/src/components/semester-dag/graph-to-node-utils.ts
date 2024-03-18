@@ -1,6 +1,6 @@
 import { getCourseWithPrereqs } from "@/db/courses"
 import { CourseNode } from "@graph/types"
-import { Edge, Node } from "reactflow"
+import { Edge, Node, XYPosition } from "reactflow"
 
 import { CourseNodeType } from "./course-node"
 import { SemesterNodeType } from "./semester-node"
@@ -137,6 +137,19 @@ const getCoursePrereqs = async (id: string) => {
 	}
 }
 
+export const getOutsideCourseNode = (course: CourseNode, position: XYPosition): CourseNodeType => {
+	return {
+		...defaultCourseNode,
+		id: course.id,
+		position,
+		data: { semesterIndex: -1, ...course },
+		style: {
+			...defaultCourseNode.style,
+			backgroundColor: "lightgrey"
+		}
+	}
+}
+
 export const getUnassignedNodesAndEdges = async (
 	graph: Map<string, CourseNode>,
 	nodes: Node[],
@@ -148,16 +161,8 @@ export const getUnassignedNodesAndEdges = async (
 
 	// console.log(coursesNotInSemesterOrTransferNode)
 	const unassignedNodes: CourseNodeType[] = coursesNotInSemesterOrTransferNode.map((course, i) => {
-		return {
-			...defaultCourseNode,
-			id: course.id,
-			position: { x: -400 - 200 * i, y: 50 },
-			data: { semesterIndex: -1, ...course },
-			style: {
-				...defaultCourseNode.style,
-				backgroundColor: "lightgrey"
-			}
-		}
+		return getOutsideCourseNode(course, { x: -400 - 200 * i, y: 50 })
+
 	})
 
 	const prereqs = await Promise.all(
