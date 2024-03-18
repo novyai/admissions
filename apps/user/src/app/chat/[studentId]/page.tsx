@@ -34,14 +34,15 @@ export default async function Page({ params }: { params: { studentId: string } }
 		}
 	})
 
+	const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
+
 	const baseProfile: BaseStudentProfile = {
 		requiredCourses: requiredCourses.map(course => course.id),
-		transferCredits: [],
+		transferCredits: [precalc],
 		timeToGraduate: 8,
 		coursePerSemester: 6,
 		currentSemester: 0
 	}
-
 	const studentProfile = await getStudentProfile(baseProfile)
 
 	return (
@@ -55,7 +56,7 @@ export default async function Page({ params }: { params: { studentId: string } }
 				</div>
 				<div>
 					<h2 className="text-xl font-semibold">{student.email}</h2>
-					<p>Current Semester: {studentProfile.currentSemester}</p>
+					<p>Current Semester: {studentProfile.currentSemester + 1}</p>
 				</div>
 			</div>
 

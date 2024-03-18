@@ -13,15 +13,15 @@ import { ChatMessage } from "./chat-message"
 
 export type CustomMessage =
 	| {
-			role: "user"
-			content: string
-			show?: boolean
-	  }
+		role: "user"
+		content: string
+		show?: boolean
+	}
 	| {
-			role: "assistant"
-			content: AdvisorAgent["advisor_output"]
-			show?: boolean
-	  }
+		role: "assistant"
+		content: AdvisorAgent["advisor_output"]
+		show?: boolean
+	}
 
 export function Chat({
 	studentProfile,
@@ -78,6 +78,15 @@ export function Chat({
 						),
 						{
 							role: "user",
+							content: `
+								My current schedule looks like this:
+								${profile.semesters.map((s, i) => `Semester ${i + 1}: ${s.map(c => c.id).join(", ")}`).join("\n")}}
+							
+								Trigger actions instead of outputting text. Don't display multiple courses using the display-course action
+								`
+						},
+						{
+							role: "user",
 							content: prompt
 						}
 					]
@@ -110,7 +119,7 @@ export function Chat({
             
             Be friendly and engaging to try and learn more about the user. Tell them about the degree and what they can expect.
             
-            Be concise.
+            Be short and concise.
             `
 					}
 				]
@@ -121,7 +130,7 @@ export function Chat({
 
 	return (
 		<>
-			<div className="mb-20 m-4 gap-4">
+			<div className="mb-20 m-8 pb-[150px] gap-4">
 				{/* {<pre>{JSON.stringify(messages, null, 2)}</pre>} */}
 				{messages
 					.filter(message => message?.show ?? true)
@@ -162,19 +171,6 @@ export function Chat({
 				</div>
 				<div className="flex w-full gap-4 items-center p-4">
 					<PromptComposer jumbo loading={loading} onSubmit={submitMessage} onCancel={stopStream} />
-					<Button
-						size="lg"
-						onClick={() => {
-							setMessages(prevMessages => [
-								...prevMessages.map(message => ({
-									...message,
-									show: false
-								}))
-							])
-						}}
-					>
-						Clear
-					</Button>
 				</div>
 			</div>
 		</>

@@ -1,4 +1,4 @@
-import { getAllRequiredCourses } from "@graph/graph"
+import { getAllDependents, getAllRequiredCourses } from "@graph/graph"
 import { CourseNode, StudentProfile } from "@graph/types"
 
 import { getCourseFromIdNameCode } from "./course"
@@ -9,15 +9,15 @@ import { getCourseFromIdNameCode } from "./course"
  * @param semesters The schedule of semesters to add the course to
  * @param semester The semester index to add the course to
  */
-export function addToSemester(course: CourseNode, semester: number, profile: StudentProfile) {
+export function addToSemester(course: CourseNode, semester: number, profile: StudentProfile, useCoursesPerSemester: boolean = true) {
 	if (semester >= profile.timeToGraduate || profile.semesters.length > profile.timeToGraduate) {
 		throw new Error(
 			`Can only have ${profile.timeToGraduate} semesters. have ${profile.semesters.length} (${semester})`
 		)
 	}
 	if (profile.semesters[semester]) {
-		if (profile.semesters[semester]?.length! >= profile.coursePerSemester) {
-			addToSemester(course, semester + 1, profile)
+		if (useCoursesPerSemester && profile.semesters[semester]?.length! >= profile.coursePerSemester) {
+			addToSemester(course, semester + 1, profile, useCoursesPerSemester)
 		} else {
 			profile.semesters[semester]?.push(course)
 		}
@@ -84,10 +84,29 @@ export function canMoveCourse(
 		}
 	}
 
-	// Check if the target semester has space
-	if ((profile.semesters[toSemester]?.length ?? 0) >= 4) {
-		return { canMove: false, reason: "The target semester is full." }
+	// Find all courses that list the moving course as a prerequisite
+	const dependentCourses = getAllDependents(course.id, profile).filter(
+		(c): c is CourseNode => c.id !== course.id
+	)
+	for (const dependentCourse of dependentCourses) {
+		const dependentCourseSemesterIndex = profile.semesters.findIndex(semester =>
+			semester.some(c => c.id === dependentCourse.id)
+		);
+
+		// If the dependent course is scheduled in the same or a later semester than the new semester of the prerequisite,
+		// it violates the prerequisite requirement.
+		if (dependentCourseSemesterIndex <= toSemester) {
+			return {
+				canMove: false,
+				reason: `Moving ${courseId} to semester ${toSemester} since it needs to be completed before ${dependentCourse.name} scheduled in semester ${dependentCourseSemesterIndex}.`
+			};
+		}
 	}
+
+	// // Check if the target semester has space
+	// if ((profile.semesters[toSemester]?.length ?? 0) >= 4) {
+	// 	return { canMove: false, reason: "The target semester is full." }
+	// }
 
 	return { canMove: true }
 }
@@ -118,7 +137,7 @@ export function moveCourse(courseId: string, toSemester: number, profile: Studen
 		}
 
 		removeFromSemester(course, profile)
-		addToSemester(course, toSemester, profile)
+		addToSemester(course, toSemester, profile, false)
 	}
 	return profile
 }

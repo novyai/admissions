@@ -24,11 +24,10 @@ export const CourseDisplay = ({ course, profile }: { course: string; profile: St
 ${preqs.length > 0 ? preqs.map(p => ` - ${profile.graph.get(p.id)?.name}`).join("\n") : "No required courses"}
 
 #### Dependents
-${
-	dependents.length > 0
-		? dependents.map(p => ` - ${profile.graph.get(p.id)?.name}`).join("\n")
-		: "No courses depend on this course"
-}
+${dependents.length > 0
+					? dependents.map(p => ` - ${profile.graph.get(p.id)?.name}`).join("\n")
+					: "No courses depend on this course"
+				}
 
 #### Description
 A course about ${courseNode.name}

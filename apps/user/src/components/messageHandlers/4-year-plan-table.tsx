@@ -26,7 +26,7 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
 		}
 	},
 	{
-		id: "scheduled",
+		id: "scheduled semester",
 		header: ({ column }) => {
 			return <DataTableColumnHeader column={column} title="Scheduled" />
 		},
@@ -41,45 +41,45 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
 		},
 		enableSorting: true
 	},
-	{
-		id: "earliestFinish",
-		header: ({ column }) => {
-			return <DataTableColumnHeader column={column} title="Earliest Finish" />
-		},
-		cell: ({ row }) => {
-			return <div>{row.original.earliestFinish}</div>
-		}
-	},
-	{
-		id: "latestFinish",
-		header: ({ column }) => {
-			return <DataTableColumnHeader column={column} title="Latest Finish" />
-		},
-		cell: ({ row }) => {
-			return <div>{row.original.latestFinish}</div>
-		}
-	},
-	{
-		id: "slack",
-		accessorFn: row => row.latestFinish! - row.earliestFinish!,
-		header: ({ column }) => {
-			return <DataTableColumnHeader column={column} title="Slack" />
-		},
-		cell: ({ row }) => {
-			return <div>{row.original.latestFinish! - row.original.earliestFinish!}</div>
-		},
-		enableSorting: true
-	},
-	{
-		id: "fanOut",
-		accessorKey: "fanOut",
-		header: ({ column }) => {
-			return <DataTableColumnHeader column={column} title="Fan Out" />
-		},
-		cell: ({ row }) => {
-			return <div>{row.original.fanOut}</div>
-		}
-	},
+	// {
+	// 	id: "earliestFinish",
+	// 	header: ({ column }) => {
+	// 		return <DataTableColumnHeader column={column} title="Earliest Finish" />
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		return <div>{row.original.earliestFinish}</div>
+	// 	}
+	// },
+	// {
+	// 	id: "latestFinish",
+	// 	header: ({ column }) => {
+	// 		return <DataTableColumnHeader column={column} title="Latest Finish" />
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		return <div>{row.original.latestFinish}</div>
+	// 	}
+	// },
+	// {
+	// 	id: "slack",
+	// 	accessorFn: row => row.latestFinish! - row.earliestFinish!,
+	// 	header: ({ column }) => {
+	// 		return <DataTableColumnHeader column={column} title="Slack" />
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		return <div>{row.original.latestFinish! - row.original.earliestFinish!}</div>
+	// 	},
+	// 	enableSorting: true
+	// },
+	// {
+	// 	id: "fanOut",
+	// 	accessorKey: "fanOut",
+	// 	header: ({ column }) => {
+	// 		return <DataTableColumnHeader column={column} title="Fan Out" />
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		return <div>{row.original.fanOut}</div>
+	// 	}
+	// },
 	{
 		id: "required for",
 		header: ({ column }) => {
