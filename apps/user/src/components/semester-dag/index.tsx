@@ -1,5 +1,4 @@
 import { StudentProfile } from "@graph/types"
-import { DAG } from "@ui/components/dag"
 
 import { CourseNode as CustomCourseNode } from "./course-node"
 import {
@@ -8,6 +7,7 @@ import {
 	getUnassignedNodesAndEdges
 } from "./graph-to-node-utils"
 import { SemesterNode } from "./semester-node"
+import { SemesterDagChat } from "./semester-dag-chat"
 
 export async function SemesterDAG({
 	studentProfile: { graph, semesters, transferCredits, allCourses }
@@ -15,21 +15,21 @@ export async function SemesterDAG({
 	studentProfile: StudentProfile
 }) {
 	// first we want to render the semesters, courses and their edges
-	const { nodes, edges } = getSemesterNodesAndEdges(semesters, allCourses)
+	const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(semesters, allCourses)
 
 	// if there are transfer credits, we want to render them and their edges
 	if (transferCredits.length > 0) {
 		const transferNodesAndEdges = getTransferNodesAndEdges(transferCredits, graph)
 
-		nodes.push(...transferNodesAndEdges.nodes)
-		edges.push(...transferNodesAndEdges.edges)
+		defaultNodes.push(...transferNodesAndEdges.nodes)
+		defaultEdges.push(...transferNodesAndEdges.edges)
 	}
 
 	// we also want to display all nodes not in transfer or a semester and its edges
 
 	const { nodes: unassignedNodes, edges: unassignedEdges } = await getUnassignedNodesAndEdges(
 		graph,
-		nodes,
+		defaultNodes,
 		transferCredits.map(c => {
 			const n = graph.get(c)
 			if (!n) {
@@ -39,19 +39,18 @@ export async function SemesterDAG({
 		})
 	)
 
-	nodes.push(...unassignedNodes)
-	edges.push(...unassignedEdges)
+	defaultNodes.push(...unassignedNodes)
+	defaultEdges.push(...unassignedEdges)
 
 	return (
-		<div style={{ width: "100vw", height: "90vh" }}>
-			<DAG
-				customNodes={{
-					semesterNode: SemesterNode,
-					courseNode: CustomCourseNode
-				}}
-				nodes={nodes}
-				edges={edges}
-			/>
-		</div>
+		<SemesterDagChat
+			customNodes={{
+				semesterNode: SemesterNode,
+				courseNode: CustomCourseNode
+			}}
+			nodes={defaultNodes}
+			edges={defaultEdges}
+		/>
+
 	)
 }

@@ -37,6 +37,22 @@ export const getAllCourses = async ({
 	}
 }
 
+export const getCoursesFromSubjectNumber = async (arr: { courseSubject: string, courseNumber: string }[]): Promise<HydratedCourse[]> => {
+	return await db.course.findMany({
+		where: {
+			OR: arr.map(({ courseSubject, courseNumber }) => ({
+				courseSubject,
+				courseNumber
+			}))
+		},
+		include: {
+			department: true,
+			conditions: true,
+			prerequisites: true
+		}
+	})
+}
+
 export const getCourses = async (courseIds: string[]): Promise<HydratedCourse[]> => {
 	try {
 		return await db.course.findMany({
