@@ -8,9 +8,7 @@ import { SemesterDAG } from "@/components/semester-dag"
 export default async function Page() {
 	const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
 		return {
-			department: {
-				code: course.course_dept
-			},
+			courseSubject: course.course_dept,
 			courseNumber: course.course_code
 		}
 	})
@@ -24,11 +22,25 @@ export default async function Page() {
 		}
 	})
 
-	const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
+	const { id: precalcId } = await db.course.findFirst({
+		select: {
+			id: true
+		},
+		where: {
+			courseSubject: "MAC",
+			courseNumber: "1147"
+		}
+	}) ?? {
+		id: null
+	}
+
+	if (!precalcId) {
+		throw new Error("Precalc course not found")
+	}
 
 	const baseProfile: BaseStudentProfile = {
 		requiredCourses: requiredCourses.map(course => course.id),
-		transferCredits: [precalc],
+		transferCredits: [precalcId],
 		timeToGraduate: 8,
 		coursePerSemester: 6,
 		currentSemester: 0
