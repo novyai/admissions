@@ -80,9 +80,12 @@ export function Chat({
 							role: "user",
 							content: `
 								My current schedule looks like this:
-								${profile.semesters.map((s, i) => `Semester ${i + 1}: ${s.map(c => c.id).join(", ")}`).join("\n")}}
+								${profile.semesters.map((s, i) => `Semester ${i + 1}: ${s.map(c => c.name).join(", ")}`).join("\n")}}
 							
-								Trigger actions instead of outputting text. Don't display multiple courses using the display-course action
+								More instructions: 
+								- Trigger actions instead of outputting text. 
+								- Don't display multiple courses using the display-course action.
+								- Don't say you can move a course because it might not be possible.
 								`
 						},
 						{

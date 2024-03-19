@@ -21,7 +21,6 @@ export const RescheduleCourse = ({
 	const canMove = canMoveCourse(courseName, toSemester - 1, profile)
 	return (
 		<div>
-			<p>{toSemester} {canMove.canMove ? "t" : 'f'} {canMoveCourse(courseName, toSemester - 1, profile).canMove}</p>
 			<strong>Assistant:</strong>
 			{`Checking if we can ${courseName} to semester ${toSemester}`}
 			<br />
