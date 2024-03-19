@@ -4,10 +4,10 @@ import { User } from "@db/client"
 import { StudentProfile } from "@repo/graph/types"
 
 import { MdxContent } from "./mdxContent"
+import { ScheduleTable } from "./messageHandlers/4-year-plan-table"
 import { CourseDisplay } from "./messageHandlers/course-display"
 import { RescheduleCourse } from "./messageHandlers/reschedule-course"
 import { SemesterDisplay } from "./messageHandlers/semester-display"
-import { ScheduleTable } from "./messageHandlers/4-year-plan-table"
 
 type AdvisorChatMessageSubType = AdvisorAgent["advisor_output"]["actions"][number]["type"]
 
