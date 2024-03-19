@@ -1,6 +1,8 @@
-[{
-  "id": 1,
-  "code": "CS",
-  "name": "Computer Science",
-  "universityId": 1
-}]
+[
+  {
+    "id": 1,
+    "code": "CS",
+    "name": "Computer Science",
+    "universityId": 1
+  }
+]

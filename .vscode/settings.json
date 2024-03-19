@@ -1,15 +1,19 @@
 {
+  "editor.defaultFormatter": "GitHub.copilot",
   "editor.tabSize": 2,
-  "editor.formatOnType": true,
-  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": false,
   "editor.trimAutoWhitespace": true,
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "[javascript, javascriptreact, typescript, typescriptreact]": {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": false
   },
   "editor.codeActionsOnSave": {
     "source.fixAll": "always",
     "source.fixAll.eslint": "always"
+  },
+  "[html]": {
+    "editor.defaultFormatter": "GitHub.copilot"
   },
   "[javascript]": {
     "editor.defaultFormatter": "vscode.typescript-language-features"
@@ -21,15 +25,14 @@
   "[yaml]": {
     "editor.autoIndent": "advanced",
     "editor.tabSize": 2,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": false,
+    "editor.formatOnPaste": true
   },
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "typescriptreact"
-  ],
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
   "eslint.workingDirectories": [
     {
-      "pattern": "./apps/**"
+      "pattern": "./apps/*"
     },
     {
       "pattern": "./packages/*"
@@ -42,6 +45,7 @@
     }
   ],
   "eslint.debug": true,
+  "github-actions.workflows.pinned.workflows": [".github/workflows/release.yml"],
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "typescript.validate.enable": true,

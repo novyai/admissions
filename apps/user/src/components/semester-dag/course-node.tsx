@@ -1,4 +1,5 @@
 "use client"
+
 import { CourseNode } from '@graph/types';
 import { Handle, NodeProps, Position, Node } from 'reactflow';
 
