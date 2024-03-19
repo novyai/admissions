@@ -1,7 +1,7 @@
 import { db, LogicalOperator, RequirementType } from "@db/client"
 import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.json"
 
-async function main() {
+export async function fixPrereqs() {
 	for (const course of fixedDenormalizedCourses) {
 		try {
 			const courseInDb = await db.course.findUnique({
@@ -142,4 +142,4 @@ async function main() {
 	}
 }
 
-main()
+await fixPrereqs()
