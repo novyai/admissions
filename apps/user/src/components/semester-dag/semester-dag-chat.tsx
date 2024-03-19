@@ -94,7 +94,7 @@ export function SemesterDagChat({
 			<div className="w-full p-2">
 				<PromptComposer
 					placeholder="What courses should I add?"
-					onSubmit={onSubmit}
+					handleSubmit={onSubmit}
 					loading={loading}
 				/>
 			</div>

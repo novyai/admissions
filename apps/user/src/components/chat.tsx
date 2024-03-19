@@ -104,6 +104,7 @@ export function Chat({
 			])
 
 			setSuggestedResponses([])
+
 		} catch (e) {
 			console.error(e)
 		}
@@ -173,7 +174,7 @@ export function Chat({
 					))}
 				</div>
 				<div className="flex w-full gap-4 items-center p-4">
-					<PromptComposer jumbo loading={loading} onSubmit={submitMessage} onCancel={stopStream} />
+					<PromptComposer jumbo loading={loading} handleSubmit={submitMessage} onCancel={stopStream} />
 				</div>
 			</div>
 		</>

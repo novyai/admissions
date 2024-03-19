@@ -7,7 +7,7 @@ import { Loader2 } from "lucide-react"
 import { AnimatedBorderWrapper } from "./animated-border-wrapper"
 
 export interface PromptComposerProps {
-	onSubmit: (value: string) => void
+	handleSubmit: (value: string) => void
 	loading: boolean
 	onCancel?: () => void
 	animatedLoading?: boolean
@@ -26,7 +26,7 @@ export interface PromptComposerProps {
  */
 export function PromptComposer({
 	placeholder,
-	onSubmit,
+	handleSubmit,
 	onCancel,
 	loading = false,
 	animatedLoading = true,
@@ -35,6 +35,11 @@ export function PromptComposer({
 	className
 }: PromptComposerProps) {
 	const [prompt, setPrompt] = useState<string>("")
+
+	const onSubmit = (value: string) => {
+		setPrompt("")
+		handleSubmit(value)
+	}
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
 		if (event.key === "Enter") {
