@@ -1,4 +1,4 @@
-import { CourseNode } from "@graph/types"
+import { CourseNode } from "@repo/graph/types"
 import { LayoutedDAG } from "@ui/components/dag"
 
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {

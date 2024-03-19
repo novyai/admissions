@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
-import { StudentProfile } from "@graph/types"
+import { StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { Button } from "@ui/components/ui/button"
 import OpenAI from "openai"

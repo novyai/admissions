@@ -6,9 +6,9 @@ import {
   calculateFanOut,
   calculateLatestFinish,
   getAllRequiredCourses
-} from "@graph/graph"
-import { addToSemester } from "@graph/schedule"
-import { BaseStudentProfile, CourseNode, StudentProfile } from "@graph/types"
+} from "@repo/graph/graph"
+import { addToSemester } from "@repo/graph/schedule"
+import { BaseStudentProfile, CourseNode, StudentProfile } from "@repo/graph/types"
 
 export const getDegree = async (profile: StudentProfile) => {
   const { prereqMap, dependentMap, allCourses } = await getDegreeData([

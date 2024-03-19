@@ -27,7 +27,9 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "postcss.config.js",
-    "../../packages/ui/src/components/chat-scroll-anchor.tsx"
+    "../../packages/ui/src/**/*.tsx",
+    "../../packages/graph/src/**/*.tsx",
+    "../../packages/graph/src/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

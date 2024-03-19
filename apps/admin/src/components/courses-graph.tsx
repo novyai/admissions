@@ -1,6 +1,6 @@
 "use client"
 
-import { CourseNode } from "@graph/types"
+import { CourseNode } from "@repo/graph/types"
 import { Edge, LayoutedDAG, Node } from "@ui/components/dag"
 
 import "reactflow/dist/style.css"

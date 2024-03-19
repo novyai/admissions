@@ -1,7 +1,7 @@
 "use client"
 
-import { getAllRequiredCourses } from "@graph/graph"
-import { CourseNode, StudentProfile } from "@graph/types"
+import { getAllRequiredCourses } from "@repo/graph/graph"
+import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
 import { DataTableColumnHeader } from "@ui/components/table/column-header"

@@ -1,7 +1,7 @@
 import { ReactNode } from "react"
 import { AdvisorAgent } from "@/agents/advisor/schema"
 import { User } from "@db/client"
-import { StudentProfile } from "@graph/types"
+import { StudentProfile } from "@repo/graph/types"
 
 import { MdxContent } from "./mdxContent"
 import { CourseDisplay } from "./messageHandlers/course-display"

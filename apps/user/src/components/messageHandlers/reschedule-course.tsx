@@ -1,8 +1,8 @@
 "use state"
 
 import { useState } from "react"
-import { canMoveCourse, moveCourse } from "@graph/schedule"
-import { StudentProfile } from "@graph/types"
+import { canMoveCourse, moveCourse } from "@repo/graph/schedule"
+import { StudentProfile } from "@repo/graph/types"
 import { Button } from "@ui/components/ui/button"
 
 export const RescheduleCourse = ({

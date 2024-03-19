@@ -1,6 +1,6 @@
-import { getCourseFromIdNameCode } from "@graph/course"
-import { getAllDependents, getAllPrereqs } from "@graph/graph"
-import { StudentProfile } from "@graph/types"
+import { getCourseFromIdNameCode } from "@repo/graph/course"
+import { getAllDependents, getAllPrereqs } from "@repo/graph/graph"
+import { StudentProfile } from "@repo/graph/types"
 
 import { MdxContent } from "../mdxContent"
 

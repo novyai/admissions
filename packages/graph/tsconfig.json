@@ -3,9 +3,11 @@
   "compilerOptions": {
     "outDir": "dist",
     "paths": {
+      "@/*": ["./src/*"],
       "@graph/*": ["./src/*"],
       "@db/*": ["../db/src/*"]
     },
+    "rootDir": "src",
     "baseUrl": "."
   },
   "include": ["src/*.ts", "next-env.d.ts", "tsup.config.ts"],

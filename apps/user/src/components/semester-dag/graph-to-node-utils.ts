@@ -1,5 +1,5 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { CourseNode } from "@graph/types"
+import { CourseNode } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
 import { CourseNodeType } from "./course-node"

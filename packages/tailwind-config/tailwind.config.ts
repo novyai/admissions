@@ -14,10 +14,15 @@ const config: Omit<Config, "content"> = {
       }
     },
     extend: {
+      flex: {
+        "2": "2 2 0%",
+        "3": "3 3 0%"
+      },
       fontFamily: {
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "serif"],
         inter: ["var(--font-inter)", "system-ui", "sans-serif"],
+
         mono: ["var(--font-default)", "monospace"],
         monoBold: ["var(--font-mono-bold)", "monospace"],
 
@@ -26,6 +31,7 @@ const config: Omit<Config, "content"> = {
         fusionaBlack: ["var(--font-fusiona-black)"]
       },
       colors: {
+        rose: "hsl(var(--rose))",
         purps: "hsl(var(--purps))",
         grass: "hsl(var(--grass))",
         cheese: "hsl(var(--cheese))",

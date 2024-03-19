@@ -1,5 +1,3 @@
-import "@repo/ui/styles.css"
-
 import { ReactNode } from "react"
 import { defaultFontMapper } from "@ui/styles/fonts"
 

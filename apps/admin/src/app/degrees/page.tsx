@@ -1,6 +1,6 @@
 import { db, Prisma } from "@db/client"
 import cseDegree from "@db/test.json"
-import { BaseStudentProfile } from "@graph/types"
+import { BaseStudentProfile } from "@repo/graph/types"
 
 import { CoursesGraph } from "@/components/courses-graph"
 import { ScheduleTable } from "@/components/schedule-table"

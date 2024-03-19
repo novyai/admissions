@@ -1,4 +1,4 @@
-import { Course } from "@db/client"
+import { Course } from "@repo/db/client"
 
 export type CourseNode = {
   id: string

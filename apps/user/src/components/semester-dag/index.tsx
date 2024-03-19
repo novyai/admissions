@@ -1,4 +1,4 @@
-import { StudentProfile } from "@graph/types"
+import { StudentProfile } from "@repo/graph/types"
 
 import { CourseNode as CustomCourseNode } from "./course-node"
 import {

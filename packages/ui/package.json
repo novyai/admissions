@@ -5,13 +5,12 @@
   "type": "module",
   "license": "MIT",
   "exports": {
-    "./*": {
-      "import": [
-        "./src/*.tsx",
-        "./src/*.ts"
-      ]
-    },
-    "./styles.css": "./src/styles/globals.css"
+    "./components/*": "./src/components/*.tsx",
+    "./components/ui/*": "./src/components/ui/*.tsx",
+    "./components/table": "./src/components/table/index.tsx",
+    "./components/table/*": "./src/components/table/*.tsx",
+    "./components/primitives/*": "./src/components/primitives/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts"
   },
   "scripts": {
     "format": "eslint ./src --fix",

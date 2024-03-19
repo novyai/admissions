@@ -1,7 +1,7 @@
 import { getStudentProfile } from "@/actions/schedule"
 import cseDegree from "@/cse_requirments.json"
 import { db, Prisma } from "@db/client"
-import { BaseStudentProfile } from "@graph/types"
+import { BaseStudentProfile } from "@repo/graph/types"
 
 import { Chat } from "@/components/chat"
 

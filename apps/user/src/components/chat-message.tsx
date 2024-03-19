@@ -1,7 +1,7 @@
 import React from "react"
 import { advisorAgentSchema } from "@/agents/advisor/schema"
 import { User } from "@db/client"
-import { StudentProfile } from "@graph/types"
+import { StudentProfile } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 
 import { AdvisorMessageBody } from "./advisor-chat"

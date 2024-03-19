@@ -1,13 +1,13 @@
 "use client"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@ui/components/table"
-import { DataTableColumnHeader } from "@ui/components/table/column-header"
+import { DataTable } from "@repo/ui/components/table"
+import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
 
-import { getAllRequiredCourses } from "@graph/graph"
+import { getAllRequiredCourses } from "@repo/graph/graph"
 
 import { ScheduleChat } from "./schedule-chat"
-import { CourseNode, StudentProfile } from "@graph/types"
+import { CourseNode, StudentProfile } from "@repo/graph/types"
 
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [

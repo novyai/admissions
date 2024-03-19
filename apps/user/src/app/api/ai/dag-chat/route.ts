@@ -1,7 +1,7 @@
 import { generatePrimaryIdentity } from "@/agents/scheduler"
 import { additionalCoursesSchema } from "@/agents/scheduler/schema"
 import { getDegreeData } from "@/db/degree"
-import { CourseNode } from "@graph/types"
+import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
 

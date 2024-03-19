@@ -1,8 +1,8 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { canMoveCourse } from "@graph/schedule"
-import { StudentProfile } from "@graph/types"
+import { canMoveCourse } from "@repo/graph/schedule"
+import { StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@repo/ui/components/prompt-composer"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
