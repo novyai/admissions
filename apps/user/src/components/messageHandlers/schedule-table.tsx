@@ -9,22 +9,7 @@ import { DataTableColumnHeader } from "@ui/components/table/column-header"
 import { MdxContent } from "../mdxContent"
 
 export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<CourseNode>[] => [
-	{
-		id: "Semester",
-		header: ({ column }) => {
-			return <DataTableColumnHeader column={column} title="Scheduled" />
-		},
-		cell: ({ row }) => {
-			const semesterScheduled = profile.semesters.findIndex(s =>
-				s.map(c => c.id).includes(row.original.id)
-			)
-			return <div>{semesterScheduled + 1}</div>
-		},
-		accessorFn: row => {
-			return profile.semesters.findIndex(s => s.map(c => c.id).includes(row.id)) + 1
-		},
-		enableSorting: true
-	},
+	// 
 	{
 		id: "name",
 		accessorKey: "name",
