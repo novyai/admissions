@@ -10,6 +10,7 @@
     "./components/table": "./src/components/table/index.tsx",
     "./components/table/*": "./src/components/table/*.tsx",
     "./components/primitives/*": "./src/components/primitives/*.tsx",
+    "./components/dag/*": "./src/components/dag/index.tsx",
     "./hooks/*": "./src/hooks/*.ts"
   },
   "scripts": {
