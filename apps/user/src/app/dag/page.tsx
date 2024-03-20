@@ -8,7 +8,9 @@ import { SemesterDAG } from "@/components/semester-dag"
 export default async function Page() {
 	const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
 		return {
-			courseSubject: course.course_dept,
+			department: {
+				code: course.course_dept
+			},
 			courseNumber: course.course_code
 		}
 	})
@@ -51,7 +53,6 @@ export default async function Page() {
 	return (
 		<>
 			<SemesterDAG studentProfile={studentProfile} />
-			{/* <DagChat studentProfile={studentProfile} /> */}
 		</>
 	)
 }
