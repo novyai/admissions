@@ -2,31 +2,31 @@ import { db, LogicalOperator, RequirementType } from "@db/client"
 import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.json"
 
 export async function fixPrereqs() {
-	for (const course of fixedDenormalizedCourses) {
-		try {
-			const courseInDb = await db.course.findUnique({
-				where: {
-					courseIdentifier: {
-						courseSubject: course.courseSubject,
-						courseNumber: course.courseNumber
-					}
-				},
-				include: {
-					conditions: {
-						include: {
-							conditions: {
-								include: {
-									prerequisites: true
-								}
-							}
-						}
-					}
-				}
-			})
-			if (!courseInDb) {
-				console.error(`Course not found in DB: ${course.courseSubject} ${course.courseNumber}`)
-			} else {
-				console.log(`Fixing ${courseInDb.name} (${courseInDb.id})`)
+  for (const course of fixedDenormalizedCourses) {
+    try {
+      const courseInDb = await db.course.findUnique({
+        where: {
+          courseIdentifier: {
+            courseSubject: course.courseSubject,
+            courseNumber: course.courseNumber
+          }
+        },
+        include: {
+          conditions: {
+            include: {
+              conditions: {
+                include: {
+                  prerequisites: true
+                }
+              }
+            }
+          }
+        }
+      })
+      if (!courseInDb) {
+        console.error(`Course not found in DB: ${course.courseSubject} ${course.courseNumber}`)
+      } else {
+        console.log(`Fixing ${courseInDb.name} (${courseInDb.id})`)
 
         // delete the old pre-requisites
         console.log("Deleting old prerequisites...")

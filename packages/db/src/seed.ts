@@ -14,6 +14,7 @@ import gradesData from "@db/data/sheet/university_grades_data.json"
 import { faker } from "@faker-js/faker"
 import { Prisma } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
+
 import { fixPrereqs } from "./fixCourses"
 
 async function insertDepts() {
@@ -433,8 +434,8 @@ async function main() {
     // step 7: insert degree data
     await insertDegreeData()
 
-		// await insertProgramCourses()
-		await fixPrereqs()
+    // await insertProgramCourses()
+    await fixPrereqs()
 
     console.log("Data ingestion completed successfully.")
   } catch (error) {
