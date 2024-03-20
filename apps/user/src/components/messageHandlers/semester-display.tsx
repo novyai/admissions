@@ -1,27 +1,27 @@
-import { StudentProfile } from "@graph/types"
+import { StudentProfile } from "@repo/graph/types"
 import { DataTable } from "@ui/components/table"
 
 import { getScheduleTableColumns } from "./schedule-table"
 
 export const SemesterDisplay = ({
-	semester,
-	profile
+  semester,
+  profile
 }: {
-	semester: number
-	profile: StudentProfile
+  semester: number
+  profile: StudentProfile
 }) => {
-	const semesterCourses = profile.semesters[semester]
+  const semesterCourses = profile.semesters[semester]
 
-	if (!semesterCourses) {
-		return <div>No courses in this semester</div>
-	}
+  if (!semesterCourses) {
+    return <div>No courses in this semester</div>
+  }
 
-	return (
-		<DataTable
-			columns={getScheduleTableColumns(profile)}
-			data={semesterCourses}
-			rowCount={semesterCourses.length}
-			search={false}
-		/>
-	)
+  return (
+    <DataTable
+      columns={getScheduleTableColumns(profile)}
+      data={semesterCourses}
+      rowCount={semesterCourses.length}
+      search={false}
+    />
+  )
 }

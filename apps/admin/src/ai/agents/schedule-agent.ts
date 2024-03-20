@@ -29,20 +29,20 @@ Always keep in mind: You're not just providing answers; you're helping students 
 const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
 
 export const rescheduleAgent = createAgent({
-	client: oai,
-	config: {
-		messages: [
-			{
-				role: "system",
-				content: primaryIdentity
-			}
-		],
-		model: "gpt-4-1106-preview",
-		temperature: 0.5,
-		max_tokens: 1000
-	},
-	response_model: {
-		schema: rescheduleCourseAgent,
-		name: "Reschedule Course Agent"
-	}
+  client: oai,
+  config: {
+    messages: [
+      {
+        role: "system",
+        content: primaryIdentity
+      }
+    ],
+    model: "gpt-4-1106-preview",
+    temperature: 0.5,
+    max_tokens: 1000
+  },
+  response_model: {
+    schema: rescheduleCourseAgent,
+    name: "Reschedule Course Agent"
+  }
 })
