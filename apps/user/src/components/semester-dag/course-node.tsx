@@ -1,20 +1,20 @@
 "use client"
-import { CourseNode } from '@graph/types';
-import { Handle, NodeProps, Position, Node } from 'reactflow';
+
+import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
+import { Handle, Node, NodeProps, Position } from "reactflow"
 
 export type CourseNodeData = {
   semesterIndex: number
-} & CourseNode
+} & CourseNodeGraphType
 
 export type CourseNodeType = Node<CourseNodeData>
 
 export function CourseNode({ data }: NodeProps<CourseNodeData>) {
-
   return (
-    <div className='mx-2 my-1'>
-      <Handle type='target' position={Position.Left} />
-      <p className='text-ellipsis text-center'>{data.name}</p>
-      <Handle type='source' position={Position.Right} />
+    <div className="mx-2 my-1">
+      <Handle type="target" position={Position.Left} />
+      <p className="text-ellipsis text-center">{data.name}</p>
+      <Handle type="source" position={Position.Right} />
     </div>
-  );
+  )
 }

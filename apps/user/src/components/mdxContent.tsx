@@ -8,50 +8,50 @@ import { CustomMessage } from "./chat"
 import MessageLoader from "./message-loader"
 
 export const MdxContent = React.memo(function MdxContent({
-	content,
-	className = ""
+  content,
+  className = ""
 }: {
-	content: string
-	role?: CustomMessage["role"]
-	className?: string
-	activeBotResponse?: boolean
+  content: string
+  role?: CustomMessage["role"]
+  className?: string
+  activeBotResponse?: boolean
 }) {
-	if (!content?.length) {
-		return (
-			<div className="w-full h-24 p-8 flex flex-col items-center gap-1 uppercase text-xs font-okineMedium tracking-widest animate-pulse">
-				Gathering information
-				<MessageLoader />
-			</div>
-		)
-	}
+  if (!content?.length) {
+    return (
+      <div className="w-full h-24 p-8 flex flex-col items-center gap-1 uppercase text-xs font-okineMedium tracking-widest animate-pulse">
+        Gathering information
+        <MessageLoader />
+      </div>
+    )
+  }
 
-	return (
-		<>
-			<ReactMarkdown
-				linkTarget="_blank"
-				rehypePlugins={[rehypeHighlight]}
-				remarkPlugins={[remarkBreaks]}
-				className={cn("react-markdown-message prose dark:prose-invert max-w-full", className, {})}
-				components={{
-					a: ({ ...props }) => {
-						return <a {...props} className="text-sky-8 hover:text-sky-9 underline" />
-					},
-					img: ({ src }) => {
-						return (
-							<>
-								{/* eslint-disable-next-line @next/next/no-img-element */}
-								<img
-									src={src}
-									className="max-w-full rounded-lg shadow-md md:max-w-sm"
-									alt="message image"
-								/>
-							</>
-						)
-					}
-				}}
-			>
-				{content ?? ""}
-			</ReactMarkdown>
-		</>
-	)
+  return (
+    <>
+      <ReactMarkdown
+        linkTarget="_blank"
+        rehypePlugins={[rehypeHighlight]}
+        remarkPlugins={[remarkBreaks]}
+        className={cn("react-markdown-message prose dark:prose-invert max-w-full", className, {})}
+        components={{
+          a: ({ ...props }) => {
+            return <a {...props} className="text-sky-8 hover:text-sky-9 underline" />
+          },
+          img: ({ src }) => {
+            return (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  className="max-w-full rounded-lg shadow-md md:max-w-sm"
+                  alt="message image"
+                />
+              </>
+            )
+          }
+        }}
+      >
+        {content ?? ""}
+      </ReactMarkdown>
+    </>
+  )
 })

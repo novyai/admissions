@@ -7,18 +7,10 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@ui/*": [
-        "../../packages/ui/src/*"
-      ],
-      "@db/*": [
-        "../../packages/db/src/*"
-      ],
-      "@graph/*": [
-        "../../packages/graph/src/*"
-      ],
+      "@/*": ["./src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@db/*": ["../../packages/db/src/*"],
+      "@graph/*": ["../../packages/graph/src/*"]
     },
     "baseUrl": ".",
     "declaration": false,
@@ -34,10 +26,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "postcss.config.js",
-    "../../packages/ui/src/components/chat-scroll-anchor.tsx"
+    "postcss.config.js"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

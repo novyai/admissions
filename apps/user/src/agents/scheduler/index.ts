@@ -1,9 +1,9 @@
 export const generatePrimaryIdentity = (
-	electives: {
-		courseSubject: string
-		courseNumber: string
-		name: string
-	}[]
+  electives: {
+    courseSubject: string
+    courseNumber: string
+    name: string
+  }[]
 ): string => `
   You are an agent whose goal is to extract elective courses from a question.
   

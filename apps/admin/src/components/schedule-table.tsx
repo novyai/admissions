@@ -1,13 +1,12 @@
 "use client"
 
+import { getAllRequiredCourses } from "@repo/graph/graph"
+import { CourseNode, StudentProfile } from "@repo/graph/types"
+import { DataTable } from "@repo/ui/components/table"
+import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
 import { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@ui/components/table"
-import { DataTableColumnHeader } from "@ui/components/table/column-header"
-
-import { getAllRequiredCourses } from "@graph/graph"
 
 import { ScheduleChat } from "./schedule-chat"
-import { CourseNode, StudentProfile } from "@graph/types"
 
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
@@ -121,19 +120,14 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
 
   return (
     <>
-      <StudentProfile profile={profile} />
+      <div>
+        <h2>Student Profile</h2>
+        <div>Time to Graduate: {profile.timeToGraduate}</div>
+        <div>Course Per Semester: {profile.coursePerSemester}</div>
+      </div>
+
       <DataTable columns={columns} data={courses} rowCount={courses.length} />
       <ScheduleChat profile={profile} />
     </>
-  )
-}
-
-const StudentProfile = ({ profile }: { profile: StudentProfile }) => {
-  return (
-    <div>
-      <h2>Student Profile</h2>
-      <div>Time to Graduate: {profile.timeToGraduate}</div>
-      <div>Course Per Semester: {profile.coursePerSemester}</div>
-    </div>
   )
 }

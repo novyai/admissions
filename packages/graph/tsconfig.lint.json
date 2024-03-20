@@ -7,6 +7,6 @@
     },
     "baseUrl": "."
   },
-  "include": ["**/*.ts", "**/*.tsx", "tests", "turbo"],
+  "include": ["**/*.ts", "**/*.tsx", "tests"],
   "exclude": ["node_modules", "dist"]
 }
