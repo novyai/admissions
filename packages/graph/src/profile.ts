@@ -1,0 +1,189 @@
+import Graph from 'graphology'
+import { forEachTopologicalGeneration, topologicalGenerations } from 'graphology-dag';
+import { BaseStudentProfile, CourseNode, StudentProfile } from './types';
+import { reverse } from 'graphology-operators';
+import { db } from '../../db/src/client';
+import { Attributes } from 'graphology-types';
+/**
+ * Load all courses into a student's profile and build their schedule
+ * @param profile the basic information about the student's profile
+ */
+export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<StudentProfile> => {
+
+  const graph = new Graph()
+
+  for (const courseId of profile.requiredCourses) {
+    await addCourseToGraph(courseId, graph); // Await the completion of each addCourseToGraph call
+  }
+
+  computeNodeStats(graph, profile)
+
+  scheduleCourses(graph, profile)
+
+  graph.forEachNode((_courseId, course) => {
+    console.log(`${course['courseSubject']}-${course['courseNumber']}: ${course['name']} -- earliestFinish: ${course['earliestFinish']} latestFinish: ${course['latestFinish']} fanOut: ${course['fanOut']} semester: ${course['semester']}`)
+  })
+  const allCourses : CourseNode[] = graph.mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
+  return {
+    ...profile,
+    allCourses : allCourses,
+    graph: allCourses.reduce((acc, course) => acc.set(course.id, course), new Map<string, CourseNode>()),
+    semesters: buildSemesters(graph, profile) 
+  };
+}
+
+async function addCourseToGraph(courseId: string, graph: Graph) {
+  // check if the course is already in the graph, if it is, exit
+  if (graph.hasNode(courseId)) {
+    return; // Make sure to return here to prevent further execution when the node exists
+  }
+
+  // find the course in the db, and add it to the graph
+  const course = await db.course.findUnique({
+    where: {
+      id: courseId
+    },
+    include: {
+      conditions: {
+        include: {
+          conditions: {
+            include: {
+              prerequisites: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (course === null) {
+    throw Error(`Course with id ${courseId} not found in DB`);
+  }
+
+  graph.addNode(courseId, { ...course });
+
+  // recurse to any prerequisites so that we can add edges
+  for (const conditionGroup of course.conditions) {
+    for (const condition of conditionGroup.conditions) {
+      for (const prerequisite of condition.prerequisites) {
+        await addCourseToGraph(prerequisite.courseId, graph);
+        // edges represent prerequisites pointing at the course they are a prerequisite for
+        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+          graph.addDirectedEdge(prerequisite.courseId, course.id);
+        }
+      }
+    }
+  }
+}
+
+function computeNodeStats(graph: Graph, profile: BaseStudentProfile) {
+  var semester = 1
+  forEachTopologicalGeneration(graph, (coursesInGeneration) => {
+    coursesInGeneration.forEach(courseId => {
+      if (semester === 1) {
+        calculateFanOut(graph, courseId)
+      }
+      graph.setNodeAttribute(courseId, 'earliestFinish', semester)
+    })
+    semester += 1
+  })
+
+  var semester = profile.timeToGraduate
+  forEachTopologicalGeneration(reverse(graph), (coursesInGeneration) => {
+    coursesInGeneration.forEach(courseId => {
+      graph.setNodeAttribute(courseId, 'latestFinish', semester)
+      graph.setNodeAttribute(courseId, 'slack', semester - graph.getNodeAttribute(courseId, 'earliestFinish'))
+    })
+    semester -= 1
+  })
+}
+/**
+ * Calculates the number of courses that are are dependent on the given course, including dependents of dependents
+ * @param graph 
+ * @param courseId 
+ * @returns 
+ */
+function calculateFanOut(graph: Graph, courseId: string): number {
+  const fanOut = graph.mapOutboundNeighbors(courseId, (dependingCourseId) => {
+    return calculateFanOut(graph, dependingCourseId) + 1
+  }).reduce((acc, val) => acc + val, 0);
+  graph.setNodeAttribute(courseId, 'fanOut', fanOut)
+  return fanOut
+}
+
+/**
+ * Schedules all of the courses in Graph based on the settings in profile by adding a semester attribute 
+ * to each node
+ * @param graph 
+ * @param profile 
+ */
+function scheduleCourses(graph: Graph, profile: BaseStudentProfile) {
+  var currentSemester = 1
+  var coursesInCurrentSemester = 0
+  var firstDeferredCourseId = null
+
+  const sortedCourses = topologicalGenerations(graph)
+    .flatMap(courseGeneration => courseGeneration
+      .map(courseId => graph.getNodeAttributes(courseId))
+      .sort((courseA, courseB) => courseA.slack - courseB.slack)
+    )
+
+  while (sortedCourses.length > 0) {
+    const course = sortedCourses.shift()!
+    if (coursesInCurrentSemester >= profile.coursePerSemester || course['id'] === firstDeferredCourseId) {
+      console.log(`Semester ${currentSemester} complete`)
+      currentSemester += 1
+      coursesInCurrentSemester = 0
+      firstDeferredCourseId = null
+    }
+    if (graph.mapInNeighbors(course['id'], (_neighborId, neigbor) => neigbor['semester']).every(semester => semester < currentSemester)) {
+      console.log(`Adding ${course['courseSubject']}-${course['courseNumber']}: ${course['name']} to schedule in semester ${currentSemester}`)
+      graph.setNodeAttribute(course['id'], 'semester', currentSemester)
+      coursesInCurrentSemester += 1
+    } else {
+      console.log(`Deferring ${course['courseSubject']}-${course['courseNumber']}: ${course['name']} to schedule in semester ${currentSemester}`)
+      if (firstDeferredCourseId === null) {
+        firstDeferredCourseId = course['id']
+      }
+      sortedCourses.push(course)
+    }
+  }
+}
+
+function toCourseNode(graph: Graph, courseId : string, course : Attributes) : CourseNode {
+  return {
+    id: courseId,
+    name: course['name'],
+
+    earliestFinish: course['earliestFinish'],
+    latestFinish: course['latestFinish'],
+    fanOut: course['fanOut'],
+
+    dependents: graph.mapOutboundNeighbors(courseId, (dependentId) => dependentId),
+    prerequisites: graph.mapInboundNeighbors(courseId, (prereqId) => prereqId),
+
+    raw_course: {
+      id: courseId,
+      name: course['name'],
+      courseSubject: course['courseSubject'],
+      courseNumber: course['courseNumber'],
+      departmentId: course['departmentId'],
+      universityId: course['universityId'],
+
+      startTerm: course['startTerm'],
+      endTerm: course['endTerm']
+    }
+  }
+}
+
+function buildSemesters(graph: Graph, profile: BaseStudentProfile) : CourseNode[][] {
+  return graph
+    .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
+    .reduce((acc, course) => {
+      const semesterIndex = graph.getNodeAttribute(course.id, 'semester') - 1;
+      if (semesterIndex) {
+        acc[semesterIndex].push(course);
+      }
+      return acc;
+    }, Array.from({ length: profile.timeToGraduate }, () => []))
+}
