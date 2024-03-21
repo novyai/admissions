@@ -13,7 +13,7 @@ export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<S
   const graph = new Graph()
 
   for (const courseId of profile.requiredCourses) {
-    await addCourseToGraph(courseId, graph); // Await the completion of each addCourseToGraph call
+    await addCourseToGraph(courseId, graph, profile.transferCredits); // Await the completion of each addCourseToGraph call
   }
 
   computeNodeStats(graph, profile)
@@ -32,7 +32,7 @@ export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<S
   };
 }
 
-async function addCourseToGraph(courseId: string, graph: Graph) {
+async function addCourseToGraph(courseId: string, graph: Graph, completedCourseIds: string[]) {
   // check if the course is already in the graph, if it is, exit
   if (graph.hasNode(courseId)) {
     return; // Make sure to return here to prevent further execution when the node exists
@@ -59,17 +59,22 @@ async function addCourseToGraph(courseId: string, graph: Graph) {
   if (course === null) {
     throw Error(`Course with id ${courseId} not found in DB`);
   }
+  if (completedCourseIds.includes(courseId)) {
+    console.log(`${course.name} is already completed, skipping adding pre-reqs`)
+    graph.addNode(courseId, { ...course });
+    graph.setNodeAttribute(courseId, 'semester', 0) // previously completed courses have a semester of 0
+  } else {
+    graph.addNode(courseId, { ...course });
 
-  graph.addNode(courseId, { ...course });
-
-  // recurse to any prerequisites so that we can add edges
-  for (const conditionGroup of course.conditions) {
-    for (const condition of conditionGroup.conditions) {
-      for (const prerequisite of condition.prerequisites) {
-        await addCourseToGraph(prerequisite.courseId, graph);
-        // edges represent prerequisites pointing at the course they are a prerequisite for
-        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-          graph.addDirectedEdge(prerequisite.courseId, course.id);
+    // recurse to any prerequisites so that we can add edges
+    for (const conditionGroup of course.conditions) {
+      for (const condition of conditionGroup.conditions) {
+        for (const prerequisite of condition.prerequisites) {
+          await addCourseToGraph(prerequisite.courseId, graph, completedCourseIds);
+          // edges represent prerequisites pointing at the course they are a prerequisite for
+          if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+            graph.addDirectedEdge(prerequisite.courseId, course.id);
+          }
         }
       }
     }
@@ -130,17 +135,27 @@ function scheduleCourses(graph: Graph, profile: BaseStudentProfile) {
 
   while (sortedCourses.length > 0) {
     const course = sortedCourses.shift()!
+
+    if (course['semester'] === 0) {
+      // course is already completed, skip scheduling
+      continue
+    }
+
+    // check if the semester is full already and increment if it is
     if (coursesInCurrentSemester >= profile.coursePerSemester || course['id'] === firstDeferredCourseId) {
       console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
       coursesInCurrentSemester = 0
       firstDeferredCourseId = null
     }
-    if (graph.mapInNeighbors(course['id'], (_neighborId, neigbor) => neigbor['semester']).every(semester => semester < currentSemester)) {
+
+    if (graph.mapInNeighbors(course['id'], (_prereqId, prereq) => prereq['semester']).every(semester => semester < currentSemester)) {
+      // if all of the prereqs were completed in previous semesters, we can add this course to the current one
       console.log(`Adding ${course['courseSubject']}-${course['courseNumber']}: ${course['name']} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course['id'], 'semester', currentSemester)
       coursesInCurrentSemester += 1
     } else {
+      // otherwise we need to defer this course
       console.log(`Deferring ${course['courseSubject']}-${course['courseNumber']}: ${course['name']} to schedule in semester ${currentSemester}`)
       if (firstDeferredCourseId === null) {
         firstDeferredCourseId = course['id']
@@ -177,13 +192,14 @@ function toCourseNode(graph: Graph, courseId : string, course : Attributes) : Co
 }
 
 function buildSemesters(graph: Graph, profile: BaseStudentProfile) : CourseNode[][] {
-  return graph
+  const semesters: CourseNode[][] =  graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
     .reduce((acc, course) => {
-      const semesterIndex = graph.getNodeAttribute(course.id, 'semester') - 1;
-      if (semesterIndex) {
-        acc[semesterIndex].push(course);
+      const semesterIndex = graph.getNodeAttribute(course.id, 'semester');
+      if (semesterIndex && semesterIndex !== 0) { // courses with a semesterIndex of 0 are already completed
+        acc[semesterIndex-1].push(course);
       }
       return acc;
     }, Array.from({ length: profile.timeToGraduate }, () => []))
+    return semesters
 }
