@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation"
-import { auth, currentUser, UserButton } from "@clerk/nextjs"
+import { UserButton } from "@clerk/nextjs"
 
 export default async function Home() {
   return (
