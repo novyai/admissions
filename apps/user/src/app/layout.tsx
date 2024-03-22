@@ -1,6 +1,9 @@
 import type { Metadata } from "next"
+import { ClerkProvider } from "@clerk/nextjs"
 
 import "@ui/styles/globals.css"
+
+import { TooltipProvider } from "@ui/components/ui/tooltip"
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,8 +16,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="overflow-y-scroll">{children}</body>
-    </html>
+    <ClerkProvider>
+      <TooltipProvider>
+        <html lang="en">
+          <body className="">{children}</body>
+        </html>
+      </TooltipProvider>
+    </ClerkProvider>
   )
 }
