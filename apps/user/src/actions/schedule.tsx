@@ -14,7 +14,7 @@ export const getDegree = async (profile: StudentProfile) => {
   const { prereqMap, dependentMap, allCourses } = await getDegreeData([
     {
       id: {
-        in: profile.requiredCourses
+        in: [...profile.requiredCourses, ...profile.transferCredits]
       }
     }
   ])

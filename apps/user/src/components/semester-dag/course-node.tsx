@@ -11,9 +11,9 @@ export type CourseNodeType = Node<CourseNodeData>
 
 export function CourseNode({ data }: NodeProps<CourseNodeData>) {
   return (
-    <div className="flex min-w-0 min-h-0 w-full h-full justify-center m-2">
+    <div className="mx-2 my-1">
       <Handle type="target" position={Position.Left} />
-      <p className="text-ellipsis">{data.name}</p>
+      <p className="text-ellipsis text-center">{data.name}</p>
       <Handle type="source" position={Position.Right} />
     </div>
   )
