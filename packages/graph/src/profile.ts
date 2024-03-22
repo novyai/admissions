@@ -59,18 +59,25 @@ async function addCourseToGraph(courseId: string, graph: Graph, completedCourseI
   if (course === null) {
     throw Error(`Course with id ${courseId} not found in DB`);
   }
-  if (completedCourseIds.includes(courseId)) {
-    console.log(`${course.name} is already completed, skipping adding pre-reqs`)
-    graph.addNode(courseId, { ...course });
+
+  graph.addNode(courseId, { ...course });
+
+  const courseIsCompleted = completedCourseIds.includes(courseId)
+  if (courseIsCompleted) {
     graph.setNodeAttribute(courseId, 'semester', 0) // previously completed courses have a semester of 0
-  } else {
-    graph.addNode(courseId, { ...course });
+  }
 
     // recurse to any prerequisites so that we can add edges
     for (const conditionGroup of course.conditions) {
       for (const condition of conditionGroup.conditions) {
         for (const prerequisite of condition.prerequisites) {
+          // if a course is completed, assume that it's prerequisites are completed
+          if (courseIsCompleted) {
+            completedCourseIds.push(prerequisite.courseId)
+          }
+
           await addCourseToGraph(prerequisite.courseId, graph, completedCourseIds);
+
           // edges represent prerequisites pointing at the course they are a prerequisite for
           if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
             graph.addDirectedEdge(prerequisite.courseId, course.id);
@@ -78,7 +85,6 @@ async function addCourseToGraph(courseId: string, graph: Graph, completedCourseI
         }
       }
     }
-  }
 }
 
 function computeNodeStats(graph: Graph, profile: BaseStudentProfile) {
