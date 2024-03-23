@@ -28,7 +28,7 @@ export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<S
     ...profile,
     allCourses : allCourses,
     graph: allCourses.reduce((acc, course) => acc.set(course.id, course), new Map<string, CourseNode>()),
-    semesters: buildSemesters(graph, profile) 
+    semesters: buildSemesters(graph) 
   };
 }
 
@@ -136,7 +136,7 @@ function scheduleCourses(graph: Graph, profile: BaseStudentProfile) {
   const sortedCourses = topologicalGenerations(graph)
     .flatMap(courseGeneration => courseGeneration
       .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => courseA.slack - courseB.slack)
+      .sort((courseA, courseB) => courseA['slack'] - courseB['slack'])
     )
 
   while (sortedCourses.length > 0) {
@@ -197,15 +197,19 @@ function toCourseNode(graph: Graph, courseId : string, course : Attributes) : Co
   }
 }
 
-function buildSemesters(graph: Graph, profile: BaseStudentProfile) : CourseNode[][] {
+function buildSemesters(graph: Graph) : CourseNode[][] {
   const semesters: CourseNode[][] =  graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
-    .reduce((acc, course) => {
+    .reduce((acc : CourseNode[][], course : CourseNode) => {
       const semesterIndex = graph.getNodeAttribute(course.id, 'semester');
-      if (semesterIndex && semesterIndex !== 0) { // courses with a semesterIndex of 0 are already completed
-        acc[semesterIndex-1].push(course);
+      if (semesterIndex > 0) { // courses with a semesterIndex of 0 are already completed
+        if (acc[semesterIndex-1] !== undefined) {
+          acc[semesterIndex-1].push(course);
+        } else {
+          acc[semesterIndex-1] = [ course ]
+        }
       }
       return acc;
-    }, Array.from({ length: profile.timeToGraduate }, () => []))
+    }, [])
     return semesters
 }
