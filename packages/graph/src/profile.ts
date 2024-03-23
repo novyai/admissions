@@ -201,13 +201,10 @@ function buildSemesters(graph: Graph) : CourseNode[][] {
   const semesters: CourseNode[][] =  graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
     .reduce((acc : CourseNode[][], course : CourseNode) => {
-      const semesterIndex = graph.getNodeAttribute(course.id, 'semester');
+      const semesterIndex : number = graph.getNodeAttribute(course.id, 'semester');
       if (semesterIndex > 0) { // courses with a semesterIndex of 0 are already completed
-        if (acc[semesterIndex-1] !== undefined) {
-          acc[semesterIndex-1].push(course);
-        } else {
-          acc[semesterIndex-1] = [ course ]
-        }
+        acc[semesterIndex-1] = acc[semesterIndex-1] || [];
+        acc[semesterIndex-1]?.push(course);
       }
       return acc;
     }, [])
