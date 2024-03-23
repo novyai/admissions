@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^4.29.9",
     "@instructor-ai/instructor": "^0.0.7",
     "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",

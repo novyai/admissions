@@ -11,7 +11,8 @@
     "./components/table/*": "./src/components/table/*.tsx",
     "./components/primitives/*": "./src/components/primitives/*.tsx",
     "./components/dag": "./src/components/dag/index.tsx",
-    "./hooks/*": "./src/hooks/*.ts"
+    "./hooks/*": "./src/hooks/*.ts",
+    "./styles/*": "./src/styles/*"
   },
   "scripts": {
     "format": "eslint ./src --fix",
