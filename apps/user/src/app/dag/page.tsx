@@ -1,6 +1,6 @@
-import { getStudentProfile } from "@/actions/schedule"
 import cseDegree from "@/cse_requirments.json"
 import { db, Prisma } from "@db/client"
+import { getStudentProfile } from "@repo/graph/profile"
 import { BaseStudentProfile } from "@repo/graph/types"
 
 import { SemesterDAG } from "@/components/semester-dag"

@@ -1,11 +1,10 @@
 import { db, Prisma } from "@db/client"
 import cseDegree from "@db/test.json"
+import { getStudentProfile } from "@repo/graph/profile"
 import { BaseStudentProfile } from "@repo/graph/types"
 
 import { CoursesGraph } from "@/components/courses-graph"
 import { ScheduleTable } from "@/components/schedule-table"
-
-import { getStudentProfile } from "./action"
 
 export default async function Page() {
   const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
