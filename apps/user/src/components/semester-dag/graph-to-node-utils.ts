@@ -147,7 +147,7 @@ export const getOutsideCourseNode = (course: CourseNode, position: XYPosition): 
   }
 }
 
-const getUnassignedNodesAndEdges = async (
+export const getUnassignedNodesAndEdges = async (
   graph: Map<string, CourseNode>,
   nodes: Node[],
   transferCredits: CourseNode[]
