@@ -1,4 +1,3 @@
-import Link from "next/link"
 import { redirect } from "next/navigation"
 import { auth, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
