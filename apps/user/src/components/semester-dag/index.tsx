@@ -7,7 +7,6 @@ import ReactFlow, {
   Edge,
   MiniMap,
   Node,
-  NodeProps,
   useEdgesState,
   useNodesState
 } from "reactflow"

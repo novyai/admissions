@@ -1,18 +1,7 @@
 import { auth, UserButton } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
-import { Input } from "@ui/components/ui/input"
-import { Label } from "@ui/components/ui/label"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip"
-import {
-  Book,
-  Bot,
-  Code2,
-  CornerDownLeft,
-  LifeBuoy,
-  Settings2,
-  SquareTerminal,
-  Triangle
-} from "lucide-react"
+import { Book, Bot, Code2, LifeBuoy, Settings2, SquareTerminal, Triangle } from "lucide-react"
 
 import { TemporayDag } from "@/components/semester-dag/temp-dag"
 
@@ -128,26 +117,8 @@ function Dashboard() {
 
 const DagChat = () => {
   return (
-    <div className="relative flex h-full flex-col rounded-xl bg-muted/50 p-4">
-      <div className="flex-1">
-        <TemporayDag />
-      </div>
-      <form className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring">
-        <Label htmlFor="message" className="sr-only">
-          Message
-        </Label>
-        <Input
-          id="message"
-          placeholder="Type your message here..."
-          className="border-0 p-3 shadow-none focus-visible:ring-0"
-        />
-        <div className="flex items-center p-3 pt-0">
-          <Button type="submit" size="sm" className="ml-auto gap-1.5">
-            Send Message
-            <CornerDownLeft className="size-3.5" />
-          </Button>
-        </div>
-      </form>
+    <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
+      <TemporayDag />
     </div>
   )
 }
