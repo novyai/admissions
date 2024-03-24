@@ -1,5 +1,5 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { CourseNode } from "@repo/graph/types"
+import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
 import { CourseNodeType } from "./course-node"
@@ -30,7 +30,7 @@ export const defaultCourseNode: Partial<Node> = {
   // extent: 'parent'
 }
 
-export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
+function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
     return {
@@ -74,10 +74,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
   return { nodes, edges }
 }
 
-export const getTransferNodesAndEdges = (
-  transferCredits: string[],
-  graph: Map<string, CourseNode>
-) => {
+const getTransferNodesAndEdges = (transferCredits: string[], graph: Map<string, CourseNode>) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
 
@@ -181,4 +178,43 @@ export const getUnassignedNodesAndEdges = async (
   })
 
   return { nodes: unassignedNodes, edges: unassignedEdges }
+}
+
+export const getallNodesAndEdges = async ({
+  semesters,
+  allCourses,
+  graph,
+  transferCredits
+}: StudentProfile) => {
+  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
+    semesters,
+    allCourses
+  )
+
+  // if there are transfer credits, we want to render them and their edges
+  if (transferCredits.length > 0) {
+    const transferNodesAndEdges = getTransferNodesAndEdges(transferCredits, graph)
+
+    defaultNodes.push(...transferNodesAndEdges.nodes)
+    defaultEdges.push(...transferNodesAndEdges.edges)
+  }
+
+  // we also want to display all nodes not in transfer or a semester and its edges
+
+  const { nodes: unassignedNodes, edges: unassignedEdges } = await getUnassignedNodesAndEdges(
+    graph,
+    defaultNodes,
+    transferCredits.map(c => {
+      const n = graph.get(c)
+      if (!n) {
+        throw new Error(`Could not find course with id ${c}`)
+      }
+      return n
+    })
+  )
+
+  defaultNodes.push(...unassignedNodes)
+  defaultEdges.push(...unassignedEdges)
+
+  return { defaultNodes, defaultEdges }
 }
