@@ -1,3 +1,5 @@
+import Image from "next/image"
+import { redirect } from "next/navigation"
 import { auth, UserButton } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip"
@@ -6,24 +8,26 @@ import { LifeBuoy, SquareTerminal, Triangle } from "lucide-react"
 import { TemporaryDag } from "@/components/semester-dag/temp-dag"
 
 export default async function Page() {
-  auth().protect({
+  const { userId, protect } = auth()
+
+  protect({
     redirectUrl: "/"
   })
 
-  return (
-    <>
-      <Dashboard />
-    </>
-  )
+  if (!userId) {
+    redirect("/")
+  }
+
+  return <Dashboard />
 }
 
 function Dashboard() {
   return (
     <div className="flex h-screen w-screen flex-row ">
       <div className="flex h-full flex-col border-r">
-        <div className="border-b p-2 pb-1">
+        <div className="border-b h-[60px] flex items-center justify-center">
           <Button variant="outline" size="icon" aria-label="Home">
-            <Triangle className="size-5 fill-foreground" />
+            <Image src="/novy.png" alt="Logo" width={32} height={32} />
           </Button>
         </div>
         <div className="grid gap-1 p-2">
@@ -114,7 +118,7 @@ function Dashboard() {
         </nav>
       </div>
       <div className="flex flex-col w-full h-full">
-        <header className="sticky top-0 z-10 flex h-[53px] items-center gap-1 border-b bg-background px-4">
+        <header className="sticky top-0 z-10 flex h-[60px] items-center gap-1 border-b bg-background px-4">
           <h1 className="text-xl font-semibold">Playground</h1>
           <div className="ml-auto">
             <UserButton afterSignOutUrl="/" />
