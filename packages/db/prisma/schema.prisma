@@ -41,6 +41,8 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 
+  Versions Version[]
+
   @@index([studentId])
 }
 
@@ -255,4 +257,18 @@ model TransferGrade {
   student         Student @relation(fields: [studentId], references: [id])
 
   @@index([studentId])
+}
+
+model Version {
+  id        String   @id @default(uuid())
+  userID    String
+  user      User     @relation(fields: [userID], references: [id])
+  createdAt DateTime @default(now())
+
+  nodes     Json
+  semesters Json
+
+  //  we should add a from field to indicate to see version history this is a part of
+
+  @@index([userID])
 }
