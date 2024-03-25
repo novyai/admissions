@@ -1,11 +1,11 @@
 import { auth, UserButton } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip"
-import { Book, Bot, Code2, LifeBuoy, Settings2, SquareTerminal, Triangle } from "lucide-react"
+import { LifeBuoy, SquareTerminal, Triangle } from "lucide-react"
 
-import { TemporayDag } from "@/components/semester-dag/temp-dag"
+import { TemporaryDag } from "@/components/semester-dag/temp-dag"
 
-export default function Page() {
+export default async function Page() {
   auth().protect({
     redirectUrl: "/"
   })
@@ -19,14 +19,31 @@ export default function Page() {
 
 function Dashboard() {
   return (
-    <div className="grid h-screen w-full pl-[53px]">
-      <aside className="inset-y fixed  left-0 z-20 flex h-full flex-col border-r">
+    <div className="flex h-screen w-screen flex-row ">
+      <div className="flex h-full flex-col border-r">
         <div className="border-b p-2 pb-1">
           <Button variant="outline" size="icon" aria-label="Home">
             <Triangle className="size-5 fill-foreground" />
           </Button>
         </div>
-        <nav className="grid gap-1 p-2">
+        <div className="grid gap-1 p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-lg border"
+                aria-label="Playground"
+              >
+                <SquareTerminal className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right" sideOffset={5}>
+              Playground
+            </TooltipContent>
+          </Tooltip>
+        </div>
+        {/* <nav className="grid gap-1 p-2">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -82,7 +99,7 @@ function Dashboard() {
               Settings
             </TooltipContent>
           </Tooltip>
-        </nav>
+        </nav> */}
         <nav className="mt-auto grid gap-1 p-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -95,8 +112,8 @@ function Dashboard() {
             </TooltipContent>
           </Tooltip>
         </nav>
-      </aside>
-      <div className="flex flex-col">
+      </div>
+      <div className="flex flex-col w-full h-full">
         <header className="sticky top-0 z-10 flex h-[53px] items-center gap-1 border-b bg-background px-4">
           <h1 className="text-xl font-semibold">Playground</h1>
           <div className="ml-auto">
@@ -117,8 +134,8 @@ function Dashboard() {
 
 const DagChat = () => {
   return (
-    <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
-      <TemporayDag />
+    <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl border p-4 lg:col-span-2">
+      <TemporaryDag />
     </div>
   )
 }

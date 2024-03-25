@@ -7,7 +7,7 @@ import { SemesterDAG } from "@/components/semester-dag"
 
 import { getallNodesAndEdges } from "./graph-to-node-utils"
 
-export const TemporayDag = async () => {
+export const TemporaryDag = async () => {
   const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
     return {
       department: {

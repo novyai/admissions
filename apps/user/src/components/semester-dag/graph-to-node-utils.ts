@@ -9,7 +9,8 @@ export const defaultSemesterNode: Partial<Node> = {
   draggable: false,
   type: "semesterNode",
   style: {
-    backgroundColor: "aliceblue",
+    backgroundColor: "hsl(var(--card))",
+    border: "1px solid hsl(var(--border))",
     borderRadius: "0.5rem",
     zIndex: 1,
     width: 175,
@@ -20,9 +21,9 @@ export const defaultSemesterNode: Partial<Node> = {
 export const defaultCourseNode: Partial<Node> = {
   type: "courseNode",
   style: {
-    backgroundColor: "white",
+    backgroundColor: "hsl(var(--accent))",
     borderRadius: "0.5rem",
-    border: "1px solid black",
+    border: "1px solid hsl(var(--border))",
     width: "auto",
     zIndex: 2,
     height: "auto"
@@ -37,7 +38,7 @@ function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseN
       ...defaultSemesterNode,
       id: `semester-${index}`,
       position: { x: index * 200, y: 0 },
-      data: { semester: index }
+      data: { semester: index + 1 }
     }
   })
 
@@ -66,7 +67,7 @@ function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseN
         type: "default",
         source: prereq,
         target: course.id,
-        zIndex: 2
+        zIndex: 3
       }
     })
   })
