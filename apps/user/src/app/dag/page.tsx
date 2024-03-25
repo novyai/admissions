@@ -1,10 +1,10 @@
-import Image from "next/image"
 import { redirect } from "next/navigation"
 import { auth, UserButton } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip"
-import { LifeBuoy, SquareTerminal, Triangle } from "lucide-react"
+import { LifeBuoy, SquareTerminal } from "lucide-react"
 
+import { Novy } from "@/components/novy-logo"
 import { TemporaryDag } from "@/components/semester-dag/temp-dag"
 
 export default async function Page() {
@@ -27,7 +27,7 @@ function Dashboard() {
       <div className="flex h-full flex-col border-r">
         <div className="border-b h-[60px] flex items-center justify-center">
           <Button variant="outline" size="icon" aria-label="Home">
-            <Image src="/novy.png" alt="Logo" width={32} height={32} />
+            <Novy width={32} height={32} />
           </Button>
         </div>
         <div className="grid gap-1 p-2">
