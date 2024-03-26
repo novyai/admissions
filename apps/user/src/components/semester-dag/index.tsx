@@ -23,28 +23,32 @@ import { z } from "zod"
 import { CourseNode, CourseNodeType } from "./course-node"
 import { SemesterNode } from "./semester-node"
 
-export function SemesterDAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
+type SemesterDAGProps = {
+  nodes: Node[]
+  edges: Edge[]
+  saveVersion: (nodes: Node[]) => Promise<void>
+}
+
+export function SemesterDAG(props: SemesterDAGProps) {
   return (
     <ReactFlowProvider>
-      <SemesterDAGInternal nodes={nodes} edges={edges} />
+      <SemesterDAGInternal {...props} />
     </ReactFlowProvider>
   )
 }
 
 function SemesterDAGInternal({
   nodes: initialNodes,
-  edges: initialEdges
-}: {
-  nodes: Node[]
-  edges: Edge[]
-}) {
+  edges: initialEdges,
+  saveVersion
+}: SemesterDAGProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
 
   const { getIntersectingNodes } = useReactFlow()
 
   const onNodeDrag: NodeDragHandler = useCallback((_, node) => {
-    const intersections = getIntersectingNodes(node).map(n => n.id)
+    const intersections = getIntersectingNodes(node, false).map(n => n.id)
 
     setNodes(ns =>
       ns.map(n => {
@@ -70,6 +74,7 @@ function SemesterDAGInternal({
     onEnd: async ({ nodes, edges }) => {
       setNodes(prev => [...prev, ...nodes])
       setEdges(prev => [...prev, ...edges])
+      saveVersion(nodes)
     }
   })
 
@@ -101,17 +106,9 @@ function SemesterDAGInternal({
   }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <ReactFlow
+        fitView
         nodeTypes={{
           semesterNode: SemesterNode,
           courseNode: CourseNode
