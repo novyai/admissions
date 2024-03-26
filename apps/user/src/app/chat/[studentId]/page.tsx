@@ -1,6 +1,6 @@
 import cseDegree from "@/cse_requirments.json"
 import { db, Prisma } from "@db/client"
-import { getStudentProfile } from "@repo/graph/profile"
+import { getStudentProfileFromRequirements } from "@repo/graph/profile"
 import { BaseStudentProfile } from "@repo/graph/types"
 
 import { Chat } from "@/components/chat"
@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { studentId: string } }
     currentSemester: 0
   }
 
-  const studentProfile = await getStudentProfile(baseProfile)
+  const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
   return (
     <div>

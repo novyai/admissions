@@ -4,13 +4,33 @@ import { BaseStudentProfile, CourseNode, StudentProfile } from './types';
 import { reverse } from 'graphology-operators';
 import { db } from '../../db/src/client';
 import { Attributes } from 'graphology-types';
+import { XYPosition } from 'reactflow';
+
+type CourseAttributes = {
+  semester?: number
+} & (Exclude<Awaited<ReturnType<typeof getCourseWithPreqs>>, null> & {
+  hasAttributes: false
+  fanOut: undefined
+  earliestFinish: undefined
+  latestFinish: undefined
+  slack: undefined
+} | 
+Exclude<Awaited<ReturnType<typeof getCourseWithPreqs>>, null> & {
+  hasAttributes: true
+  fanOut: number
+  earliestFinish: number
+  latestFinish: number
+  slack: number
+})
+
+type CustomGraph = Graph<CourseAttributes, Attributes, Attributes>
 /**
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
  */
-export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<StudentProfile> => {
+export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) : Promise<StudentProfile> => {
 
-  const graph = new Graph()
+  const graph: CustomGraph = new Graph()
 
   for (const courseId of profile.requiredCourses) {
     await addCourseToGraph(courseId, graph, profile.transferCredits); // Await the completion of each addCourseToGraph call
@@ -21,7 +41,7 @@ export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<S
   scheduleCourses(graph, profile)
 
   graph.forEachNode((_courseId, course) => {
-    console.log(`${course['courseSubject']}-${course['courseNumber']}: ${course['name']} -- earliestFinish: ${course['earliestFinish']} latestFinish: ${course['latestFinish']} fanOut: ${course['fanOut']} semester: ${course['semester']}`)
+    console.log(`${course.courseSubject}-${course.courseNumber}: ${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`)
   })
   const allCourses : CourseNode[] = graph.mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
   return {
@@ -32,18 +52,16 @@ export const getStudentProfile = async (profile: BaseStudentProfile) : Promise<S
   };
 }
 
-async function addCourseToGraph(courseId: string, graph: Graph, completedCourseIds: string[]) {
-  // check if the course is already in the graph, if it is, exit
-  if (graph.hasNode(courseId)) {
-    return; // Make sure to return here to prevent further execution when the node exists
-  }
-
-  // find the course in the db, and add it to the graph
-  const course = await db.course.findUnique({
+async function getCourseWithPreqs(courseId:string) {
+  return db.course.findUnique({
     where: {
       id: courseId
     },
-    include: {
+    select: {
+      id: true,
+      courseNumber: true,
+      courseSubject: true, 
+      name: true,           
       conditions: {
         include: {
           conditions: {
@@ -56,11 +74,21 @@ async function addCourseToGraph(courseId: string, graph: Graph, completedCourseI
     }
   });
 
+}
+
+async function addCourseToGraph(courseId: string, graph: CustomGraph, completedCourseIds: string[]) {
+  // check if the course is already in the graph, if it is, exit
+  if (graph.hasNode(courseId)) {
+    return; // Make sure to return here to prevent further execution when the node exists
+  }
+
+  // find the course in the db, and add it to the graph
+  const course = await getCourseWithPreqs(courseId)
   if (course === null) {
     throw Error(`Course with id ${courseId} not found in DB`);
   }
 
-  graph.addNode(courseId, { ...course });
+  graph.addNode(courseId, { ...course, hasAttributes: false, fanOut: undefined, earliestFinish: undefined, latestFinish: undefined, slack: undefined });
 
   const courseIsCompleted = completedCourseIds.includes(courseId)
   if (courseIsCompleted) {
@@ -87,7 +115,7 @@ async function addCourseToGraph(courseId: string, graph: Graph, completedCourseI
     }
 }
 
-function computeNodeStats(graph: Graph, profile: BaseStudentProfile) {
+function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile) {
   var semester = 1
   forEachTopologicalGeneration(graph, (coursesInGeneration) => {
     coursesInGeneration.forEach(courseId => {
@@ -103,7 +131,7 @@ function computeNodeStats(graph: Graph, profile: BaseStudentProfile) {
   forEachTopologicalGeneration(reverse(graph), (coursesInGeneration) => {
     coursesInGeneration.forEach(courseId => {
       graph.setNodeAttribute(courseId, 'latestFinish', semester)
-      graph.setNodeAttribute(courseId, 'slack', semester - graph.getNodeAttribute(courseId, 'earliestFinish'))
+      graph.setNodeAttribute(courseId, 'slack', semester - (graph.getNodeAttribute(courseId, 'earliestFinish') ?? 0))
     })
     semester -= 1
   })
@@ -114,7 +142,7 @@ function computeNodeStats(graph: Graph, profile: BaseStudentProfile) {
  * @param courseId 
  * @returns 
  */
-function calculateFanOut(graph: Graph, courseId: string): number {
+function calculateFanOut(graph: CustomGraph, courseId: string): number {
   const fanOut = graph.mapOutboundNeighbors(courseId, (dependingCourseId) => {
     return calculateFanOut(graph, dependingCourseId) + 1
   }).reduce((acc, val) => acc + val, 0);
@@ -128,21 +156,22 @@ function calculateFanOut(graph: Graph, courseId: string): number {
  * @param graph 
  * @param profile 
  */
-function scheduleCourses(graph: Graph, profile: BaseStudentProfile) {
+function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
   var currentSemester = 1
   var coursesInCurrentSemester = 0
   var firstDeferredCourseId = null
 
   const sortedCourses = topologicalGenerations(graph)
+
     .flatMap(courseGeneration => courseGeneration
       .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => courseA['slack'] - courseB['slack'])
+      .sort((courseA, courseB) => (courseA.slack ?? 0) - (courseB.slack ?? 0))
     )
 
   while (sortedCourses.length > 0) {
     const course = sortedCourses.shift()!
 
-    if (course['semester'] === 0) {
+    if (course.semester === 0) {
       // course is already completed, skip scheduling
       continue
     }
@@ -155,7 +184,7 @@ function scheduleCourses(graph: Graph, profile: BaseStudentProfile) {
       firstDeferredCourseId = null
     }
 
-    if (graph.mapInNeighbors(course['id'], (_prereqId, prereq) => prereq['semester']).every(semester => semester < currentSemester)) {
+    if (graph.mapInNeighbors(course.id, (_prereqId, prereq) => prereq.semester).every(semester => semester! < currentSemester)) {
       // if all of the prereqs were completed in previous semesters, we can add this course to the current one
       console.log(`Adding ${course['courseSubject']}-${course['courseNumber']}: ${course['name']} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course['id'], 'semester', currentSemester)
@@ -210,3 +239,30 @@ function buildSemesters(graph: Graph) : CourseNode[][] {
     }, [])
     return semesters
 }
+
+export async function getProfileFromSchedule(blob: string) : Promise<StudentProfile> {
+  const { profile, nodes } = JSON.parse(blob) as { profile: BaseStudentProfile & { semesters: string[][] }, nodes: {
+    id: string,
+    position: XYPosition
+  }[]}
+  
+  const graph: CustomGraph = new Graph()
+
+  for (const node of nodes) {
+    await addCourseToGraph(node.id, graph, profile.transferCredits); // Await the completion of each addCourseToGraph call
+  }
+
+  computeNodeStats(graph, profile)
+
+  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
+
+  
+  return  {
+      ...profile,
+      allCourses : allCourses,
+      graph: allCourses.reduce((acc, course) => acc.set(course.id, course), new Map<string, CourseNode>()),
+      semesters: profile.semesters.map(s => s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c))))
+    }
+  
+}
+
