@@ -1,12 +1,17 @@
 import { redirect } from "next/navigation"
-import { getVersions } from "@/db/versions"
+import cseDegree from "@/cse_requirments.json"
 import { auth, UserButton } from "@clerk/nextjs"
+import { db, Prisma, Version } from "@db/client"
+import { getProfileFromSchedule, getStudentProfileFromRequirements } from "@graph/profile"
+import { BaseStudentProfile, StudentProfile } from "@graph/types"
 import { Button } from "@ui/components/ui/button"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@ui/components/ui/tooltip"
 import { LifeBuoy } from "lucide-react"
+import { Node as RFNode } from "reactflow"
 
 import { Novy } from "@/components/novy-logo"
-import { TemporaryDag } from "@/components/semester-dag/temp-dag"
+import { SemesterDAG } from "@/components/semester-dag"
+import { getallNodesAndEdges } from "@/components/semester-dag/graph-to-node-utils"
 
 export default async function Page() {
   const { userId, protect } = auth()
@@ -19,6 +24,34 @@ export default async function Page() {
     redirect("/")
   }
 
+  console.log("userId", userId)
+  let schedule = await db.schedule.findUnique({
+    where: {
+      userID: userId
+    },
+    include: {
+      versions: {
+        select: {
+          scheduleId: true,
+          blob: true,
+          createdAt: true,
+          id: true
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      }
+    }
+  })
+
+  if (!schedule) {
+    schedule = await createFirstScheduleAndVersion(userId)
+  }
+
+  const profile = await getProfileFromSchedule(schedule.versions[0]!.blob?.toString() ?? "")
+
+  const { defaultNodes, defaultEdges } = await getallNodesAndEdges(profile)
+
   return (
     <div className="flex h-screen w-screen flex-row ">
       <div className="flex h-full flex-col border-r">
@@ -28,7 +61,7 @@ export default async function Page() {
             <h1 className="text-xxl font-semibold">Playground</h1>
           </Button>
         </div>
-        <DagVersionSidebar userId={userId} />
+        <DagVersionSidebar versions={schedule.versions} />
         <nav className="mt-auto grid gap-1 p-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -49,24 +82,16 @@ export default async function Page() {
           </div>
         </header>
         <main className="grid flex-1 gap-4 overflow-auto p-4">
-          <DagChat />
+          <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl border p-4 lg:col-span-2">
+            <SemesterDAG nodes={defaultNodes} edges={defaultEdges} />
+          </div>
         </main>
       </div>
     </div>
   )
 }
 
-const DagChat = () => {
-  return (
-    <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl border p-4 lg:col-span-2">
-      <TemporaryDag />
-    </div>
-  )
-}
-
-async function DagVersionSidebar({ userId }: { userId: string }) {
-  const versions = await getVersions(userId)
-
+async function DagVersionSidebar({ versions }: { versions: Version[] }) {
   if (!versions.length) {
     // this should never be the case, cause on user creation we should create a first version
     return <p>No versions</p>
@@ -79,4 +104,92 @@ async function DagVersionSidebar({ userId }: { userId: string }) {
       })}
     </div>
   )
+}
+
+async function createFirstScheduleAndVersion(userId: string) {
+  const deptCourses = cseDegree.map((course): Prisma.CourseWhereInput => {
+    return {
+      department: {
+        code: course.course_dept
+      },
+      courseNumber: course.course_code
+    }
+  })
+
+  const requiredCourses = await db.course.findMany({
+    where: {
+      OR: deptCourses
+    },
+    select: {
+      id: true
+    }
+  })
+
+  const { id: precalcId } = (await db.course.findFirst({
+    select: {
+      id: true
+    },
+    where: {
+      courseSubject: "MAC",
+      courseNumber: "1147"
+    }
+  })) ?? {
+    id: null
+  }
+
+  if (!precalcId) {
+    throw new Error("Precalc course not found")
+  }
+
+  const baseProfile: BaseStudentProfile = {
+    requiredCourses: requiredCourses.map(course => course.id),
+    transferCredits: [],
+    timeToGraduate: 8,
+    coursePerSemester: 6,
+    currentSemester: 0
+  }
+
+  const studentProfile = await getStudentProfileFromRequirements(baseProfile)
+
+  const { defaultNodes } = await getallNodesAndEdges(studentProfile)
+
+  const schedule = await db.schedule.create({
+    data: {
+      userID: userId,
+      versions: {
+        create: {
+          blob: createBlob(studentProfile, defaultNodes)
+        }
+      }
+    },
+    include: {
+      versions: {
+        select: {
+          scheduleId: true,
+          blob: true,
+          createdAt: true,
+          id: true
+        },
+        orderBy: {
+          createdAt: "desc"
+        }
+      }
+    }
+  })
+
+  return schedule
+}
+
+function createBlob(semesters: StudentProfile, nodes: RFNode[]): string {
+  return JSON.stringify({
+    profile: {
+      requiredCourses: semesters.requiredCourses,
+      transferCredits: semesters.transferCredits,
+      timeToGraduate: semesters.timeToGraduate,
+      coursePerSemester: semesters.coursePerSemester,
+      currentSemester: semesters.currentSemester,
+      semesters: semesters.semesters.map(s => s.map(c => c.id))
+    },
+    nodes: nodes.filter(n => n.type === "courseNode").map(n => ({ id: n.id, position: n.position }))
+  })
 }

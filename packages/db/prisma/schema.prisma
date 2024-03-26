@@ -30,18 +30,17 @@ enum DegreeStatus {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  uid       String?  @unique
-  email     String   @unique
+  id        String    @id @default(uuid())
+  uid       String?   @unique
+  email     String    @unique
   firstName String?
   lastName  String?
   userType  UserType
-  studentId String?  @unique
-  student   Student? @relation(fields: [studentId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-
-  Versions Version[]
+  studentId String?   @unique
+  student   Student?  @relation(fields: [studentId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  Schedule  Schedule?
 
   @@index([studentId])
 }
@@ -259,16 +258,27 @@ model TransferGrade {
   @@index([studentId])
 }
 
-model Version {
+model Schedule {
   id        String   @id @default(uuid())
-  userID    String
+  userID    String   @unique()
   user      User     @relation(fields: [userID], references: [id])
   createdAt DateTime @default(now())
 
-  nodes     Json
-  semesters Json
-
+  activeDraftId String?
   //  we should add a from field to indicate to see version history this is a part of
+  versions       Version[]
 
   @@index([userID])
+}
+
+model Version {
+  id         String   @id @default(uuid())
+  scheduleId String
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  blob Json
+
+  @@index([scheduleId])
 }

@@ -7,19 +7,31 @@ import ReactFlow, {
   Edge,
   MiniMap,
   Node,
+  NodeDragHandler,
+  ReactFlowProvider,
   useEdgesState,
-  useNodesState
+  useNodesState,
+  useReactFlow
 } from "reactflow"
 
 import "reactflow/dist/style.css"
 
+import { useCallback } from "react"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
 import { CourseNode, CourseNodeType } from "./course-node"
 import { SemesterNode } from "./semester-node"
 
-export function SemesterDAG({
+export function SemesterDAG({ nodes, edges }: { nodes: Node[]; edges: Edge[] }) {
+  return (
+    <ReactFlowProvider>
+      <SemesterDAGInternal nodes={nodes} edges={edges} />
+    </ReactFlowProvider>
+  )
+}
+
+function SemesterDAGInternal({
   nodes: initialNodes,
   edges: initialEdges
 }: {
@@ -28,6 +40,27 @@ export function SemesterDAG({
 }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+
+  const { getIntersectingNodes } = useReactFlow()
+
+  const onNodeDrag: NodeDragHandler = useCallback((_, node) => {
+    const intersections = getIntersectingNodes(node).map(n => n.id)
+
+    setNodes(ns =>
+      ns.map(n => {
+        if (n.type === "courseNode") return n
+
+        return {
+          ...n,
+          style: {
+            ...n.style,
+            backgroundColor: intersections.includes(n.id) ? "red" : ""
+          }
+        }
+      })
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { startStream, loading } = useJsonStream({
     schema: z.object({
@@ -87,6 +120,7 @@ export function SemesterDAG({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeDrag={onNodeDrag}
       >
         <Background />
         <MiniMap />
