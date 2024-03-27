@@ -8,6 +8,8 @@ import ReactFlow, {
   MiniMap,
   Node,
   NodeDragHandler,
+  OnEdgesChange,
+  OnNodesChange,
   ReactFlowProvider,
   useEdgesState,
   useNodesState,
@@ -16,17 +18,28 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css"
 
-import { useCallback } from "react"
+import { Dispatch, SetStateAction, useCallback } from "react"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
 import { CourseNode, CourseNodeType } from "./course-node"
 import { SemesterNode } from "./semester-node"
 
+const nodeTypes = {
+  semesterNode: SemesterNode,
+  courseNode: CourseNode
+}
+
 type SemesterDAGProps = {
   nodes: Node[]
   edges: Edge[]
   saveVersion: (nodes: Node[]) => Promise<void>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setNodes: Dispatch<SetStateAction<Node<any, string | undefined>[]>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setEdges: Dispatch<SetStateAction<Edge<any>[]>>
+  onNodesChange: OnNodesChange
+  onEdgesChange: OnEdgesChange
 }
 
 export function SemesterDAG(props: SemesterDAGProps) {
@@ -38,13 +51,14 @@ export function SemesterDAG(props: SemesterDAGProps) {
 }
 
 function SemesterDAGInternal({
-  nodes: initialNodes,
-  edges: initialEdges,
+  nodes,
+  edges,
+  setNodes,
+  setEdges,
+  onNodesChange,
+  onEdgesChange,
   saveVersion
 }: SemesterDAGProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-
   const { getIntersectingNodes } = useReactFlow()
 
   const onNodeDrag: NodeDragHandler = useCallback((_, node) => {
@@ -109,10 +123,7 @@ function SemesterDAGInternal({
     <div className="w-full h-full flex flex-col items-center justify-center">
       <ReactFlow
         fitView
-        nodeTypes={{
-          semesterNode: SemesterNode,
-          courseNode: CourseNode
-        }}
+        nodeTypes={nodeTypes}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

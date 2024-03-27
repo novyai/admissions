@@ -1,37 +1,64 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Version } from "@db/client"
-import { StudentProfile } from "@graph/types"
+import { getProfileFromSchedule } from "@graph/action"
 import { Button } from "@ui/components/ui/button"
-import { Edge, Node } from "reactflow"
+import { Edge, Node, useEdgesState, useNodesState } from "reactflow"
 
 import { SemesterDAG } from "@/components/semester-dag"
 
-import { createVersion } from "./action"
+import { createVersion, getAllNodesAndEdges } from "./action"
 
 export function Editor({
-  nodes,
-  edges,
-  versions: initialVersions,
-  profile
+  versions: initialVersions
+  // profile
 }: {
-  nodes: Node[]
-  edges: Edge[]
+  // nodes: Node[]
+  // edges: Edge[]
   versions: Version[]
-  profile: StudentProfile
+  // profile: StudentProfile
 }) {
   const [versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
 
+  const [nodes, setNodes, onNodesChange] = useNodesState([])
+  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+
+  const [status, setStatus] = useState<"pending" | "saving" | "clean" | "error">("clean")
+
   const saveVersion = async (nodes: Node[]) => {
+    setStatus("saving")
+    const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
     const version = await createVersion(profile, selectedVersion.scheduleId, nodes)
     setVersions(prev => [...prev, version])
     setSelectedVersion(version)
+    setStatus("clean")
   }
+
+  useEffect(() => {
+    setStatus("pending")
+    const update = async () => {
+      const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
+      const { defaultNodes, defaultEdges } = await getAllNodesAndEdges(profile)
+      console.log({ defaultNodes, defaultEdges })
+
+      setNodes(defaultNodes)
+      setEdges(defaultEdges)
+    }
+
+    update().then(
+      () => setStatus("clean"),
+      reason => {
+        console.error(reason)
+        setStatus("error")
+      }
+    )
+  }, [selectedVersion])
 
   return (
     <>
+      {/* <p>{status}</p> */}
       <DagVersionSidebar
         versions={versions}
         selectedVersion={selectedVersion}
@@ -39,7 +66,15 @@ export function Editor({
       />
       <div className="flex flex-col w-full h-full">
         <div className="relative flex-1 min-h-[50vh] rounded-xl border">
-          <SemesterDAG saveVersion={saveVersion} nodes={nodes} edges={edges} />
+          <SemesterDAG
+            saveVersion={saveVersion}
+            nodes={nodes}
+            edges={edges}
+            setNodes={setNodes}
+            setEdges={setEdges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+          />
         </div>
       </div>
     </>
@@ -64,7 +99,9 @@ function DagVersionSidebar({
             key={version.id}
             onClick={() => setSelectedVersion(version)}
           >
-            <span>{version.id}</span>
+            <span>
+              {version.id.substring(0, 4)} - {version.createdAt.toISOString()}
+            </span>
           </Button>
         )
       })}

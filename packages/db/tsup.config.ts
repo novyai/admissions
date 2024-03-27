@@ -10,6 +10,6 @@ export default defineConfig(options => {
     sourcemap: true,
     minify: true,
     target: "es2020",
-    format: ["cjs", "esm"]
+    format: ["esm"]
   }
 })

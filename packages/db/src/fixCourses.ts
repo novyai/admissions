@@ -142,4 +142,4 @@ export async function fixPrereqs() {
   }
 }
 
-fixPrereqs()
+await fixPrereqs()

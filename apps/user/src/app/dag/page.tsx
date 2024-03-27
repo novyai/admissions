@@ -2,15 +2,14 @@ import { redirect } from "next/navigation"
 import cseDegree from "@/cse_requirments.json"
 import { auth, UserButton } from "@clerk/nextjs"
 import { db, Prisma } from "@db/client"
-import { getProfileFromSchedule, getStudentProfileFromRequirements } from "@graph/profile"
-import { BaseStudentProfile, StudentProfile } from "@graph/types"
+import { getStudentProfileFromRequirements } from "@graph/profile"
+import { BaseStudentProfile } from "@graph/types"
 import { Button } from "@ui/components/ui/button"
-import { Node } from "reactflow"
 
 import { createBlob } from "@/lib/version-blob"
 import { Novy } from "@/components/novy-logo"
-import { getallNodesAndEdges } from "@/components/semester-dag/graph-to-node-utils"
 
+import { getAllNodesAndEdges } from "./action"
 import { Editor } from "./editor"
 
 export default async function Page() {
@@ -24,29 +23,28 @@ export default async function Page() {
     redirect("/")
   }
 
-  const schedule =
-    (await db.schedule.findUnique({
-      where: {
-        userID: userId
-      },
-      include: {
-        versions: {
-          select: {
-            scheduleId: true,
-            blob: true,
-            createdAt: true,
-            id: true
-          },
-          orderBy: {
-            createdAt: "desc"
-          }
+  let schedule = await db.schedule.findUnique({
+    where: {
+      userID: userId
+    },
+    include: {
+      versions: {
+        select: {
+          scheduleId: true,
+          blob: true,
+          createdAt: true,
+          id: true
+        },
+        orderBy: {
+          createdAt: "asc"
         }
       }
-    })) ?? (await createFirstScheduleAndVersion(userId))
+    }
+  })
 
-  const profile = await getProfileFromSchedule(schedule.versions[0]!.blob?.toString() ?? "")
-
-  const { defaultNodes, defaultEdges } = await getallNodesAndEdges(profile)
+  if (!schedule || schedule?.versions.length == 0) {
+    schedule = await createFirstScheduleAndVersion(userId)
+  }
 
   return (
     <div className="flex h-screen w-screen flex-col  ">
@@ -65,10 +63,10 @@ export default async function Page() {
       </div>
       <div className="flex flex-row w-full h-full gap-4 m-4">
         <Editor
-          nodes={defaultNodes}
-          edges={defaultEdges}
+          // nodes={defaultNodes}
+          // edges={defaultEdges}
           versions={schedule.versions}
-          profile={profile}
+          // profile={profile}
         />
       </div>
     </div>
@@ -120,7 +118,7 @@ async function createFirstScheduleAndVersion(userId: string) {
 
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
-  const { defaultNodes } = await getallNodesAndEdges(studentProfile)
+  const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
   const schedule = await db.schedule.create({
     data: {
@@ -140,7 +138,7 @@ async function createFirstScheduleAndVersion(userId: string) {
           id: true
         },
         orderBy: {
-          createdAt: "desc"
+          createdAt: "asc"
         }
       }
     }

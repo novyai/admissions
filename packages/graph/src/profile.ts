@@ -26,7 +26,7 @@ type CourseAttributes = {
     })
 )
 
-type CustomGraph = Graph<CourseAttributes, Attributes, Attributes>
+export type CustomGraph = Graph<CourseAttributes, Attributes, Attributes>
 /**
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
@@ -86,7 +86,7 @@ async function getCourseWithPreqs(courseId: string) {
   })
 }
 
-async function addCourseToGraph(
+export async function addCourseToGraph(
   courseId: string,
   graph: CustomGraph,
   completedCourseIds: string[]
@@ -136,7 +136,7 @@ async function addCourseToGraph(
   }
 }
 
-function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile) {
+export function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile) {
   var semester = 1
   forEachTopologicalGeneration(graph, coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
@@ -237,7 +237,7 @@ function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
   }
 }
 
-function toCourseNode(graph: Graph, courseId: string, course: Attributes): CourseNode {
+export function toCourseNode(graph: Graph, courseId: string, course: Attributes): CourseNode {
   return {
     id: courseId,
     name: course["name"],
@@ -276,38 +276,4 @@ function buildSemesters(graph: Graph): CourseNode[][] {
       return acc
     }, [])
   return semesters
-}
-
-export async function getProfileFromSchedule(blob: string): Promise<StudentProfile> {
-  const { profile, nodes } = JSON.parse(blob) as {
-    profile: BaseStudentProfile & { semesters: string[][] }
-    nodes: {
-      id: string
-      position: XYPosition
-    }[]
-  }
-
-  const graph: CustomGraph = new Graph()
-
-  for (const node of nodes) {
-    await addCourseToGraph(node.id, graph, profile.transferCredits) // Await the completion of each addCourseToGraph call
-  }
-
-  computeNodeStats(graph, profile)
-
-  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
-    toCourseNode(graph, courseId, course)
-  )
-
-  return {
-    ...profile,
-    allCourses: allCourses,
-    graph: allCourses.reduce(
-      (acc, course) => acc.set(course.id, course),
-      new Map<string, CourseNode>()
-    ),
-    semesters: profile.semesters.map(s =>
-      s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))
-    )
-  }
 }
