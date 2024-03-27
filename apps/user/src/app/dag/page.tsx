@@ -62,12 +62,7 @@ export default async function Page() {
         </header>
       </div>
       <div className="flex flex-row w-full h-full gap-4 m-4">
-        <Editor
-          // nodes={defaultNodes}
-          // edges={defaultEdges}
-          versions={schedule.versions}
-          // profile={profile}
-        />
+        <Editor versions={schedule.versions} />
       </div>
     </div>
   )
