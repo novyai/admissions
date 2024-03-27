@@ -1,6 +1,6 @@
 "use client"
 
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Version } from "@db/client"
 import { getProfileFromSchedule } from "@graph/action"
 import { Button } from "@ui/components/ui/button"
