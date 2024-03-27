@@ -7,27 +7,74 @@ import ReactFlow, {
   Edge,
   MiniMap,
   Node,
-  useEdgesState,
-  useNodesState
+  NodeDragHandler,
+  OnEdgesChange,
+  OnNodesChange,
+  ReactFlowProvider,
+  useReactFlow
 } from "reactflow"
 
 import "reactflow/dist/style.css"
 
+import { Dispatch, SetStateAction, useCallback } from "react"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
 import { CourseNode, CourseNodeType } from "./course-node"
 import { SemesterNode } from "./semester-node"
 
-export function SemesterDAG({
-  nodes: initialNodes,
-  edges: initialEdges
-}: {
+const nodeTypes = {
+  semesterNode: SemesterNode,
+  courseNode: CourseNode
+}
+
+type SemesterDAGProps = {
   nodes: Node[]
   edges: Edge[]
-}) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
+  saveVersion: (nodes: Node[]) => Promise<void>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setNodes: Dispatch<SetStateAction<Node<any, string | undefined>[]>>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setEdges: Dispatch<SetStateAction<Edge<any>[]>>
+  onNodesChange: OnNodesChange
+  onEdgesChange: OnEdgesChange
+}
+
+export function SemesterDAG(props: SemesterDAGProps) {
+  return (
+    <ReactFlowProvider>
+      <SemesterDAGInternal {...props} />
+    </ReactFlowProvider>
+  )
+}
+
+function SemesterDAGInternal({
+  nodes,
+  edges,
+  setNodes,
+  setEdges,
+  onNodesChange,
+  onEdgesChange,
+  saveVersion
+}: SemesterDAGProps) {
+  const { getIntersectingNodes: _get } = useReactFlow()
+
+  const onNodeDrag: NodeDragHandler = useCallback((_, _node) => {
+    // const _intersections = getIntersectingNodes(node).map(n => n.id)
+    // setNodes(ns =>
+    //   ns.map(n => {
+    //     if (n.type === "courseNode") return n
+    //     return {
+    //       ...n,
+    //       style: {
+    //         ...n.style,
+    //         backgroundColor: intersections.includes(n.id) ? "red" : ""
+    //       }
+    //     }
+    //   })
+    // )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const { startStream, loading } = useJsonStream({
     schema: z.object({
@@ -37,6 +84,7 @@ export function SemesterDAG({
     onEnd: async ({ nodes, edges }) => {
       setNodes(prev => [...prev, ...nodes])
       setEdges(prev => [...prev, ...edges])
+      saveVersion(nodes)
     }
   })
 
@@ -68,25 +116,15 @@ export function SemesterDAG({
   }
 
   return (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center"
-      }}
-    >
+    <div className="w-full h-full flex flex-col items-center justify-center">
       <ReactFlow
-        nodeTypes={{
-          semesterNode: SemesterNode,
-          courseNode: CourseNode
-        }}
+        fitView
+        nodeTypes={nodeTypes}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
+        onNodeDrag={onNodeDrag}
       >
         <Background />
         <MiniMap />

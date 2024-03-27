@@ -1,6 +1,7 @@
 import { generatePrimaryIdentity } from "@/agents/scheduler"
 import { additionalCoursesSchema } from "@/agents/scheduler/schema"
 import { getDegreeData } from "@/db/degree"
+import { currentUser } from "@clerk/nextjs"
 import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
@@ -23,6 +24,11 @@ export async function POST(request: Request): Promise<Response> {
     }[]
     prevNodes: Node[]
   } = await request.json()
+
+  const user = await currentUser()
+  if (!user) {
+    throw new Error("User unauthenticated")
+  }
 
   try {
     // make a completion call with your generated params

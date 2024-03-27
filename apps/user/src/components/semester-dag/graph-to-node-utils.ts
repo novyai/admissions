@@ -1,37 +1,11 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { CourseNode, StudentProfile } from "@repo/graph/types"
+import { CourseNode } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
 import { CourseNodeType } from "./course-node"
-import { SemesterNodeType } from "./semester-node"
+import { defaultCourseNode, defaultSemesterNode, SemesterNodeType } from "./semester-node"
 
-export const defaultSemesterNode: Partial<Node> = {
-  draggable: false,
-  type: "semesterNode",
-  style: {
-    backgroundColor: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "0.5rem",
-    zIndex: 1,
-    width: 175,
-    height: 600
-  }
-}
-
-export const defaultCourseNode: Partial<Node> = {
-  type: "courseNode",
-  style: {
-    backgroundColor: "hsl(var(--accent))",
-    borderRadius: "0.5rem",
-    border: "1px solid hsl(var(--border))",
-    width: "auto",
-    zIndex: 2,
-    height: "auto"
-  }
-  // extent: 'parent'
-}
-
-function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
+export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
     return {
@@ -75,7 +49,10 @@ function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseN
   return { nodes, edges }
 }
 
-const getTransferNodesAndEdges = (transferCredits: string[], graph: Map<string, CourseNode>) => {
+export const getTransferNodesAndEdges = (
+  transferCredits: string[],
+  graph: Map<string, CourseNode>
+) => {
   const nodes: Node[] = []
   const edges: Edge[] = []
 
@@ -157,7 +134,7 @@ export const getUnassignedNodesAndEdges = async (
     ({ id }) => !nodes.map(n => n.id).includes(id)
   )
 
-  // console.log(coursesNotInSemesterOrTransferNode)
+  console.log(coursesNotInSemesterOrTransferNode)
   const unassignedNodes: CourseNodeType[] = coursesNotInSemesterOrTransferNode.map((course, i) => {
     return getOutsideCourseNode(course, { x: -400 - 200 * i, y: 50 })
   })
@@ -179,43 +156,4 @@ export const getUnassignedNodesAndEdges = async (
   })
 
   return { nodes: unassignedNodes, edges: unassignedEdges }
-}
-
-export const getallNodesAndEdges = async ({
-  semesters,
-  allCourses,
-  graph,
-  transferCredits
-}: StudentProfile) => {
-  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
-    semesters,
-    allCourses
-  )
-
-  // if there are transfer credits, we want to render them and their edges
-  if (transferCredits.length > 0) {
-    const transferNodesAndEdges = getTransferNodesAndEdges(transferCredits, graph)
-
-    defaultNodes.push(...transferNodesAndEdges.nodes)
-    defaultEdges.push(...transferNodesAndEdges.edges)
-  }
-
-  // we also want to display all nodes not in transfer or a semester and its edges
-
-  const { nodes: unassignedNodes, edges: unassignedEdges } = await getUnassignedNodesAndEdges(
-    graph,
-    defaultNodes,
-    transferCredits.map(c => {
-      const n = graph.get(c)
-      if (!n) {
-        throw new Error(`Could not find course with id ${c}`)
-      }
-      return n
-    })
-  )
-
-  defaultNodes.push(...unassignedNodes)
-  defaultEdges.push(...unassignedEdges)
-
-  return { defaultNodes, defaultEdges }
 }
