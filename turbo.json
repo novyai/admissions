@@ -1,7 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "OPENAI_API_KEY", "OPENAI_ORG_ID"],
+  "globalEnv": ["NODE_ENV", "OPENAI_API_KEY", "OPENAI_ORG_ID", "WEBHOOK_SECRET"],
   "pipeline": {
     "build": {
       "dependsOn": ["db:generate", "^build"],
