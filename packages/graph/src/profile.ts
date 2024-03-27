@@ -2,7 +2,6 @@ import Graph from "graphology"
 import { forEachTopologicalGeneration, topologicalGenerations } from "graphology-dag"
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
-import { XYPosition } from "reactflow"
 
 import { db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
