@@ -57,24 +57,22 @@ function SemesterDAGInternal({
   onEdgesChange,
   saveVersion
 }: SemesterDAGProps) {
-  const { getIntersectingNodes } = useReactFlow()
+  const { getIntersectingNodes: _get } = useReactFlow()
 
-  const onNodeDrag: NodeDragHandler = useCallback((_, node) => {
-    const intersections = getIntersectingNodes(node).map(n => n.id)
-
-    setNodes(ns =>
-      ns.map(n => {
-        if (n.type === "courseNode") return n
-
-        return {
-          ...n,
-          style: {
-            ...n.style,
-            backgroundColor: intersections.includes(n.id) ? "red" : ""
-          }
-        }
-      })
-    )
+  const onNodeDrag: NodeDragHandler = useCallback((_, _node) => {
+    // const _intersections = getIntersectingNodes(node).map(n => n.id)
+    // setNodes(ns =>
+    //   ns.map(n => {
+    //     if (n.type === "courseNode") return n
+    //     return {
+    //       ...n,
+    //       style: {
+    //         ...n.style,
+    //         backgroundColor: intersections.includes(n.id) ? "red" : ""
+    //       }
+    //     }
+    //   })
+    // )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

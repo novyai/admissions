@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from "react"
 import { Version } from "@db/client"
 import { getProfileFromSchedule } from "@graph/action"
 import { Button } from "@ui/components/ui/button"
-import { Node, useEdgesState, useNodesState } from "reactflow"
+import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { SemesterDAG } from "@/components/semester-dag"
 
@@ -14,10 +14,24 @@ export function Editor({ versions: initialVersions }: { versions: Version[] }) {
   const [versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([])
-  const [edges, setEdges, onEdgesChange] = useEdgesState([])
+  const [nodes, setNodes] = useState<Node[]>([])
+  const [edges, setEdges] = useState<Edge[]>([])
 
-  const [status, setStatus] = useState<"pending" | "saving" | "clean" | "error">("clean")
+  const onNodesChange = useCallback(
+    (changes: NodeChange[]) => {
+      const changeTypes = new Set(changes.map(c => c.type))
+      if (changeTypes.has("position")) {
+        setStatus("dirty")
+      }
+      setNodes(nds => applyNodeChanges(changes, nds))
+    },
+    [setNodes]
+  )
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
+    [setEdges]
+  )
+  const [status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
   const saveVersion = async (nodes: Node[]) => {
     setStatus("saving")
@@ -51,12 +65,16 @@ export function Editor({ versions: initialVersions }: { versions: Version[] }) {
 
   return (
     <>
-      <p>{status}</p>
-      <DagVersionSidebar
-        versions={versions}
-        selectedVersion={selectedVersion}
-        setSelectedVersion={setSelectedVersion}
-      />
+      <div className="flex flex-col gap-y-4">
+        <Button disabled={status !== "dirty"} onClick={() => saveVersion(nodes)}>
+          {status === "dirty" ? "Save Changes" : "No Changes"}
+        </Button>
+        <VersionList
+          versions={versions}
+          selectedVersion={selectedVersion}
+          setSelectedVersion={setSelectedVersion}
+        />
+      </div>
       <div className="flex flex-col w-full h-full">
         <div className="relative flex-1 min-h-[50vh] rounded-xl border">
           <SemesterDAG
@@ -74,7 +92,7 @@ export function Editor({ versions: initialVersions }: { versions: Version[] }) {
   )
 }
 
-function DagVersionSidebar({
+function VersionList({
   versions,
   selectedVersion,
   setSelectedVersion
@@ -84,7 +102,7 @@ function DagVersionSidebar({
   setSelectedVersion: (version: Version) => void
 }) {
   return (
-    <div className="flex flex-col gap-y-4">
+    <>
       {versions.map(version => {
         return (
           <Button
@@ -98,6 +116,6 @@ function DagVersionSidebar({
           </Button>
         )
       })}
-    </div>
+    </>
   )
 }
