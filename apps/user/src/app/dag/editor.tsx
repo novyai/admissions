@@ -4,21 +4,13 @@ import { useEffect, useState } from "react"
 import { Version } from "@db/client"
 import { getProfileFromSchedule } from "@graph/action"
 import { Button } from "@ui/components/ui/button"
-import { Edge, Node, useEdgesState, useNodesState } from "reactflow"
+import { Node, useEdgesState, useNodesState } from "reactflow"
 
 import { SemesterDAG } from "@/components/semester-dag"
 
 import { createVersion, getAllNodesAndEdges } from "./action"
 
-export function Editor({
-  versions: initialVersions
-  // profile
-}: {
-  // nodes: Node[]
-  // edges: Edge[]
-  versions: Version[]
-  // profile: StudentProfile
-}) {
+export function Editor({ versions: initialVersions }: { versions: Version[] }) {
   const [versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
 
@@ -54,11 +46,12 @@ export function Editor({
         setStatus("error")
       }
     )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion])
 
   return (
     <>
-      {/* <p>{status}</p> */}
+      <p>{status}</p>
       <DagVersionSidebar
         versions={versions}
         selectedVersion={selectedVersion}

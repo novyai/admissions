@@ -11,8 +11,6 @@ import ReactFlow, {
   OnEdgesChange,
   OnNodesChange,
   ReactFlowProvider,
-  useEdgesState,
-  useNodesState,
   useReactFlow
 } from "reactflow"
 
@@ -62,7 +60,7 @@ function SemesterDAGInternal({
   const { getIntersectingNodes } = useReactFlow()
 
   const onNodeDrag: NodeDragHandler = useCallback((_, node) => {
-    const intersections = getIntersectingNodes(node, false).map(n => n.id)
+    const intersections = getIntersectingNodes(node).map(n => n.id)
 
     setNodes(ns =>
       ns.map(n => {
