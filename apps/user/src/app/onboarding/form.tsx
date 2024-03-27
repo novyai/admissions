@@ -1,18 +1,16 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@ui/components/multiselect"
 import { Button } from "@ui/components/ui/button"
-import {
-  Form,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@ui/components/ui/form"
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/ui/form"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
+
+import { Program } from "@/lib/defaultCourses"
+
+import { createFirstScheduleAndVersion } from "./action"
 
 export const programs = [
   {
@@ -37,11 +35,19 @@ export function OnboardingForm({ userId }: { userId: string }) {
     }
   })
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  const router = useRouter()
+
+  // 2. async Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const programs = values.options.map(option => option.value)
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isValidProgram = (program: any): program is Program =>
+      Object.values(Program).includes(program)
+    const validPrograms: Program[] = programs.filter(isValidProgram)
+
+    await createFirstScheduleAndVersion(userId, validPrograms)
+    router.push("/dag")
   }
 
   return (
@@ -56,6 +62,7 @@ export function OnboardingForm({ userId }: { userId: string }) {
               <MultiSelect
                 options={programs satisfies Option[]}
                 {...field}
+                trigger={form.trigger}
                 placeholder="Select your majors"
               />
               <FormMessage />

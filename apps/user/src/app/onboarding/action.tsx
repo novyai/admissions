@@ -1,37 +1,13 @@
 "use server"
 
-import cseDegree from "@/cse_requirments.json"
-import { db, Prisma } from "@db/client"
+import { db } from "@db/client"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 
+import { Program, programHandler } from "@/lib/defaultCourses"
 import { createBlob } from "@/lib/version-blob"
 
 import { getAllNodesAndEdges } from "../dag/action"
-
-export enum Program {
-  "CS" = "CS",
-  "DS" = "DS"
-}
-
-const programHandler: Record<Program, Prisma.CourseWhereInput[]> = {
-  [Program.CS]: cseDegree.map((course): Prisma.CourseWhereInput => {
-    return {
-      department: {
-        code: course.course_dept
-      },
-      courseNumber: course.course_code
-    }
-  }),
-  [Program.DS]: cseDegree.map((course): Prisma.CourseWhereInput => {
-    return {
-      department: {
-        code: course.course_dept
-      },
-      courseNumber: course.course_code
-    }
-  })
-}
 
 export async function createFirstScheduleAndVersion(userId: string, programs: Program[]) {
   const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
@@ -73,7 +49,7 @@ export async function createFirstScheduleAndVersion(userId: string, programs: Pr
 
   const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
-  const schedule = await db.schedule.create({
+  await db.schedule.create({
     data: {
       userID: userId,
       versions: {
@@ -96,6 +72,4 @@ export async function createFirstScheduleAndVersion(userId: string, programs: Pr
       }
     }
   })
-
-  // return schedule
 }

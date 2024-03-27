@@ -5,24 +5,43 @@ import { Badge } from "@ui/components/ui/badge"
 import { Command, CommandGroup, CommandItem } from "@ui/components/ui/command"
 import { Command as CommandPrimitive } from "cmdk"
 import { X } from "lucide-react"
+import { ControllerRenderProps, UseFormTrigger } from "react-hook-form"
 
 export type Option = Record<"value" | "label", string>
 
-interface MultiSelectProps {
+interface MultiSelectProps
+  extends ControllerRenderProps<
+    {
+      options: Option[]
+    },
+    "options"
+  > {
   options: Option[]
   value: Option[]
-  onChange: React.Dispatch<React.SetStateAction<Option[]>>
   className?: string
   placeholder: string
+
+  trigger: UseFormTrigger<{
+    options: Option[]
+  }>
 }
 
-export function MultiSelect({ options, value: selected, onChange, placeholder }: MultiSelectProps) {
+export function MultiSelect({
+  options,
+  value: selected,
+  onChange,
+  placeholder,
+  trigger,
+  name
+}: MultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState("")
 
-  const handleUnselect = React.useCallback((framework: Option) => {
-    onChange(prev => prev.filter(s => s.value !== framework.value))
+  const handleUnselect = React.useCallback((option: Option) => {
+    const newSelected = [...selected.filter(s => s.value !== option.value)]
+    onChange(newSelected)
+    trigger(name)
   }, [])
 
   const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -30,11 +49,9 @@ export function MultiSelect({ options, value: selected, onChange, placeholder }:
     if (input) {
       if (e.key === "Delete" || e.key === "Backspace") {
         if (input.value === "") {
-          onChange(prev => {
-            const newSelected = [...prev]
-            newSelected.pop()
-            return newSelected
-          })
+          const newSelected = [...selected]
+          newSelected.pop()
+          onChange(newSelected)
         }
       }
       // This is not a default behaviour of the <input /> field
@@ -96,9 +113,10 @@ export function MultiSelect({ options, value: selected, onChange, placeholder }:
                       e.preventDefault()
                       e.stopPropagation()
                     }}
-                    onSelect={value => {
+                    onSelect={_value => {
                       setInputValue("")
-                      onChange(prev => [...prev, option])
+                      onChange([...selected, option])
+                      trigger(name)
                     }}
                     className={"cursor-pointer"}
                   >
