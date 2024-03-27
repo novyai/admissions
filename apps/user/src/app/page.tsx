@@ -27,10 +27,10 @@ function HeroSection() {
           Let our AI plan your schedule. Spend less time organizing and more time doing.
         </p>
         <div className="flex flex-col gap-2 min-[400px]:flex-row">
-          <SignInButton afterSignInUrl="/dag" mode="redirect">
+          <SignInButton afterSignInUrl="/verify" mode="redirect">
             <Button>Sign In</Button>
           </SignInButton>
-          <SignUpButton afterSignUpUrl="/dag" mode="redirect">
+          <SignUpButton afterSignUpUrl="/verify" mode="redirect">
             <Button>Sign Up</Button>
           </SignUpButton>
         </div>
