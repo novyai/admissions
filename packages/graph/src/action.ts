@@ -2,7 +2,7 @@
 
 import { XYPosition } from "reactflow"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
-import { CustomGraph, addCourseToGraph, computeNodeStats, toCourseNode } from "./profile"
+import { CourseGraph, addCourseToGraph, computeNodeStats, toCourseNode } from "./profile"
 import Graph from "graphology"
 
 export async function getProfileFromSchedule(blob: string): Promise<StudentProfile> {
@@ -14,7 +14,7 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
     }[]
   }
 
-  const graph: CustomGraph = new Graph()
+  const graph: CourseGraph = new Graph()
 
 
   for (const node of [...nodes.map(n => n.id), ...profile.semesters.flat()]) {
