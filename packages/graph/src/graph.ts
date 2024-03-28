@@ -1,5 +1,5 @@
 import { CourseNode, StudentProfile } from "@graph/types"
-import { CourseGraph, computeNodeStats } from "./profile"
+import { CourseGraph, computeNodeStats, toCourseNode } from "./profile"
 import Graph from "graphology"
 
 export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
@@ -60,74 +60,25 @@ export function getAllRequiredCourses(course: string, graph: Map<string, CourseN
 }
 
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
-  const course = profile.graph.get(courseId)
-  if (!course) {
-    return []
-  }
+  const graph = studentProfileToGraph(profile)
 
-  const prereqs = course.prerequisites
-  if (prereqs.length === 0) {
-    return []
-  }
-  const prereqCourses = prereqs.map(p => getAllPrereqs(p, profile)).flat()
+  return _getAllPrereqs(courseId, graph)
+    .map(prereqId => toCourseNode(graph, prereqId, undefined))
+}
 
-  return prereqCourses
+function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
+  const prereqs = graph.inNeighbors(courseId)
+  return [...prereqs, ...prereqs.flatMap(p => _getAllPrereqs(p, graph))]
 }
 
 export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
-  const course = profile.graph.get(courseId)
-  if (!course) {
-    return []
-  }
+  const graph = studentProfileToGraph(profile)
 
-  const dependents = course.dependents
-  if (dependents.length === 0) {
-    return []
-  }
-  const dependentCourses = dependents.map(p => getAllDependents(p, profile)).flat()
-
-  return dependentCourses
+  return _getAllDependents(courseId, graph)
+    .map(prereqId => toCourseNode(graph, prereqId, undefined))
 }
 
-// const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
-// const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
-// const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
-// const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
-
-// const mathProfile: StudentProfile = {
-//   requiredCourses: [calc2, calc1],
-//   completedCourses: [precalc],
-//   timeToGraduate: 4
-// }
-
-// await getDegree(mathProfile)
-
-// const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
-//   const [dept, num] = course.split(" ")
-//   return {
-//     department: {
-//       code: dept
-//     },
-//     courseNumber: num
-//   }
-// })
-
-// const requiredCourses = await db.course.findMany({
-//   where: {
-//     OR: deptCourses
-//   },
-//   select: {
-//     id: true,
-//     name: true
-//   }
-// })
-
-// console.log(requiredCourses.map(course => course.name))
-
-// const cseProfile: StudentProfile = {
-//   requiredCourses: requiredCourses.map(course => course.id),
-//   completedCourses: [],
-//   timeToGraduate: 8
-// }
-
-// await getDegree(cseProfile)
+function _getAllDependents(courseId: string, graph: CourseGraph): string[] {
+  const prereqs = graph.outNeighbors(courseId)
+  return [...prereqs, ...prereqs.flatMap(p => _getAllDependents(p, graph))]
+}

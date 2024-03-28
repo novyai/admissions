@@ -9,21 +9,21 @@ import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 type CourseAttributes = {
   semester?: number
 } & Course & (
-  | {
-    hasAttributes: false
-    fanOut: undefined
-    earliestFinish: undefined
-    latestFinish: undefined
-    slack: undefined
-  }
-  | {
-    hasAttributes: true
-    fanOut: number
-    earliestFinish: number
-    latestFinish: number
-    slack: number
-  }
-)
+    | {
+      hasAttributes: false
+      fanOut: undefined
+      earliestFinish: undefined
+      latestFinish: undefined
+      slack: undefined
+    }
+    | {
+      hasAttributes: true
+      fanOut: number
+      earliestFinish: number
+      latestFinish: number
+      slack: number
+    }
+  )
 
 export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
 
@@ -90,7 +90,7 @@ async function getCourseWithPreqs(courseId: string) {
 
 export async function addCourseToGraph(
   courseId: string,
-  graph: CustomGraph,
+  graph: CourseGraph,
   completedCourseIds: string[]
 ) {
   // check if the course is already in the graph, if it is, exit
@@ -111,7 +111,7 @@ export async function addCourseToGraph(
     name: course.name,
     departmentId: course.departmentId,
     universityId: course.universityId,
-    
+
     startTerm: null,
     endTerm: null,
 
@@ -147,7 +147,7 @@ export async function addCourseToGraph(
   }
 }
 
-export function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile) {
+export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {
   var semester = 1
   forEachTopologicalGeneration(graph, coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
@@ -178,7 +178,7 @@ export function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile
  * @param courseId
  * @returns
  */
-function calculateFanOut(graph: CustomGraph, courseId: string): number {
+function calculateFanOut(graph: CourseGraph, courseId: string): number {
   const fanOut = graph
     .mapOutboundNeighbors(courseId, dependingCourseId => {
       return calculateFanOut(graph, dependingCourseId) + 1
@@ -194,7 +194,7 @@ function calculateFanOut(graph: CustomGraph, courseId: string): number {
  * @param graph
  * @param profile
  */
-function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
+function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   var currentSemester = 1
   var coursesInCurrentSemester = 0
   var firstDeferredCourseId = null
@@ -248,7 +248,11 @@ function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
   }
 }
 
-export function toCourseNode(graph: Graph, courseId: string, course: Attributes): CourseNode {
+
+export function toCourseNode(graph: Graph, courseId: string, course: Attributes | undefined): CourseNode {
+  if (!course) {
+    course = graph.getNodeAttributes(courseId)
+  }
   return {
     id: courseId,
     name: course["name"],
