@@ -67,11 +67,11 @@ export const getAllPrereqs = (courseId: string, profile: StudentProfile): Course
 
   const prereqs = course.prerequisites
   if (prereqs.length === 0) {
-    return [course]
+    return []
   }
   const prereqCourses = prereqs.map(p => getAllPrereqs(p, profile)).flat()
 
-  return [course, ...prereqCourses]
+  return prereqCourses
 }
 
 export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
@@ -82,11 +82,11 @@ export const getAllDependents = (courseId: string, profile: StudentProfile): Cou
 
   const dependents = course.dependents
   if (dependents.length === 0) {
-    return [course]
+    return []
   }
   const dependentCourses = dependents.map(p => getAllDependents(p, profile)).flat()
 
-  return [course, ...dependentCourses]
+  return dependentCourses
 }
 
 // const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"

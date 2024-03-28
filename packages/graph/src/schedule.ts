@@ -108,9 +108,7 @@ export function canMoveCourse(
   }
 
   // Find all courses that list the moving course as a prerequisite
-  const dependentCourses = getAllDependents(course.id, profile).filter(
-    (c): c is CourseNode => c.id !== course.id
-  )
+  const dependentCourses = getAllDependents(course.id, profile)
   for (const dependentCourse of dependentCourses) {
     const dependentCourseSemesterIndex = profile.semesters.findIndex(semester =>
       semester.some(c => c.id === dependentCourse.id)
