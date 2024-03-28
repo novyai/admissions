@@ -24,7 +24,7 @@ export const programs = [
 ]
 
 const formSchema = z.object({
-  options: z.array(z.custom<Option>())
+  options: z.array(z.custom<Option>()).min(1)
 })
 
 export function OnboardingForm({ userId }: { userId: string }) {
@@ -58,7 +58,7 @@ export function OnboardingForm({ userId }: { userId: string }) {
           name="options"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{field.name}</FormLabel>
+              <FormLabel>Major / Minor Selection</FormLabel>
               <MultiSelect
                 options={programs satisfies Option[]}
                 {...field}
