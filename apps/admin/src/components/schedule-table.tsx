@@ -75,29 +75,6 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
         return <div>{row.original.fanOut}</div>
       }
     },
-    // {
-    //   id: "unmet prereqs",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Unmet Prerequisites" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div>
-    //         {getUnmetCourseRequirements(row.original.id, profile)
-    //           .filter(
-    //             p =>
-    //               !profile.semesters
-    //                 .flat()
-    //                 .map(c => c.id)
-    //                 .includes(p)
-    //           )
-    //           .filter(p => p !== row.original.id)
-    //           .map(p => profile.graph.get(p)?.name)
-    //           .join(", ")}
-    //       </div>
-    //     )
-    //   }
-    // },
     {
       id: "required for",
       header: ({ column }) => {

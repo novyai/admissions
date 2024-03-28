@@ -39,21 +39,6 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
   return graph
 }
 
-export function isEligibleForCourse(course: CourseNode, semesters: CourseNode[][]): boolean {
-  // If the course has no prerequisites, then you can take it immediately
-  if (course.prerequisites.length === 0) return true
-
-  // If the student has already completed the prerequisites, then they are eligible
-  const isEligible = course.prerequisites.every(prerequisite =>
-    semesters
-      .flat()
-      .map(c => c.id)
-      .includes(prerequisite)
-  )
-
-  return isEligible
-}
-
 /**
  * Returns all of the courses that depend on the given course
  * @param course Course to get all required courses for
@@ -93,34 +78,6 @@ export function isLastClassRequired(node: CourseNode, profile: StudentProfile): 
     return true
   }
   return false
-}
-
-export function getUnmetCourseRequirements(course: string, profile: StudentProfile): string[] {
-  const node = profile.graph.get(course)
-  if (!node) throw new Error("Course not found")
-
-  // two base cases:
-  // 1. if the course is already completed, return an empty array
-  // 2. if the student is eligible to take the course, return an empty array
-
-  if (
-    profile.semesters
-      .flat()
-      .map(c => c.id)
-      .includes(node.id)
-  ) {
-    return []
-  }
-
-  if (isEligibleForCourse(node, profile.semesters)) {
-    return []
-  }
-
-  const unmetPrerequisites = node.prerequisites.map(prerequisite => {
-    return getUnmetCourseRequirements(prerequisite, profile)
-  })
-
-  return [course, ...unmetPrerequisites.flat()]
 }
 
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
