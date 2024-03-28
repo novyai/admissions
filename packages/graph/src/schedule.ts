@@ -34,21 +34,6 @@ export function addToSemester(
   }
 }
 
-export function canMoveCourse2(
-  courseId: string,
-  toSemester: number,
-  profile: StudentProfile
-): { canMove: false, reason: string } | { canMove: true } {
-  if (toSemester >= profile.timeToGraduate) {
-    return {
-      canMove: false,
-      reason: "Cannot move course beyond the student's time to graduate."
-    }
-  }
-
-  return { canMove: true }
-}
-
 /**
  * Checks if a course can be moved to a different semester without violating prerequisites and graduation time.
  * @param courseId The ID of the course to move.
