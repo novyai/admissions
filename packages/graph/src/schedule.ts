@@ -1,4 +1,4 @@
-import { getAllDependents, getAllRequiredCourses } from "@graph/graph"
+import { getAllDependents, getAllPrereqs } from "@graph/graph"
 import { CourseNode, StudentProfile } from "@graph/types"
 
 import { getCourseFromIdNameCode } from "./course"
@@ -83,9 +83,7 @@ export function canMoveCourse(
   }
 
   // Check if moving the course violates any prerequisite requirements
-  const coursePrerequisites = getAllRequiredCourses(course.id, profile.graph).filter(
-    c => c !== course.id
-  )
+  const coursePrerequisites = getAllPrereqs(course.id, profile).map(p => p.id)
 
   const beforePrereqs: string[] = []
   for (const prereqId of coursePrerequisites) {

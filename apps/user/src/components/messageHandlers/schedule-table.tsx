@@ -1,6 +1,6 @@
 "use client"
 
-import { getAllRequiredCourses } from "@repo/graph/graph"
+import { getAllPrereqs } from "@repo/graph/graph"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@ui/components/table"
@@ -88,9 +88,7 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
       return <DataTableColumnHeader column={column} title="Prerequisites" />
     },
     cell: ({ row }) => {
-      const courses = getAllRequiredCourses(row.original.id, profile.graph)
-        .filter(p => p !== row.original.id)
-        .map(p => ` - ${profile.graph.get(p)?.name}`)
+      const courses = getAllPrereqs(row.original.id, profile).map(p => ` - ${p.name}`)
 
       if (courses.length > 0) {
         return <MdxContent content={courses.join("\n")} />

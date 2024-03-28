@@ -39,26 +39,6 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
   return graph
 }
 
-/**
- * Returns all of the courses that depend on the given course
- * @param course Course to get all required courses for
- * @param graph Map of all courses
- * @returns Array of all required courses for the given course
- */
-export function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
-  const requiredCourses = new Set<string>()
-
-  const node = graph.get(course)
-  if (!node) throw new Error("Course not found")
-  requiredCourses.add(course)
-  for (const prerequisite of node.prerequisites) {
-    getAllRequiredCourses(prerequisite, graph).forEach(entry => {
-      requiredCourses.add(entry)
-    })
-  }
-  return [...requiredCourses.values()]
-}
-
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
 
