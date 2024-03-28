@@ -1,4 +1,43 @@
 import { CourseNode, StudentProfile } from "@graph/types"
+import { CourseGraph, computeNodeStats } from "./profile"
+import Graph from "graphology"
+
+export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
+
+  const graph : CourseGraph = new Graph()
+
+  for (const courseNode of profile.allCourses) {
+    graph.addNode(courseNode.id, {
+      id: courseNode.id,
+      courseSubject: courseNode.raw_course.courseSubject,
+      courseNumber: courseNode.raw_course.courseNumber,
+      name: courseNode.name,
+      departmentId: courseNode.raw_course.departmentId,
+      universityId: courseNode.raw_course.universityId,
+
+      startTerm: null,
+      endTerm: null, 
+
+      hasAttributes: false,
+      fanOut: undefined,
+      earliestFinish: undefined,
+      latestFinish: undefined,
+      slack: undefined,
+
+      //TODO: add semester
+    })
+  }
+
+  for (const courseNode of profile.allCourses) {
+    for (const prereq of courseNode.prerequisites) {
+      graph.addDirectedEdge(prereq, courseNode.id)
+    }
+  }
+
+  computeNodeStats(graph, profile)
+
+  return graph
+}
 
 export function isEligibleForCourse(course: CourseNode, semesters: CourseNode[][]): boolean {
   // If the course has no prerequisites, then you can take it immediately
