@@ -1,158 +1,64 @@
 import { CourseNode, StudentProfile } from "@graph/types"
+import { CourseGraph, computeNodeStats, toCourseNode } from "./profile"
+import Graph from "graphology"
 
-export function isEligibleForCourse(course: CourseNode, semesters: CourseNode[][]): boolean {
-  // If the course has no prerequisites, then you can take it immediately
-  if (course.prerequisites.length === 0) return true
+export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
 
-  // If the student has already completed the prerequisites, then they are eligible
-  const isEligible = course.prerequisites.every(prerequisite =>
-    semesters
-      .flat()
-      .map(c => c.id)
-      .includes(prerequisite)
-  )
+  const graph : CourseGraph = new Graph()
 
-  return isEligible
-}
+  for (const courseNode of profile.allCourses) {
+    graph.addNode(courseNode.id, {
+      id: courseNode.id,
+      courseSubject: courseNode.raw_course.courseSubject,
+      courseNumber: courseNode.raw_course.courseNumber,
+      name: courseNode.name,
+      departmentId: courseNode.raw_course.departmentId,
+      universityId: courseNode.raw_course.universityId,
 
-/**
- * Returns all of the courses that depend on the given course
- * @param course Course to get all required courses for
- * @param graph Map of all courses
- * @returns Array of all required courses for the given course
- */
-export function getAllRequiredCourses(course: string, graph: Map<string, CourseNode>) {
-  const requiredCourses = new Set<string>()
+      startTerm: null,
+      endTerm: null, 
 
-  const node = graph.get(course)
-  if (!node) throw new Error("Course not found")
-  requiredCourses.add(course)
-  for (const prerequisite of node.prerequisites) {
-    getAllRequiredCourses(prerequisite, graph).forEach(entry => {
-      requiredCourses.add(entry)
+      hasAttributes: false,
+      fanOut: undefined,
+      earliestFinish: undefined,
+      latestFinish: undefined,
+      slack: undefined,
+
+      semester: profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id))
     })
   }
-  return [...requiredCourses.values()]
-}
 
-/**
- * Checks if the course doesn't have any other required courses that depend on it to graduate
- * @param node Class Node to check if it is the last required course
- * @param profile Profile of the student and degree
- * @param graph Map of all courses
- * @returns true if no other required courses depend on this course to graduate, false otherwise
- */
-export function isLastClassRequired(node: CourseNode, profile: StudentProfile): boolean {
-  // checks if course is the prereq for any other required course
-  if (profile.requiredCourses.includes(node.id)) {
-    for (const course of profile.requiredCourses) {
-      if (course === node.id) continue
-      if (getAllRequiredCourses(course, profile.graph).includes(node.id)) {
-        return false
-      }
+  for (const courseNode of profile.allCourses) {
+    for (const prereq of courseNode.prerequisites) {
+      graph.addDirectedEdge(prereq, courseNode.id)
     }
-    return true
-  }
-  return false
-}
-
-export function getUnmetCourseRequirements(course: string, profile: StudentProfile): string[] {
-  const node = profile.graph.get(course)
-  if (!node) throw new Error("Course not found")
-
-  // two base cases:
-  // 1. if the course is already completed, return an empty array
-  // 2. if the student is eligible to take the course, return an empty array
-
-  if (
-    profile.semesters
-      .flat()
-      .map(c => c.id)
-      .includes(node.id)
-  ) {
-    return []
   }
 
-  if (isEligibleForCourse(node, profile.semesters)) {
-    return []
-  }
+  computeNodeStats(graph, profile)
 
-  const unmetPrerequisites = node.prerequisites.map(prerequisite => {
-    return getUnmetCourseRequirements(prerequisite, profile)
-  })
-
-  return [course, ...unmetPrerequisites.flat()]
+  return graph
 }
 
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
-  const course = profile.graph.get(courseId)
-  if (!course) {
-    return []
-  }
+  const graph = studentProfileToGraph(profile)
 
-  const prereqs = course.prerequisites
-  if (prereqs.length === 0) {
-    return [course]
-  }
-  const prereqCourses = prereqs.map(p => getAllPrereqs(p, profile)).flat()
+  return _getAllPrereqs(courseId, graph)
+    .map(prereqId => toCourseNode(graph, prereqId, undefined))
+}
 
-  return [course, ...prereqCourses]
+function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
+  const prereqs = graph.inNeighbors(courseId)
+  return [...prereqs, ...prereqs.flatMap(p => _getAllPrereqs(p, graph))]
 }
 
 export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
-  const course = profile.graph.get(courseId)
-  if (!course) {
-    return []
-  }
+  const graph = studentProfileToGraph(profile)
 
-  const dependents = course.dependents
-  if (dependents.length === 0) {
-    return [course]
-  }
-  const dependentCourses = dependents.map(p => getAllDependents(p, profile)).flat()
-
-  return [course, ...dependentCourses]
+  return _getAllDependents(courseId, graph)
+    .map(prereqId => toCourseNode(graph, prereqId, undefined))
 }
 
-// const calc2 = "faec91f2-461b-4bb7-b266-cd1307ecae4d"
-// const calc1 = "2e6b393e-1b5c-4a46-a5be-f62e41545748"
-// const calc3 = "e4ada3c1-f89a-48c6-bbcd-3a6165fce77d"
-// const precalc = "6b15a066-a434-499b-8b26-6179ff2dca19"
-
-// const mathProfile: StudentProfile = {
-//   requiredCourses: [calc2, calc1],
-//   completedCourses: [precalc],
-//   timeToGraduate: 4
-// }
-
-// await getDegree(mathProfile)
-
-// const deptCourses = Object.keys(cseDegree.Courses).map((course): Prisma.CourseWhereInput => {
-//   const [dept, num] = course.split(" ")
-//   return {
-//     department: {
-//       code: dept
-//     },
-//     courseNumber: num
-//   }
-// })
-
-// const requiredCourses = await db.course.findMany({
-//   where: {
-//     OR: deptCourses
-//   },
-//   select: {
-//     id: true,
-//     name: true
-//   }
-// })
-
-// console.log(requiredCourses.map(course => course.name))
-
-// const cseProfile: StudentProfile = {
-//   requiredCourses: requiredCourses.map(course => course.id),
-//   completedCourses: [],
-//   timeToGraduate: 8
-// }
-
-// await getDegree(cseProfile)
+function _getAllDependents(courseId: string, graph: CourseGraph): string[] {
+  const prereqs = graph.outNeighbors(courseId)
+  return [...prereqs, ...prereqs.flatMap(p => _getAllDependents(p, graph))]
+}

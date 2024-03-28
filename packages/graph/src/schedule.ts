@@ -1,4 +1,4 @@
-import { getAllDependents, getAllRequiredCourses } from "@graph/graph"
+import { getAllDependents, getAllPrereqs } from "@graph/graph"
 import { CourseNode, StudentProfile } from "@graph/types"
 
 import { getCourseFromIdNameCode } from "./course"
@@ -68,9 +68,7 @@ export function canMoveCourse(
   }
 
   // Check if moving the course violates any prerequisite requirements
-  const coursePrerequisites = getAllRequiredCourses(course.id, profile.graph).filter(
-    c => c !== course.id
-  )
+  const coursePrerequisites = getAllPrereqs(course.id, profile).map(p => p.id)
 
   const beforePrereqs: string[] = []
   for (const prereqId of coursePrerequisites) {
@@ -93,9 +91,7 @@ export function canMoveCourse(
   }
 
   // Find all courses that list the moving course as a prerequisite
-  const dependentCourses = getAllDependents(course.id, profile).filter(
-    (c): c is CourseNode => c.id !== course.id
-  )
+  const dependentCourses = getAllDependents(course.id, profile)
   for (const dependentCourse of dependentCourses) {
     const dependentCourseSemesterIndex = profile.semesters.findIndex(semester =>
       semester.some(c => c.id === dependentCourse.id)

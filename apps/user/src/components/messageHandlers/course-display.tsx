@@ -12,8 +12,8 @@ export const CourseDisplay = ({ course, profile }: { course: string; profile: St
     return <div>Course {course} not found</div>
   }
 
-  const preqs = getAllPrereqs(courseNode.id, profile).filter(p => p.id !== courseNode.id)
-  const dependents = getAllDependents(courseNode.id, profile).filter(p => p.id !== courseNode.id)
+  const preqs = getAllPrereqs(courseNode.id, profile)
+  const dependents = getAllDependents(courseNode.id, profile)
 
   return (
     <MdxContent

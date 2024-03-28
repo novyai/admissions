@@ -1,6 +1,6 @@
 "use client"
 
-import { getAllRequiredCourses } from "@repo/graph/graph"
+import { getAllPrereqs } from "@repo/graph/graph"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
@@ -75,29 +75,6 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
         return <div>{row.original.fanOut}</div>
       }
     },
-    // {
-    //   id: "unmet prereqs",
-    //   header: ({ column }) => {
-    //     return <DataTableColumnHeader column={column} title="Unmet Prerequisites" />
-    //   },
-    //   cell: ({ row }) => {
-    //     return (
-    //       <div>
-    //         {getUnmetCourseRequirements(row.original.id, profile)
-    //           .filter(
-    //             p =>
-    //               !profile.semesters
-    //                 .flat()
-    //                 .map(c => c.id)
-    //                 .includes(p)
-    //           )
-    //           .filter(p => p !== row.original.id)
-    //           .map(p => profile.graph.get(p)?.name)
-    //           .join(", ")}
-    //       </div>
-    //     )
-    //   }
-    // },
     {
       id: "required for",
       header: ({ column }) => {
@@ -106,9 +83,8 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
       cell: ({ row }) => {
         return (
           <div>
-            {getAllRequiredCourses(row.original.id, profile.graph)
-              .filter(p => p !== row.original.id)
-              .map(p => profile.graph.get(p)?.name)
+            {getAllPrereqs(row.original.id, profile)
+              .map(preq => preq.name)
               .join(", ")}
           </div>
         )

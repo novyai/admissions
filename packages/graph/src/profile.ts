@@ -3,29 +3,30 @@ import { forEachTopologicalGeneration, topologicalGenerations } from "graphology
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
 
-import { db } from "../../db/src/client"
+import { Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 type CourseAttributes = {
   semester?: number
-} & (
-  | (Exclude<Awaited<ReturnType<typeof getCourseWithPreqs>>, null> & {
+} & Course & (
+    | {
       hasAttributes: false
       fanOut: undefined
       earliestFinish: undefined
       latestFinish: undefined
       slack: undefined
-    })
-  | (Exclude<Awaited<ReturnType<typeof getCourseWithPreqs>>, null> & {
+    }
+    | {
       hasAttributes: true
       fanOut: number
       earliestFinish: number
       latestFinish: number
       slack: number
-    })
-)
+    }
+  )
 
-export type CustomGraph = Graph<CourseAttributes, Attributes, Attributes>
+export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
+
 /**
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
@@ -33,7 +34,7 @@ export type CustomGraph = Graph<CourseAttributes, Attributes, Attributes>
 export const getStudentProfileFromRequirements = async (
   profile: BaseStudentProfile
 ): Promise<StudentProfile> => {
-  const graph: CustomGraph = new Graph()
+  const graph: CourseGraph = new Graph()
 
   for (const courseId of profile.requiredCourses) {
     await addCourseToGraph(courseId, graph, profile.transferCredits) // Await the completion of each addCourseToGraph call
@@ -72,6 +73,8 @@ async function getCourseWithPreqs(courseId: string) {
       courseNumber: true,
       courseSubject: true,
       name: true,
+      departmentId: true,
+      universityId: true,
       conditions: {
         include: {
           conditions: {
@@ -87,7 +90,7 @@ async function getCourseWithPreqs(courseId: string) {
 
 export async function addCourseToGraph(
   courseId: string,
-  graph: CustomGraph,
+  graph: CourseGraph,
   completedCourseIds: string[]
 ) {
   // check if the course is already in the graph, if it is, exit
@@ -102,7 +105,16 @@ export async function addCourseToGraph(
   }
 
   graph.addNode(courseId, {
-    ...course,
+    id: course.id,
+    courseSubject: course.courseSubject,
+    courseNumber: course.courseNumber,
+    name: course.name,
+    departmentId: course.departmentId,
+    universityId: course.universityId,
+
+    startTerm: null,
+    endTerm: null,
+
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,
@@ -135,7 +147,7 @@ export async function addCourseToGraph(
   }
 }
 
-export function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile) {
+export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {
   var semester = 1
   forEachTopologicalGeneration(graph, coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
@@ -166,7 +178,7 @@ export function computeNodeStats(graph: CustomGraph, profile: BaseStudentProfile
  * @param courseId
  * @returns
  */
-function calculateFanOut(graph: CustomGraph, courseId: string): number {
+function calculateFanOut(graph: CourseGraph, courseId: string): number {
   const fanOut = graph
     .mapOutboundNeighbors(courseId, dependingCourseId => {
       return calculateFanOut(graph, dependingCourseId) + 1
@@ -182,7 +194,7 @@ function calculateFanOut(graph: CustomGraph, courseId: string): number {
  * @param graph
  * @param profile
  */
-function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
+function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   var currentSemester = 1
   var coursesInCurrentSemester = 0
   var firstDeferredCourseId = null
@@ -236,7 +248,11 @@ function scheduleCourses(graph: CustomGraph, profile: BaseStudentProfile) {
   }
 }
 
-export function toCourseNode(graph: Graph, courseId: string, course: Attributes): CourseNode {
+
+export function toCourseNode(graph: Graph, courseId: string, course: Attributes | undefined): CourseNode {
+  if (!course) {
+    course = graph.getNodeAttributes(courseId)
+  }
   return {
     id: courseId,
     name: course["name"],
