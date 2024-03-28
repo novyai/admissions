@@ -24,7 +24,7 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
       latestFinish: undefined,
       slack: undefined,
 
-      //TODO: add semester
+      semester: profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id))
     })
   }
 
