@@ -59,27 +59,6 @@ export function getAllRequiredCourses(course: string, graph: Map<string, CourseN
   return [...requiredCourses.values()]
 }
 
-/**
- * Checks if the course doesn't have any other required courses that depend on it to graduate
- * @param node Class Node to check if it is the last required course
- * @param profile Profile of the student and degree
- * @param graph Map of all courses
- * @returns true if no other required courses depend on this course to graduate, false otherwise
- */
-export function isLastClassRequired(node: CourseNode, profile: StudentProfile): boolean {
-  // checks if course is the prereq for any other required course
-  if (profile.requiredCourses.includes(node.id)) {
-    for (const course of profile.requiredCourses) {
-      if (course === node.id) continue
-      if (getAllRequiredCourses(course, profile.graph).includes(node.id)) {
-        return false
-      }
-    }
-    return true
-  }
-  return false
-}
-
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
   const course = profile.graph.get(courseId)
   if (!course) {
