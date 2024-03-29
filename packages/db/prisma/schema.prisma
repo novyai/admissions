@@ -40,7 +40,7 @@ model User {
   student   Student?  @relation(fields: [studentId], references: [id])
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now())
-  Schedule  Schedule?
+  Schedule  Schedule[]
 
   @@index([studentId])
 }
@@ -260,12 +260,11 @@ model TransferGrade {
 
 model Schedule {
   id        String   @id @default(uuid())
-  userID    String   @unique()
-  user      User     @relation(fields: [userID], references: [id])
+  userID    String    
+  user      User     @relation(fields: [userID], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   activeDraftId String?
-  //  we should add a from field to indicate to see version history this is a part of
   versions       Version[]
 
   @@index([userID])
