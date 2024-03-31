@@ -3,7 +3,7 @@ import { forEachTopologicalGeneration, topologicalGenerations } from "graphology
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
 
-import { Course, db } from "../../db/src/client"
+import { $Enums, ConditionGroup, Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 import { graphtoStudentProfile } from "./graph"
 
@@ -38,7 +38,7 @@ export const getStudentProfileFromRequirements = async (
   const graph: CourseGraph = new Graph()
 
   for (const courseId of profile.requiredCourses) {
-    await addCourseToGraph(courseId, graph, profile.transferCredits) // Await the completion of each addCourseToGraph call
+    await addCourseToGraph(courseId, graph, profile.transferCredits, profile) // Await the completion of each addCourseToGraph call
   }
 
   computeNodeStats(graph, profile)
@@ -82,7 +82,8 @@ async function getCourseWithPreqs(courseId: string) {
 export async function addCourseToGraph(
   courseId: string,
   graph: CourseGraph,
-  completedCourseIds: string[]
+  completedCourseIds: string[],
+  profile: BaseStudentProfile
 ) {
   // check if the course is already in the graph, if it is, exit
   if (graph.hasNode(courseId)) {
@@ -119,23 +120,88 @@ export async function addCourseToGraph(
   }
 
   // recurse to any prerequisites so that we can add edges
-  for (const conditionGroup of course.conditions) {
-    for (const condition of conditionGroup.conditions) {
+
+  if (course.conditions.length === 0) {
+    return
+  }
+
+  // condition groups are implicitly ORed, so we only need to recurse down one.
+  // recurse down the branch that has the most required courses.
+  const conditionGroupsWithCounts = await Promise.all(course.conditions
+    .map(async conditionGroup => ({
+      conditionGroup: conditionGroup,
+      requiredCoursesInTree: await countRequiredCoursesinConditionGroup(conditionGroup, profile)
+    })))
+
+  conditionGroupsWithCounts.sort((a, b) => b.requiredCoursesInTree - a.requiredCoursesInTree)
+
+  const conditionGroup = conditionGroupsWithCounts[0]?.conditionGroup
+
+  if (conditionGroup) {
+    if (conditionGroup.logicalOperator === 'OR') {
+
+      const conditionsWithCounts = await Promise.all(conditionGroup.conditions
+        .filter(condition => condition.prerequisites.length > 0)
+        .map(async condition => ({
+          condition: condition,
+          count: await countRequiredCoursesInPrerequisiteTree(condition.prerequisites[0]!.courseId, profile)
+        })))
+      
+      const condition = conditionsWithCounts.reduce((acc, cur) => cur.count > acc.count ? cur : acc, { count: 0, condition: { prerequisites: []}}).condition
+
       for (const prerequisite of condition.prerequisites) {
         // if a course is completed, assume that it's prerequisites are completed
         if (courseIsCompleted) {
           completedCourseIds.push(prerequisite.courseId)
         }
 
-        await addCourseToGraph(prerequisite.courseId, graph, completedCourseIds)
+        await addCourseToGraph(prerequisite.courseId, graph, completedCourseIds, profile)
 
         // edges represent prerequisites pointing at the course they are a prerequisite for
         if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
           graph.addDirectedEdge(prerequisite.courseId, course.id)
         }
       }
+
+    } else {
+      for (const condition of conditionGroup.conditions) {
+        for (const prerequisite of condition.prerequisites) {
+          // if a course is completed, assume that it's prerequisites are completed
+          if (courseIsCompleted) {
+            completedCourseIds.push(prerequisite.courseId)
+          }
+
+          await addCourseToGraph(prerequisite.courseId, graph, completedCourseIds, profile)
+
+          // edges represent prerequisites pointing at the course they are a prerequisite for
+          if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+            graph.addDirectedEdge(prerequisite.courseId, course.id)
+          }
+        }
+      }
     }
   }
+}
+
+async function countRequiredCoursesinConditionGroup(conditionGroup: ConditionGroup & { conditions: ({ prerequisites: { id: string; conditionId: string; courseId: string }[] })[] }, profile: BaseStudentProfile) : Promise<number> {
+  const conditionCounts : number[] = await Promise.all(conditionGroup.conditions
+      .filter(condition => condition.prerequisites.length > 0)
+      .map(async condition => await countRequiredCoursesInPrerequisiteTree(condition.prerequisites[0]!.courseId, profile)))
+
+  if (conditionGroup.logicalOperator === 'OR') {
+    return Math.max(...conditionCounts, 0)
+  } else {
+    return conditionCounts.reduce((acc, curr) => acc + curr, 0)
+  }
+}
+
+async function countRequiredCoursesInPrerequisiteTree(courseId: string, profile: BaseStudentProfile) : Promise<number> {
+   const course = await getCourseWithPreqs(courseId);
+   if (course === null) {
+    return 0
+   }
+   const conditionGroupCounts : number[] = await Promise.all(course.conditions.map(conditionGroup  => countRequiredCoursesinConditionGroup(conditionGroup, profile)))
+   return (profile.requiredCourses.includes(courseId) ? 1 : 0) + Math.max(...conditionGroupCounts, 0)
 }
 
 export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {

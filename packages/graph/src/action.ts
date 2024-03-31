@@ -18,7 +18,7 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
 
 
   for (const node of [...nodes.map(n => n.id), ...profile.semesters.flat()]) {
-    await addCourseToGraph(node, graph, profile.transferCredits) // Await the completion of each addCourseToGraph call
+    await addCourseToGraph(node, graph, profile.transferCredits, profile) // Await the completion of each addCourseToGraph call
   }
 
   computeNodeStats(graph, profile)
