@@ -3,7 +3,7 @@ import { forEachTopologicalGeneration, topologicalGenerations } from "graphology
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
 
-import { $Enums, ConditionGroup, Course, db } from "../../db/src/client"
+import { ConditionGroup, Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 import { graphtoStudentProfile } from "./graph"
 

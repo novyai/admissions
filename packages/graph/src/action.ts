@@ -2,7 +2,7 @@
 
 import { XYPosition } from "reactflow"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
-import { CourseGraph, addCourseToGraph, computeNodeStats, toCourseNode } from "./profile"
+import { CourseGraph, addCourseToGraph, computeNodeStats, getStudentProfileFromRequirements, toCourseNode } from "./profile"
 import Graph from "graphology"
 
 export async function getProfileFromSchedule(blob: string): Promise<StudentProfile> {
@@ -14,36 +14,38 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
     }[]
   }
 
-  const graph: CourseGraph = new Graph()
+  return getStudentProfileFromRequirements(profile)
+
+ // const graph: CourseGraph = new Graph()
 
 
-  for (const node of [...nodes.map(n => n.id), ...profile.semesters.flat()]) {
-    await addCourseToGraph(node, graph, profile.transferCredits, profile) // Await the completion of each addCourseToGraph call
-  }
+ // for (const node of [...nodes.map(n => n.id), ...profile.semesters.flat()]) {
+ //   await addCourseToGraph(node, graph, profile.transferCredits, profile) // Await the completion of each addCourseToGraph call
+ // }
 
-  computeNodeStats(graph, profile)
+ // computeNodeStats(graph, profile)
 
-  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
-    toCourseNode(graph, courseId, course)
-  )
+ // const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
+ //   toCourseNode(graph, courseId, course)
+ // )
 
-  const profileGraph = allCourses.reduce(
-    (acc, course) => acc.set(course.id, course),
-    new Map<string, CourseNode>()
-  )
+ // const profileGraph = allCourses.reduce(
+ //   (acc, course) => acc.set(course.id, course),
+ //   new Map<string, CourseNode>()
+ // )
 
 
-  if (profile.semesters.flat().length === 0) {
-    throw new Error("No semesters found")
-  }
+ // if (profile.semesters.flat().length === 0) {
+ //   throw new Error("No semesters found")
+ // }
 
-  return {
-    ...profile,
-    allCourses,
-    graph: profileGraph,
-    semesters: profile.semesters.map(s =>
-      s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))
-    )
-  }
+ // return {
+ //   ...profile,
+ //   allCourses,
+ //   graph: profileGraph,
+ //   semesters: profile.semesters.map(s =>
+ //     s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))
+ //   )
+ // }
 }
 
