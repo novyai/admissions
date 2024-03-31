@@ -5,6 +5,7 @@ import { Attributes } from "graphology-types"
 
 import { Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
+import { graphtoStudentProfile } from "./graph"
 
 type CourseAttributes = {
   semester?: number
@@ -49,18 +50,8 @@ export const getStudentProfileFromRequirements = async (
       `${course.courseSubject}-${course.courseNumber}: ${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
     )
   })
-  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
-    toCourseNode(graph, courseId, course)
-  )
-  return {
-    ...profile,
-    allCourses: allCourses,
-    graph: allCourses.reduce(
-      (acc, course) => acc.set(course.id, course),
-      new Map<string, CourseNode>()
-    ),
-    semesters: buildSemesters(graph)
-  }
+
+  return graphtoStudentProfile(graph, profile)
 }
 
 async function getCourseWithPreqs(courseId: string) {
@@ -276,19 +267,4 @@ export function toCourseNode(graph: Graph, courseId: string, course: Attributes 
       endTerm: course["endTerm"]
     }
   }
-}
-
-function buildSemesters(graph: Graph): CourseNode[][] {
-  const semesters: CourseNode[][] = graph
-    .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
-    .reduce((acc: CourseNode[][], course: CourseNode) => {
-      const semesterIndex: number = graph.getNodeAttribute(course.id, "semester")
-      if (semesterIndex > 0) {
-        // courses with a semesterIndex of 0 are already completed
-        acc[semesterIndex - 1] = acc[semesterIndex - 1] || []
-        acc[semesterIndex - 1]?.push(course)
-      }
-      return acc
-    }, [])
-  return semesters
 }

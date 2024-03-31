@@ -1,6 +1,7 @@
 "use state"
 
 import { useState } from "react"
+import { getCourseFromIdNameCode } from "@graph/course"
 import { canMoveCourse, moveCourse } from "@repo/graph/schedule"
 import { StudentProfile } from "@repo/graph/types"
 import { Button } from "@ui/components/ui/button"
@@ -18,7 +19,9 @@ export const RescheduleCourse = ({
 }) => {
   const [confirmed, setConfirmed] = useState(false)
 
-  const canMove = canMoveCourse(courseName, toSemester - 1, profile)
+  const course = getCourseFromIdNameCode(profile, courseName)
+
+  const canMove = canMoveCourse(course.id, toSemester - 1, profile)
   return (
     <div>
       <strong>Assistant:</strong>
@@ -28,7 +31,7 @@ export const RescheduleCourse = ({
         <Button
           disabled={confirmed}
           onClick={() => {
-            setProfile(moveCourse(courseName, toSemester - 1, profile))
+            setProfile(moveCourse(course.id, toSemester - 1, profile))
             setConfirmed(true)
           }}
         >
