@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@ui/components/multiselect"
 import { Button } from "@ui/components/ui/button"
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/ui/form"
+import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -23,11 +24,11 @@ export const programs = [
 ]
 
 const formSchema = z.object({
-  options: z.array(z.custom<Option>())
+  options: z.array(z.custom<Option>()).min(1)
 })
 
 export function CreateNewScheduleForm({ userId }: { userId: string }) {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const { formState, trigger, ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       options: []
@@ -37,19 +38,21 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
   const router = useRouter()
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const programs = values.options.map(option => option.value)
+    const result = formSchema.safeParse(values)
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isValidProgram = (program: any): program is Program =>
-      Object.values(Program).includes(program)
-    const validPrograms: Program[] = programs.filter(isValidProgram)
+    if (!result.success) {
+      return
+    }
 
-    const scheduleId = await createNewSchedule(userId, validPrograms)
+    const scheduleId = await createNewSchedule(
+      userId,
+      result.data.options.map(option => option.value as Program)
+    )
     router.push(`/dag/${scheduleId}`)
   }
 
   return (
-    <Form {...form}>
+    <Form trigger={trigger} formState={formState} {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
           control={form.control}
@@ -60,14 +63,19 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
               <MultiSelect
                 options={programs satisfies Option[]}
                 {...field}
-                trigger={form.trigger}
+                trigger={trigger}
                 placeholder="Select your majors"
               />
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={!formState.isValid || formState.isSubmitting}>
+          <>
+            {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Submit
+          </>
+        </Button>
       </form>
     </Form>
   )
