@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-export const rescheduleCourseAgent = z.object(
+export const rescheduleCourseSchema = z.object(
   {
     toSemester: z.number({
       description: "The semester to reschedule the course to"
@@ -9,5 +9,5 @@ export const rescheduleCourseAgent = z.object(
       description: "The course name to reschedule. Do not use the course ID. USE THE FULL NAME"
     })
   },
-  { description: "Reshedule Course Agent" }
+  { description: "Resheduling Course Agent" }
 )

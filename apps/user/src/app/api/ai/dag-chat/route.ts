@@ -1,7 +1,5 @@
 import { getDegreeData } from "@/db/degree"
-import { generatePrimaryIdentity } from "@ai/agents/scheduler"
-import { additionalCoursesSchema } from "@ai/agents/scheduler/schema"
-import { instructorOAI } from "@ai/lib/oai"
+import { addCourseAgent, generatePrimaryIdentity } from "@ai/agents/add-courses-agent"
 import { currentUser } from "@clerk/nextjs"
 import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
@@ -32,12 +30,7 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     // make a completion call with your generated params
-    const extraction = await instructorOAI.chat.completions.create({
-      response_model: {
-        schema: additionalCoursesSchema,
-        name: "USF CSE Advisor"
-      },
-
+    const extraction = await addCourseAgent.completion({
       messages: [
         {
           role: "system",

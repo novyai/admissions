@@ -1,9 +1,7 @@
 import testData from "@db/data/test.json"
-import { createAgent } from "zod-stream"
+import { createAgent } from "@ai/agents"
 
-
-import { rescheduleCourseAgent } from "./schema"
-import { oai } from "@ai/lib/oai"
+import { rescheduleCourseSchema } from "./schema"
 
 type Data = typeof testData
 
@@ -29,8 +27,8 @@ Always keep in mind: You're not just providing answers; you're helping students 
 const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
 
 export const rescheduleAgent = createAgent({
-  client: oai,
-  defaultClientOptions: {
+  config: 
+  {
     messages: [
       {
         role: "system",
@@ -39,10 +37,11 @@ export const rescheduleAgent = createAgent({
     ],
     model: "gpt-4-turbo-preview",
     temperature: 0.5,
-    max_tokens: 1000
+    max_tokens: 1000,
+    stream: false,
   },
   response_model: {
-    schema: rescheduleCourseAgent,
+    schema: rescheduleCourseSchema,
     name: "Reschedule Course Agent"
   }
 })
