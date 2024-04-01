@@ -1,6 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { getCourseFromIdNameCode } from "@graph/course"
 import { canMoveCourse } from "@repo/graph/schedule"
 import { StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@repo/ui/components/prompt-composer"
@@ -65,19 +66,18 @@ export function ScheduleChat({ profile }: { profile: StudentProfile }) {
     }
   }
 
+  const course = getCourseFromIdNameCode(profile, result.data.course_name ?? "")
+
   return (
     <>
       <div>
         <p>
-          Trying to move {result.data.course_name} to semester: {result.data.toSemester}
+          Trying to move {course.name} to semester: {result.data.toSemester}
         </p>
         <br />
         {!loading && (
           <pre>
-            {(
-              canMoveCourse(result.data.course_name ?? "", result.data.toSemester ?? -1, profile)
-                .canMove
-            ) ?
+            {canMoveCourse(course.id, result.data.toSemester ?? -1, profile).canMove ?
               "Can move"
             : "Can't move"}
           </pre>

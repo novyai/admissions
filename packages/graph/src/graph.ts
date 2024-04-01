@@ -1,4 +1,4 @@
-import { CourseNode, StudentProfile } from "@graph/types"
+import { BaseStudentProfile, CourseNode, StudentProfile } from "@graph/types"
 import { CourseGraph, computeNodeStats, toCourseNode } from "./profile"
 import Graph from "graphology"
 
@@ -37,6 +37,36 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
   computeNodeStats(graph, profile)
 
   return graph
+}
+
+export function graphtoStudentProfile(graph : CourseGraph, oldProfile: BaseStudentProfile) : StudentProfile {
+  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
+    toCourseNode(graph, courseId, course)
+  )
+  return {
+    ...oldProfile,
+    allCourses: allCourses,
+    graph: allCourses.reduce(
+      (acc, course) => acc.set(course.id, course),
+      new Map<string, CourseNode>()
+    ),
+    semesters: buildSemesters(graph)
+  }
+}
+
+function buildSemesters(graph: Graph): CourseNode[][] {
+  const semesters: CourseNode[][] = graph
+    .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
+    .reduce((acc: CourseNode[][], course: CourseNode) => {
+      const semesterIndex: number = graph.getNodeAttribute(course.id, "semester")
+      if (semesterIndex > 0) {
+        // courses with a semesterIndex of 0 are already completed
+        acc[semesterIndex - 1] = acc[semesterIndex - 1] || []
+        acc[semesterIndex - 1]?.push(course)
+      }
+      return acc
+    }, [])
+  return semesters
 }
 
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
