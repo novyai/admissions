@@ -1,5 +1,5 @@
-import cseDegree from "@/cse_requirments.json"
 import { db, Prisma } from "@db/client"
+import cseDegree from "@db/data/cse_requirments.json"
 import { getStudentProfileFromRequirements } from "@repo/graph/profile"
 import { BaseStudentProfile } from "@repo/graph/types"
 
