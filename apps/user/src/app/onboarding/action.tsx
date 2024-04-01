@@ -1,10 +1,10 @@
 "use server"
 
 import { db } from "@db/client"
+import { Program, programHandler } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 
-import { Program, programHandler } from "@/lib/defaultCourses"
 import { createBlob } from "@/lib/version-blob"
 
 import { getAllNodesAndEdges } from "../dag/action"
