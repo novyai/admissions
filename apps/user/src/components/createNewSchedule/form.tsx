@@ -63,6 +63,7 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
               <MultiSelect
                 options={programs satisfies Option[]}
                 {...field}
+                closeOnSelect
                 trigger={trigger}
                 placeholder="Select your majors"
               />

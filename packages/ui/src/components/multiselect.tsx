@@ -20,6 +20,7 @@ interface MultiSelectProps
   value: Option[]
   className?: string
   placeholder: string
+  closeOnSelect?: boolean
 
   trigger: UseFormTrigger<{
     options: Option[]
@@ -30,6 +31,7 @@ export function MultiSelect({
   options,
   value: selected,
   onChange,
+  closeOnSelect = false,
   placeholder,
   trigger,
   name
@@ -117,6 +119,9 @@ export function MultiSelect({
                       setInputValue("")
                       onChange([...selected, option])
                       trigger(name)
+                      if (closeOnSelect) {
+                        setOpen(false)
+                      }
                     }}
                     className={"cursor-pointer"}
                   >
