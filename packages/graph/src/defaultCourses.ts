@@ -1,4 +1,4 @@
-import cseDegree from "@/cse_requirments.json"
+import cseDegree from "@db/data/cse_requirments.json"
 import { Prisma } from "@db/client"
 
 export enum Program {
