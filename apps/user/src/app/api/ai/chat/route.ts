@@ -1,11 +1,8 @@
-import { primaryIdentity } from "@/agents/advisor"
-import { advisorAgentSchema } from "@/agents/advisor/schema"
+import { primaryIdentity } from "@ai/agents/advisor"
+import { advisorAgentSchema } from "@ai/agents/advisor/schema"
+import { oai } from "@ai/lib/oai"
 import OpenAI from "openai"
 import { OAIStream, withResponseModel } from "zod-stream"
-
-import { oai } from "@/lib/oai"
-
-export const runtime = "edge"
 
 export async function POST(request: Request): Promise<Response> {
   const {
