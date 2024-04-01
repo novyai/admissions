@@ -7,7 +7,7 @@ export default async function Home() {
   const { userId } = auth()
 
   if (userId) {
-    redirect("/dag")
+    redirect("/schedule")
   }
 
   return (

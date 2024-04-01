@@ -28,7 +28,7 @@ function ScheduleTable({ schedules }: { schedules: Schedule[] }) {
     <div>
       {schedules.map(schedule => (
         <div key={schedule.id}>
-          <Link href={`/dag/${schedule.id}`}>{schedule.id}</Link>
+          <Link href={`/schedule/${schedule.id}`}>{schedule.id}</Link>
         </div>
       ))}
     </div>
