@@ -1,12 +1,10 @@
-import { generatePrimaryIdentity } from "@/agents/scheduler"
-import { additionalCoursesSchema } from "@/agents/scheduler/schema"
 import { getDegreeData } from "@/db/degree"
+import { addCourseAgent, generatePrimaryIdentity } from "@ai/agents/add-courses-agent"
 import { currentUser } from "@clerk/nextjs"
 import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
 
-import { instructorOAI } from "@/lib/oai"
 import { CourseNodeType } from "@/components/semester-dag/course-node"
 import { getUnassignedNodesAndEdges } from "@/components/semester-dag/graph-to-node-utils"
 
@@ -32,12 +30,7 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     // make a completion call with your generated params
-    const extraction = await instructorOAI.chat.completions.create({
-      response_model: {
-        schema: additionalCoursesSchema,
-        name: "USF CSE Advisor"
-      },
-
+    const extraction = await addCourseAgent.completion({
       messages: [
         {
           role: "system",

@@ -1,7 +1,5 @@
-import "server-only"
-
-import Instructor from "@instructor-ai/instructor"
 import OpenAI from "openai"
+import Instructor from "@instructor-ai/instructor"
 
 export const oai = new OpenAI({
   apiKey: process.env["OPENAI_API_KEY"],
@@ -12,3 +10,4 @@ export const instructorOAI = Instructor({
   client: oai,
   mode: "TOOLS"
 })
+
