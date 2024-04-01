@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.29.9",
-    "@instructor-ai/instructor": "^0.0.7",
     "@repo/db": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/tailwind-config": "workspace:*",
@@ -18,7 +17,6 @@
     "@repo/ui": "workspace:*",
     "framer-motion": "^11.0.6",
     "next": "14.1.0",
-    "openai": "^4.28.0",
     "react": "^18",
     "react-dom": "^18",
     "reactflow": "^11.10.4",
