@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@clerk/nextjs"
 import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/ui/card"
 
-import { CreateNewScheduleForm } from "./form"
+import { CreateNewScheduleForm } from "@/components/createNewSchedule/form"
 
 export default async function CreateSchedulePage() {
   const { userId } = auth()
