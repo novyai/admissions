@@ -9,7 +9,7 @@ import { Form, FormField, FormItem, FormLabel, FormMessage } from "@ui/component
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { createFirstScheduleAndVersion } from "./action"
+import { createNewSchedule } from "./action"
 
 export const programs = [
   {
@@ -26,7 +26,7 @@ const formSchema = z.object({
   options: z.array(z.custom<Option>())
 })
 
-export function OnboardingForm({ userId }: { userId: string }) {
+export function CreateNewScheduleForm({ userId }: { userId: string }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,7 +36,6 @@ export function OnboardingForm({ userId }: { userId: string }) {
 
   const router = useRouter()
 
-  // 2. async Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const programs = values.options.map(option => option.value)
 
@@ -45,8 +44,8 @@ export function OnboardingForm({ userId }: { userId: string }) {
       Object.values(Program).includes(program)
     const validPrograms: Program[] = programs.filter(isValidProgram)
 
-    await createFirstScheduleAndVersion(userId, validPrograms)
-    router.push("/dag")
+    const scheduleId = await createNewSchedule(userId, validPrograms)
+    router.push(`/dag/${scheduleId}`)
   }
 
   return (

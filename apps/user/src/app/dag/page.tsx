@@ -1,11 +1,7 @@
-import { redirect } from "next/navigation"
-import { auth, UserButton } from "@clerk/nextjs"
-import { db } from "@db/client"
-import { Button } from "@ui/components/ui/button"
-
-import { Novy } from "@/components/novy-logo"
-
-import { Editor } from "./editor"
+import Link from "next/link"
+import { redirect, RedirectType } from "next/navigation"
+import { auth } from "@clerk/nextjs"
+import { db, Schedule } from "@db/client"
 
 export default async function Page() {
   const { userId, protect } = auth()
@@ -15,50 +11,26 @@ export default async function Page() {
   })
 
   if (!userId) {
-    redirect("/")
+    return redirect("/sign-in", RedirectType.replace)
   }
 
-  let schedule = await db.schedule.findUnique({
+  const schedules = await db.schedule.findMany({
     where: {
       userID: userId
-    },
-    include: {
-      versions: {
-        select: {
-          scheduleId: true,
-          blob: true,
-          createdAt: true,
-          id: true
-        },
-        orderBy: {
-          createdAt: "asc"
-        }
-      }
     }
   })
 
-  if (!schedule || schedule?.versions.length == 0) {
-    redirect("/onboarding")
-  }
+  return <ScheduleTable schedules={schedules} />
+}
 
+function ScheduleTable({ schedules }: { schedules: Schedule[] }) {
   return (
-    <div className="flex h-screen w-screen flex-col  ">
-      <div className="flex w-full flex-row border-r">
-        <div className="border-b gap-2 h-[60px] flex items-center justify-center">
-          <Button variant="outline" aria-label="Home" className="flex">
-            <Novy width={32} height={32} />
-            <h1 className="text-xxl font-semibold">Playground</h1>
-          </Button>
+    <div>
+      {schedules.map(schedule => (
+        <div key={schedule.id}>
+          <Link href={`/dag/${schedule.id}`}>{schedule.id}</Link>
         </div>
-        <header className="sticky w-full top-0 z-10 flex h-[60px] items-center gap-1 border-b bg-background px-4">
-          <div className="ml-auto">
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </header>
-      </div>
-      <div className="flex flex-row w-full h-full gap-4 m-4">
-        <Editor versions={schedule.versions} />
-      </div>
+      ))}
     </div>
   )
 }

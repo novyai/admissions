@@ -110,9 +110,7 @@ function VersionList({
             key={version.id}
             onClick={() => setSelectedVersion(version)}
           >
-            <span>
-              {version.id.substring(0, 4)} - {version.createdAt.toISOString()}
-            </span>
+            {version.id.substring(0, 4)} - {version.createdAt.toISOString()}
           </Button>
         )
       })}
