@@ -26,7 +26,7 @@ export function AuthVerify() {
       }, 1000)
     }
 
-    router.push("/onboarding")
+    router.push("/create")
   }
 
   useEffect(() => {

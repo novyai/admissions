@@ -1,12 +1,13 @@
+import Link from "next/link"
 import { redirect } from "next/navigation"
-import { auth, SignInButton, SignUpButton } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs"
 import { Button } from "@ui/components/ui/button"
 
 export default async function Home() {
   const { userId } = auth()
 
   if (userId) {
-    redirect("/dag")
+    redirect("/schedule")
   }
 
   return (
@@ -27,12 +28,13 @@ function HeroSection() {
           Let our AI plan your schedule. Spend less time organizing and more time doing.
         </p>
         <div className="flex flex-col gap-2 min-[400px]:flex-row">
-          <SignInButton afterSignInUrl="/verify" mode="redirect">
-            <Button>Sign In</Button>
-          </SignInButton>
-          <SignUpButton afterSignUpUrl="/verify" mode="redirect">
-            <Button>Sign Up</Button>
-          </SignUpButton>
+          <Button asChild>
+            <Link href="/sign-in?redirectUrl=/verify">Login</Link>
+          </Button>
+
+          <Button asChild>
+            <Link href="/sign-up?redirectUrl=/verify">Sign Up</Link>
+          </Button>
         </div>
       </div>
     </section>

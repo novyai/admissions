@@ -6,10 +6,15 @@ import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 
 import { createBlob } from "@/lib/version-blob"
+import { getAllNodesAndEdges } from "@/components/dag/action"
 
-import { getAllNodesAndEdges } from "../dag/action"
-
-export async function createFirstScheduleAndVersion(userId: string, programs: Program[]) {
+/**
+ * Create a new schedule and its first version for the user
+ * @param userId The user's ID
+ * @param programs The user's programs to pull in courses from
+ * @returns The ID of the newly created schedule
+ */
+export async function createNewSchedule(userId: string, programs: Program[]) {
   const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
 
   const requiredCourses = await db.course.findMany({
@@ -49,7 +54,7 @@ export async function createFirstScheduleAndVersion(userId: string, programs: Pr
 
   const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
-  await db.schedule.create({
+  const schedule = await db.schedule.create({
     data: {
       userID: userId,
       versions: {
@@ -72,4 +77,6 @@ export async function createFirstScheduleAndVersion(userId: string, programs: Pr
       }
     }
   })
+
+  return schedule.id
 }
