@@ -1,9 +1,9 @@
 import testData from "@db/data/test.json"
 import { createAgent } from "zod-stream"
 
-import { oai } from "@/lib/oai"
 
 import { rescheduleCourseAgent } from "./schema"
+import { oai } from "@ai/lib/oai"
 
 type Data = typeof testData
 
@@ -30,14 +30,14 @@ const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Cours
 
 export const rescheduleAgent = createAgent({
   client: oai,
-  config: {
+  defaultClientOptions: {
     messages: [
       {
         role: "system",
         content: primaryIdentity
       }
     ],
-    model: "gpt-4-1106-preview",
+    model: "gpt-4-turbo-preview",
     temperature: 0.5,
     max_tokens: 1000
   },
