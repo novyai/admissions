@@ -1,12 +1,12 @@
-import { generatePrimaryIdentity } from "@/agents/scheduler"
-import { additionalCoursesSchema } from "@/agents/scheduler/schema"
 import { getDegreeData } from "@/db/degree"
+import { generatePrimaryIdentity } from "@ai/agents/scheduler"
+import { additionalCoursesSchema } from "@ai/agents/scheduler/schema"
+import { instructorOAI } from "@ai/lib/oai"
 import { currentUser } from "@clerk/nextjs"
 import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
 
-import { instructorOAI } from "@/lib/oai"
 import { CourseNodeType } from "@/components/semester-dag/course-node"
 import { getUnassignedNodesAndEdges } from "@/components/semester-dag/graph-to-node-utils"
 

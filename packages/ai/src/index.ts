@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { oai } from "./lib/oai";
+import Instructor from "@instructor-ai/instructor"
 
 
 const s = z.object({
@@ -13,7 +14,6 @@ const s = z.object({
   }).array().min(10)
 })
 
-import Instructor from "@instructor-ai/instructor"
 
 const instructor = Instructor({
   client: oai,
