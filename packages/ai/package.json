@@ -1,0 +1,30 @@
+{
+  "name": "@repo/ai",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    "./agents/*": "./src/agents/*/index.ts",
+    "./agents/*/schema": "./src/agents/*/schema.ts",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "build": "echo 'No build step'"
+  },
+  "dependencies": {
+    "@instructor-ai/instructor": "^0.0.7",
+    "js-tiktoken": "^1.0.7",
+    "openai": "^4.24.7",
+    "zod-stream": "^1.0.0",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "eslint": "^8.54.0",
+    "prisma": "latest",
+    "rimraf": "^5.0.5",
+    "@repo/typescript-config": "workspace:*",
+    "tsx": "^4.4.0",
+    "typescript": "^5.3.3"
+  }
+}

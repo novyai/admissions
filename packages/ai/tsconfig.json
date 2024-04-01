@@ -1,0 +1,14 @@
+{
+  "extends": "@repo/typescript-config/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@ai/*": ["./src/*"],
+      "@db/*": ["../../packages/db/src/*"],
+      "@constants/*": ["../../packages/constants/src/*"]
+    },
+    "baseUrl": "."
+  },
+  "include": ["**/*.ts", "**/*.tsx", "tests", "turbo"],
+  "exclude": ["node_modules", "dist"]
+}
