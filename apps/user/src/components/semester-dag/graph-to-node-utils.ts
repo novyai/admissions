@@ -5,6 +5,9 @@ import { Edge, Node, XYPosition } from "reactflow"
 import { CourseNodeType, defaultCourseNode } from "./course-node"
 import { defaultSemesterNode, SEMESTER_NODE_WIDTH, SemesterNodeType } from "./semester-node"
 
+export const isCourseNode = (n: Node): n is CourseNodeType => n.type === "courseNode"
+export const isSemesterNode = (n: Node): n is SemesterNodeType => n.type === "semesterNode"
+
 export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
