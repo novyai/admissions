@@ -12,30 +12,18 @@ type SemesterNodeProps = NodeProps<SemesterNodeData>
 
 export type SemesterNodeType = Node<SemesterNodeData>
 
+export const SEMESTER_NODE_WIDTH = 275
+export const SEMESTER_NODE_HEIGHT = 600
+
 export const defaultSemesterNode: Partial<Node> = {
   draggable: false,
-  type: "semesterNode",
+  selectable: false,
+  type: "semesterNode" as const,
+  className: `bg-card border border-border rounded-md`,
   style: {
-    backgroundColor: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "0.5rem",
-    zIndex: 1,
-    width: 175,
-    height: 600
+    width: SEMESTER_NODE_WIDTH,
+    height: SEMESTER_NODE_HEIGHT
   }
-}
-
-export const defaultCourseNode: Partial<Node> = {
-  type: "courseNode",
-  style: {
-    backgroundColor: "hsl(var(--accent))",
-    borderRadius: "0.5rem",
-    border: "1px solid hsl(var(--border))",
-    width: "auto",
-    zIndex: 2,
-    height: "auto"
-  }
-  // extent: 'parent'
 }
 
 export function SemesterNode({ data }: SemesterNodeProps) {
