@@ -12,7 +12,7 @@ import {
 } from "@/components/semester-dag/graph-to-node-utils"
 
 export const createVersion = async (profile: StudentProfile, scheduleId: string, nodes: Node[]) => {
-  const blob = createBlob(profile, nodes)
+  const blob = JSON.stringify(createBlob(profile, nodes))
   const newVersion = await db.version.create({
     data: {
       scheduleId,

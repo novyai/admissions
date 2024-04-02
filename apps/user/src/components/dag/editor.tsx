@@ -10,7 +10,13 @@ import { SemesterDAG } from "@/components/semester-dag"
 
 import { createVersion, getAllNodesAndEdges } from "./action"
 
-export function Editor({ versions: initialVersions }: { versions: Version[] }) {
+export function Editor({
+  versions: initialVersions,
+  scheduleId
+}: {
+  versions: Version[]
+  scheduleId: string
+}) {
   const [versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
 
@@ -36,7 +42,7 @@ export function Editor({ versions: initialVersions }: { versions: Version[] }) {
   const saveVersion = async (nodes: Node[]) => {
     setStatus("saving")
     const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
-    const version = await createVersion(profile, selectedVersion.scheduleId, nodes)
+    const version = await createVersion(profile, scheduleId, nodes)
     setVersions(prev => [...prev, version])
     setSelectedVersion(version)
     setStatus("clean")
