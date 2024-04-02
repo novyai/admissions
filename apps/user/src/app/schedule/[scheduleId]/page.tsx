@@ -46,5 +46,5 @@ export default async function Page({
 
   // TODO: add check if user can edit or if a user is a student's advisor
 
-  return <Editor versions={schedule.versions} />
+  return <Editor versions={schedule.versions} scheduleId={scheduleId} />
 }
