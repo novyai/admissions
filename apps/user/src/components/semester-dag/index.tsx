@@ -93,11 +93,13 @@ function SemesterDAGInternal({
       const semester = "semester" in droppedIn.data ? droppedIn.data.semester : undefined
 
       if (!semester) {
-        console.error("Cannot add to transfer node")
+        console.log("Cannot add to transfer node")
         return
       }
 
-      const canMove = canMoveCourse(node.id, semester, profile)
+      console.log(droppedIn.data.semester, node.data.semesterIndex)
+
+      const canMove = canMoveCourse(node.id, semester - 1, profile)
       if (!canMove.canMove) {
         console.error("Cannot add to semester", canMove.reason)
         resetNodePlacement(node.id)
@@ -112,14 +114,14 @@ function SemesterDAGInternal({
           )
         )
       } else {
-        console.log("moving", node.id, "to", droppedIn.id)
-        setNodes(
-          nodes.map(n =>
+        console.log("moving", node.id, "to", droppedIn.data.semester, semester - 1)
+        setNodes(nds =>
+          nds.map(n =>
             n.id === node.id ?
               {
                 ...n,
                 className: cn(n.className, defaultCourseNode.className),
-                data: { ...n.data, semesterIndex: semester }
+                data: { ...n.data, semesterIndex: droppedIn.data.semester }
               }
             : n.id === droppedIn.id ?
               {
@@ -131,7 +133,7 @@ function SemesterDAGInternal({
         )
       }
     },
-    [getIntersectingNodes, nodes, profile, resetNodePlacement, setNodes]
+    [getIntersectingNodes, profile, resetNodePlacement, setNodes]
   )
 
   const onNodeDrag: NodeDragHandler = useCallback(
@@ -143,13 +145,13 @@ function SemesterDAGInternal({
           if (isCourseNode(n)) return n
 
           if (intersections.includes(n.id)) {
-            console.log(n)
-            const canMove = canMoveCourse(node.id, n.data.semester, profile)
+            const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
 
-            if (node.data === n.data.semester) {
+            // if node is overlapping same semester
+            if (node.data.semesterIndex === n.data.semester) {
               return {
                 ...n,
-                className: cn(n.className, defaultSemesterNode.className)
+                className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
               }
             }
             return {

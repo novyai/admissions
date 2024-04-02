@@ -40,7 +40,7 @@ export function Editor({
     setNodes(nds => applyNodeChanges(changes, nds))
   }, [])
 
-  const resetNodePlacement = async (id: string) => {
+  const resetNodePlacement = (id: string) => {
     const pos = defaultNodes.find(n => n.id === id)?.position!
     console.log(`resetting node ${id} to ${pos.x},${pos.y}`)
     setNodes(nds => nds.map(n => (n.id === id ? { ...n, position: pos } : n)))
