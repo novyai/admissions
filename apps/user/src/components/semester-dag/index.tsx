@@ -3,6 +3,7 @@
 import { PromptComposer } from "@ui/components/prompt-composer"
 import ReactFlow, {
   Background,
+  BaseEdge,
   Controls,
   Edge,
   MiniMap,
