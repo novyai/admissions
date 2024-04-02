@@ -82,8 +82,8 @@ function SemesterDAGInternal({
       edges: z.array(z.custom<Edge>())
     }),
     onEnd: async ({ nodes, edges }) => {
-      setNodes(prev => [...prev, ...nodes])
-      setEdges(prev => [...prev, ...edges])
+      setNodes(nodes)
+      setEdges(edges)
       saveVersion(nodes)
     }
   })

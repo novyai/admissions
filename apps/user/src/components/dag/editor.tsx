@@ -23,25 +23,24 @@ export function Editor({
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
 
-  const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
-      const changeTypes = new Set(changes.map(c => c.type))
-      if (changeTypes.has("position")) {
-        setStatus("dirty")
-      }
-      setNodes(nds => applyNodeChanges(changes, nds))
-    },
-    [setNodes]
-  )
+  const onNodesChange = useCallback((changes: NodeChange[]) => {
+    const changeTypes = new Set(changes.map(c => c.type))
+    if (changeTypes.has("position")) {
+      setStatus("dirty")
+    }
+    setNodes(nds => applyNodeChanges(changes, nds))
+  }, [])
+
   const onEdgesChange = useCallback(
     (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    []
   )
   const [status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
   const saveVersion = async (nodes: Node[]) => {
     setStatus("saving")
     const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
+    console.log(nodes)
     const version = await createVersion(profile, scheduleId, nodes)
     setVersions(prev => [...prev, version])
     setSelectedVersion(version)
