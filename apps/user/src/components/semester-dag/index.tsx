@@ -97,8 +97,6 @@ function SemesterDAGInternal({
         return
       }
 
-      console.log(droppedIn.data.semester, node.data.semesterIndex)
-
       const canMove = canMoveCourse(node.id, semester - 1, profile)
       if (!canMove.canMove) {
         console.error("Cannot add to semester", canMove.reason)
@@ -114,14 +112,14 @@ function SemesterDAGInternal({
           )
         )
       } else {
-        console.log("moving", node.id, "to", droppedIn.data.semester, semester - 1)
+        console.log("moving", node.id, "to", semester, semester - 1)
         setNodes(nds =>
           nds.map(n =>
             n.id === node.id ?
               {
                 ...n,
                 className: cn(n.className, defaultCourseNode.className),
-                data: { ...n.data, semesterIndex: droppedIn.data.semester }
+                data: { ...n.data, semesterIndex: semester }
               }
             : n.id === droppedIn.id ?
               {
@@ -148,7 +146,7 @@ function SemesterDAGInternal({
             const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
 
             // if node is overlapping same semester
-            if (node.data.semesterIndex === n.data.semester) {
+            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
               return {
                 ...n,
                 className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
