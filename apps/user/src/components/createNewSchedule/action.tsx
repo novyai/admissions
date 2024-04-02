@@ -26,22 +26,6 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     }
   })
 
-  const { id: precalcId } = (await db.course.findFirst({
-    select: {
-      id: true
-    },
-    where: {
-      courseSubject: "MAC",
-      courseNumber: "1147"
-    }
-  })) ?? {
-    id: null
-  }
-
-  if (!precalcId) {
-    throw new Error("Precalc course not found")
-  }
-
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
     transferCredits: [],
@@ -59,7 +43,7 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
       userID: userId,
       versions: {
         create: {
-          blob: createBlob(studentProfile, defaultNodes)
+          blob: JSON.stringify(createBlob(studentProfile, defaultNodes))
         }
       }
     },
