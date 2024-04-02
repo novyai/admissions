@@ -2,8 +2,8 @@ import { getCourseWithPrereqs } from "@/db/courses"
 import { CourseNode } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
-import { CourseNodeType } from "./course-node"
-import { defaultCourseNode, defaultSemesterNode, SemesterNodeType } from "./semester-node"
+import { CourseNodeType, defaultCourseNode } from "./course-node"
+import { defaultSemesterNode, SEMESTER_NODE_WIDTH, SemesterNodeType } from "./semester-node"
 
 export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
   const nodes: Node[] = []
@@ -11,7 +11,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
     return {
       ...defaultSemesterNode,
       id: `semester-${index}`,
-      position: { x: index * 200, y: 0 },
+      position: { x: index * (SEMESTER_NODE_WIDTH + 25), y: 0 },
       data: { semester: index + 1 }
     }
   })
@@ -20,12 +20,13 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
 
   const childNodes: CourseNodeType[] = semesters
     .map((semester, semIndex) =>
-      semester.map((course, courseIndex): Node => {
+      semester.map((course, courseIndex): CourseNodeType => {
         return {
           ...defaultCourseNode,
+          type: "courseNode",
           id: course.id,
           parentNode: `semester-${semIndex}`,
-          position: { x: 0, y: 50 + courseIndex * 50 },
+          position: { x: 5, y: 50 + courseIndex * 50 },
           data: { semesterIndex: semIndex + 1, ...course }
         }
       })
@@ -117,11 +118,7 @@ export const getOutsideCourseNode = (course: CourseNode, position: XYPosition): 
     ...defaultCourseNode,
     id: course.id,
     position,
-    data: { semesterIndex: -1, ...course },
-    style: {
-      ...defaultCourseNode.style,
-      backgroundColor: "lightgrey"
-    }
+    data: { semesterIndex: -1, ...course }
   }
 }
 
