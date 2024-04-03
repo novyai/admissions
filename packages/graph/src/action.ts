@@ -29,32 +29,32 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
 
 
   for (const node of [...nodes.map(n => n.id), ...profile.semesters.flat()]) {
-    await addCourseToGraph(node, graph, profile.transferCredits) // Await the completion of each addCourseToGraph call
+    await addCourseToGraph(node, graph, profile.transferCredits, profile) // Await the completion of each addCourseToGraph call
   }
 
-  computeNodeStats(graph, profile)
+ computeNodeStats(graph, profile)
 
-  const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
-    toCourseNode(graph, courseId, course)
-  )
+ const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
+   toCourseNode(graph, courseId, course)
+ )
 
-  const profileGraph = allCourses.reduce(
-    (acc, course) => acc.set(course.id, course),
-    new Map<string, CourseNode>()
-  )
+ const profileGraph = allCourses.reduce(
+   (acc, course) => acc.set(course.id, course),
+   new Map<string, CourseNode>()
+ )
 
 
-  if (profile.semesters.flat().length === 0) {
-    throw new Error("No semesters found")
-  }
+ if (profile.semesters.flat().length === 0) {
+   throw new Error("No semesters found")
+ }
 
-  return {
-    ...profile,
-    allCourses,
-    graph: profileGraph,
-    semesters: profile.semesters.map(s =>
-      s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))
-    )
-  }
+ return {
+   ...profile,
+   allCourses,
+   graph: profileGraph,
+   semesters: profile.semesters.map(s =>
+     s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))
+   )
+ }
 }
 
