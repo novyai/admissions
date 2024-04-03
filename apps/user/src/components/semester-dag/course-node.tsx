@@ -11,22 +11,13 @@ export type CourseNodeData = {
 export type CourseNodeType = Node<CourseNodeData>
 
 export const defaultCourseNode: Partial<Node> = {
-  type: "courseNode" as const,
+  type: "courseNode" as const
   // extent: 'parent'
-  style: {
-    width: "auto",
-    height: "auto"
-  }
 }
 
 export function CourseNode({ data, selected, dragging }: NodeProps<CourseNodeData>) {
   return (
-    <div
-      className={cn(
-        "bg-accent border rounded-md px-2 py-1 -1",
-        (selected || dragging) && "bg-muted border-ring"
-      )}
-    >
+    <div className={cn("border rounded-md px-2 py-1 -1", (selected || dragging) && "border-ring")}>
       <Handle type="target" position={Position.Left} />
       <p className="text-ellipsis text-center">{data.name}</p>
       <Handle type="source" position={Position.Right} />

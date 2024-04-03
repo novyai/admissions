@@ -5,9 +5,6 @@ import ReactFlow, {
   Background,
   Controls,
   Edge,
-  getConnectedEdges,
-  getIncomers,
-  getOutgoers,
   MiniMap,
   Node,
   NodeDragHandler,
@@ -19,16 +16,15 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css"
 
-import { Dispatch, SetStateAction, useCallback } from "react"
-import { canMoveCourse } from "@graph/schedule"
+import { CSSProperties, Dispatch, SetStateAction } from "react"
 import { StudentProfile } from "@graph/types"
-import { cn } from "@ui/lib/utils"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
-import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
-import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
-import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./semester-node"
+import { CourseNode, CourseNodeType } from "./course-node"
+import { isCourseNode } from "./graph-to-node-utils"
+import { SemesterNode } from "./semester-node"
+import { getEdgesIDsInCoursePath, getNodeIDsInCoursePath } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
@@ -70,47 +66,52 @@ function SemesterDAGInternal({
 }: SemesterDAGProps) {
   const { getIntersectingNodes } = useReactFlow()
 
-  const onNodeDragStart: NodeDragHandler = useCallback((_, _node) => {
-    const incomers = getIncomers(_node, nodes, edges)
-    const outgoers = getOutgoers(_node, nodes, edges)
-
-    const connectedNodeIDs = incomers.concat(outgoers).map(node => node.id)
-    console.log(connectedNodeIDs)
-    setNodes(ns => {
-      return ns.map(node => {
-        if (_node.id == node.id || connectedNodeIDs.includes(node.id)) {
-          node.style = { ...node.style, backgroundColor: "lightcyan" }
+  const modifyCoursePath = (
+    targetNode: CourseNodeType,
+    modifyNode: (node: CourseNodeType) => void,
+    modifyEdge: (edge: Edge) => void
+  ) => {
+    const courseNodes = nodes.filter(node => isCourseNode(node)) as CourseNodeType[]
+    const connectedNodeIDs = getNodeIDsInCoursePath(targetNode, courseNodes, edges)
+    setNodes(ns =>
+      ns.map(node => {
+        if (connectedNodeIDs.includes(node.id)) {
+          modifyNode(node)
         }
         return node
       })
-    })
+    )
 
-    // const _intersections = getIntersectingNodes(node).map(n => n.id)
-    // setNodes(ns =>
-    //   ns.map(n => {
-    //     if (n.type === "courseNode") return n
-    //     return {
-    //       ...n,
-    //       style: {
-    //         ...n.style,
-    //         backgroundColor: intersections.includes(n.id) ? "red" : ""
-    //       }
-    //     }
-    //   })
-    // )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const onNodeDragEnd: NodeDragHandler = useCallback((_, _node) => {
-    setNodes(ns => {
-      return ns.map(node => {
-        if (_node.id == node.id) {
-          node.style = { ...node.style, backgroundColor: "hsl(var(--accent)" }
+    const connectedEdgeIDs = getEdgesIDsInCoursePath(connectedNodeIDs, edges)
+    setEdges(es =>
+      es.map(edge => {
+        if (connectedEdgeIDs.includes(edge.id)) {
+          modifyEdge(edge)
         }
-        return node
+        return edge
       })
-    })
-  }, [])
+    )
+  }
+
+  const onNodeDragStart: NodeDragHandler = (_, _node) => {
+    if (isCourseNode(_node)) {
+      modifyCoursePath(
+        _node,
+        node => (node.style = { ...node.style, backgroundColor: "lightcyan" }),
+        edge => (edge.hidden = false)
+      )
+    }
+  }
+
+  const onNodeDragEnd: NodeDragHandler = (_, _node) => {
+    if (isCourseNode(_node)) {
+      modifyCoursePath(
+        _node,
+        node => (node.style = { ...node.style, backgroundColor: "whitesmoke" }),
+        edge => (edge.hidden = true)
+      )
+    }
+  }
 
   const { startStream, loading } = useJsonStream({
     schema: z.object({
@@ -162,7 +163,7 @@ function SemesterDAGInternal({
         onEdgesChange={onEdgesChange}
         onNodeDragStart={onNodeDragStart}
         onNodeDragStop={onNodeDragEnd}
-        // defaultEdgeOptions={{ hidden: true }}
+        defaultEdgeOptions={{ hidden: true, style: { stroke: "lightskyblue" } }}
       >
         <Background />
         <MiniMap />
