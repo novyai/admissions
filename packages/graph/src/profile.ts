@@ -138,6 +138,7 @@ export async function addCourseToGraph(
   const conditionGroup = conditionGroupsWithCounts[0]?.conditionGroup
 
   if (conditionGroup) {
+    // for OR conditions, we only need to recurse down the condition that has the most required courses
     if (conditionGroup.logicalOperator === 'OR') {
 
       const conditionsWithCounts = await Promise.all(conditionGroup.conditions
@@ -147,9 +148,9 @@ export async function addCourseToGraph(
           count: await countRequiredCoursesInPrerequisiteTree(condition.prerequisites[0]!.courseId, profile)
         })))
       
-      const condition = conditionsWithCounts.reduce((acc, cur) => cur.count > acc.count ? cur : acc, { count: 0, condition: { prerequisites: []}}).condition
+      const prerequisites = conditionsWithCounts.reduce((acc, cur) => cur.count > acc.count ? cur : acc).condition.prerequisites
 
-      for (const prerequisite of condition.prerequisites) {
+      for (const prerequisite of prerequisites) {
         // if a course is completed, assume that it's prerequisites are completed
         if (courseIsCompleted) {
           completedCourseIds.push(prerequisite.courseId)
