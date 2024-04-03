@@ -3,9 +3,11 @@
 import { PromptComposer } from "@ui/components/prompt-composer"
 import ReactFlow, {
   Background,
-  BaseEdge,
   Controls,
   Edge,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
   MiniMap,
   Node,
   NodeDragHandler,
@@ -68,106 +70,47 @@ function SemesterDAGInternal({
 }: SemesterDAGProps) {
   const { getIntersectingNodes } = useReactFlow()
 
-  const onNodeDragStop: NodeDragHandler = useCallback(
-    (_, node: SemesterNodeType | CourseNodeType) => {
-      if (!isCourseNode(node)) return
+  const onNodeDragStart: NodeDragHandler = useCallback((_, _node) => {
+    const incomers = getIncomers(_node, nodes, edges)
+    const outgoers = getOutgoers(_node, nodes, edges)
 
-      const intersections = getIntersectingNodes(node, false).filter(
-        n => n.type && isSemesterNode(n)
-      )
+    const connectedNodeIDs = incomers.concat(outgoers).map(node => node.id)
+    console.log(connectedNodeIDs)
+    setNodes(ns => {
+      return ns.map(node => {
+        if (_node.id == node.id || connectedNodeIDs.includes(node.id)) {
+          node.style = { ...node.style, backgroundColor: "lightcyan" }
+        }
+        return node
+      })
+    })
 
-      if (intersections.length === 0) {
-        console.error("TODO: NOT DROPPED IN A SEMESTER")
-        return
-      } else if (intersections.length >= 2) {
-        console.error("Cannot to multiple semesters")
-        return
-      }
+    // const _intersections = getIntersectingNodes(node).map(n => n.id)
+    // setNodes(ns =>
+    //   ns.map(n => {
+    //     if (n.type === "courseNode") return n
+    //     return {
+    //       ...n,
+    //       style: {
+    //         ...n.style,
+    //         backgroundColor: intersections.includes(n.id) ? "red" : ""
+    //       }
+    //     }
+    //   })
+    // )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-      if (intersections.length !== 1 || !intersections[0]) {
-        console.log("no intersections")
-        return
-      }
-
-      const droppedIn: SemesterNodeType = intersections[0]
-
-      const semester = "semester" in droppedIn.data ? droppedIn.data.semester : undefined
-
-      if (!semester) {
-        console.log("Cannot add to transfer node")
-        return
-      }
-
-      const canMove = canMoveCourse(node.id, semester - 1, profile)
-      if (!canMove.canMove) {
-        console.error("Cannot add to semester", canMove.reason)
-        resetNodePlacement(node.id)
-        setNodes(nds =>
-          nds.map(n =>
-            n.id === droppedIn.id ?
-              {
-                ...n,
-                className: cn(n.className, defaultSemesterNode.className)
-              }
-            : n
-          )
-        )
-      } else {
-        console.log("moving", node.id, "to", semester, semester - 1)
-        setNodes(nds =>
-          nds.map(n =>
-            n.id === node.id ?
-              {
-                ...n,
-                className: cn(n.className, defaultCourseNode.className),
-                data: { ...n.data, semesterIndex: semester }
-              }
-            : n.id === droppedIn.id ?
-              {
-                ...n,
-                className: cn(n.className, defaultSemesterNode.className)
-              }
-            : n
-          )
-        )
-      }
-    },
-    [getIntersectingNodes, profile, resetNodePlacement, setNodes]
-  )
-
-  const onNodeDrag: NodeDragHandler = useCallback(
-    (_e, node: SemesterNodeType | CourseNodeType) => {
-      const intersections = getIntersectingNodes(node, false).map(n => n.id)
-
-      setNodes(ns =>
-        ns.map(n => {
-          if (isCourseNode(n)) return n
-
-          if (intersections.includes(n.id)) {
-            const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
-
-            // if node is overlapping same semester
-            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
-              return {
-                ...n,
-                className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
-              }
-            }
-            return {
-              ...n,
-              className: cn(n.className, canMove.canMove ? "bg-green-200" : "bg-red-200")
-            }
-          }
-
-          return {
-            ...n,
-            className: cn(n.className, defaultSemesterNode.className)
-          }
-        })
-      )
-    },
-    [getIntersectingNodes, setNodes, profile]
-  )
+  const onNodeDragEnd: NodeDragHandler = useCallback((_, _node) => {
+    setNodes(ns => {
+      return ns.map(node => {
+        if (_node.id == node.id) {
+          node.style = { ...node.style, backgroundColor: "hsl(var(--accent)" }
+        }
+        return node
+      })
+    })
+  }, [])
 
   const { startStream, loading } = useJsonStream({
     schema: z.object({
@@ -217,8 +160,9 @@ function SemesterDAGInternal({
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
-        onNodeDrag={onNodeDrag}
-        onNodeDragStop={onNodeDragStop}
+        onNodeDragStart={onNodeDragStart}
+        onNodeDragStop={onNodeDragEnd}
+        // defaultEdgeOptions={{ hidden: true }}
       >
         <Background />
         <MiniMap />
