@@ -32,10 +32,14 @@ const getAllChildrenNodes = (
 }
 
 export const getNodeIDsInCoursePath = (
-  targetNode: CourseNodeType,
-  courseNodes: CourseNodeType[],
+  targetNode: Node,
+  allNodes: Node[],
   allEdges: Edge[]
 ): string[] => {
+  if (!isCourseNode(targetNode)) {
+    return []
+  }
+  const courseNodes = allNodes.filter(node => isCourseNode(node)) as CourseNodeType[]
   const incomers = getAllChildrenNodes(targetNode, courseNodes, allEdges, getIncomers)
   const outgoers = getAllChildrenNodes(targetNode, courseNodes, allEdges, getOutgoers)
   const connectedNodes = [targetNode, ...incomers, ...outgoers]
