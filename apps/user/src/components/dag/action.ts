@@ -19,6 +19,7 @@ export const createVersion = async (profile: StudentProfile, scheduleId: string,
       blob
     }
   })
+
   return newVersion
 }
 

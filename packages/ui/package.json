@@ -9,6 +9,7 @@
     "./components/ui/*": "./src/components/ui/*.tsx",
     "./components/table": "./src/components/table/index.tsx",
     "./components/table/*": "./src/components/table/*.tsx",
+    "./components/dag": "./src/components/dag/index.tsx",
     "./components/primitives/*": "./src/components/primitives/*.tsx",
     "./hooks/*": "./src/hooks/*.ts"
   },
