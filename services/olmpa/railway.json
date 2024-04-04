@@ -1,0 +1,20 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bun run build --filter=olmpa-api",
+    "watchPatterns": [
+      "services/orca/**",
+      "package.json",
+      "bun.lockb",
+      "railway.json",
+      "packages/db/**"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 2,
+    "startCommand": "bun api:start --filter=orca-api",
+    "sleepApplication": false,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

@@ -4,15 +4,15 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { User } from "@db/client"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem
-} from "@ui/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/ui/popover"
+} from "@repo/ui/components/ui/command"
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/ui/popover"
 import { cn } from "@ui/lib/utils"
 
 export function SelectUser({ users }: { users: User[] }) {

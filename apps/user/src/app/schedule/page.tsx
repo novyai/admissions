@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect, RedirectType } from "next/navigation"
 import { auth } from "@clerk/nextjs"
 import { db } from "@db/client"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@ui/components/ui/table"
+} from "@repo/ui/components/ui/table"
 
 import { ScheduleTableActions } from "./schedule-table-actions"
 

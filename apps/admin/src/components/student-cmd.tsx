@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@ui/components/ui/button"
-import { Dialog, DialogContent } from "@ui/components/ui/dialog"
+import { Button } from "@repo/ui/components/ui/button"
+import { Dialog, DialogContent } from "@repo/ui/components/ui/dialog"
 import { Sparkles } from "lucide-react"
 
 import { Chat } from "./chat"

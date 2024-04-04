@@ -1,15 +1,26 @@
+const { resolve } = require("node:path")
+
+const project = resolve(__dirname, "tsconfig.lint.json")
+
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
   root: true,
-  extends: ["@repo/eslint-config/library"],
+  extends: ["@repo/eslint-config/react-internal.js"],
   parser: "@typescript-eslint/parser",
+  ignorePatterns: [".eslintrc.cjs"],
   parserOptions: {
-    project: true
+    project
   },
+  overrides: [
+    {
+      extends: ["plugin:@typescript-eslint/disable-type-checked"],
+      files: ["./**/*.js", "*.js"]
+    }
+  ],
   settings: {
     tailwindcss: {
       callees: ["cn"],
-      config: "tailwind.config.ts"
+      config: "tailwind.config.js"
     }
   }
 }

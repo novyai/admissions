@@ -1,7 +1,7 @@
 import { getStudentGPA, getTranscriptForStudent } from "@/db/students"
 import { HydratedUniversityGrade } from "@/types"
 import { TransferGrade } from "@db/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@ui/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import {
   Table,
   TableBody,
@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow
-} from "@ui/components/ui/table"
+} from "@repo/ui/components/ui/table"
 import { ActivitySquare, BookOpenCheck } from "lucide-react"
 
 import { parseTermCode } from "@/lib/courses"

@@ -7,10 +7,21 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@ui/*": ["../../packages/ui/src/*"],
-      "@db/*": ["../../packages/db/src/*"],
-      "@graph/*": ["../../packages/graph/src/*"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@ui/*": [
+        "../../packages/ui/src/*"
+      ],
+      "@db/*": [
+        "../../packages/db/src/*"
+      ],
+      "@graph/*": [
+        "../../packages/graph/src/*"
+      ],
+      "@ai/*": [
+        "../../packages/ai/src/*"
+      ]
     },
     "baseUrl": ".",
     "declaration": false,
@@ -28,8 +39,12 @@
     ".next/types/**/*.ts",
     "postcss.config.js",
     "../../packages/ui/src/**/*.tsx",
+    "../../packages/ui/src/**/*.ts",
     "../../packages/graph/src/**/*.tsx",
-    "../../packages/graph/src/**/*.ts"
+    "../../packages/graph/src/**/*.ts",
+    "../../packages/ai/src/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

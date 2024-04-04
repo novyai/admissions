@@ -10,18 +10,17 @@ import { ControllerRenderProps, UseFormTrigger } from "react-hook-form"
 export type Option = Record<"value" | "label", string>
 
 interface MultiSelectProps
-  extends ControllerRenderProps<
-    {
+  extends Omit<
+    ControllerRenderProps<{
       options: Option[]
-    },
-    "options"
+    }>,
+    "ref" | "onBlur"
   > {
   options: Option[]
   value: Option[]
   className?: string
   placeholder: string
   closeOnSelect?: boolean
-
   trigger: UseFormTrigger<{
     options: Option[]
   }>
@@ -40,28 +39,34 @@ export function MultiSelect({
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState("")
 
-  const handleUnselect = React.useCallback((option: Option) => {
-    const newSelected = [...selected.filter(s => s.value !== option.value)]
-    onChange(newSelected)
-    trigger(name)
-  }, [])
+  const handleUnselect = React.useCallback(
+    (option: Option) => {
+      const newSelected = [...selected.filter(s => s.value !== option.value)]
+      onChange(newSelected)
+      trigger(name)
+    },
+    [name, onChange, selected, trigger]
+  )
 
-  const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
-    const input = inputRef.current
-    if (input) {
-      if (e.key === "Delete" || e.key === "Backspace") {
-        if (input.value === "") {
-          const newSelected = [...selected]
-          newSelected.pop()
-          onChange(newSelected)
+  const handleKeyDown = React.useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const input = inputRef.current
+      if (input) {
+        if (e.key === "Delete" || e.key === "Backspace") {
+          if (input.value === "") {
+            const newSelected = [...selected]
+            newSelected.pop()
+            onChange(newSelected)
+          }
+        }
+        // This is not a default behaviour of the <input /> field
+        if (e.key === "Escape") {
+          input.blur()
         }
       }
-      // This is not a default behaviour of the <input /> field
-      if (e.key === "Escape") {
-        input.blur()
-      }
-    }
-  }, [])
+    },
+    [onChange, selected]
+  )
 
   const selectables = options.filter(option => !selected.includes(option))
 

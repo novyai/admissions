@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react"
-import { Toaster } from "@ui/components/ui/toaster"
+import { Toaster } from "@repo/ui/components/ui/toaster"
 import { ThemeProvider } from "next-themes"
 
 export const AppContext = createContext({

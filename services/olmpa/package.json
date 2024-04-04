@@ -1,0 +1,46 @@
+{
+  "name": "olmpa-api",
+  "version": "0.0.1",
+  "description": "",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "bun test --coverage --verbose",
+    "api:start": "bun ./src/index.ts",
+    "dev": "bun --watch ./src/index.ts",
+    "lint": "TIMING=1 eslint src/**/*.ts* --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "author": "Dimitri Kennedy <dimitri@sick.email> (https://hack.dance)",
+  "homepage": "https://hack.dance",
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.7.0",
+    "@repo/ai": "workspace:*",
+    "@repo/constants": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.5",
+    "bullmq": "^5.2.1",
+    "date-fns": "^3.3.1",
+    "date-fns-tz": "^2.0.0",
+    "elysia": "0.8.17",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "openai": "^4.28.0",
+    "pino": "^8.19.0",
+    "pino-pretty": "^10.3.1",
+    "zod-stream": "1.0.0"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@turbo/gen": "^1.10.12",
+    "@types/node": "^20.5.2",
+    "@types/ramda": "^0.29.11",
+    "concurrently": "^8.2.2",
+    "ramda": "^0.29.1",
+    "tsup": "^8.0.1"
+  }
+}

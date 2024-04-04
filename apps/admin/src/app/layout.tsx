@@ -1,9 +1,11 @@
+import "@/styles/globals.css"
+
 import { ReactNode } from "react"
-import { defaultFontMapper } from "@ui/styles/fonts"
 
 import { cn } from "@/lib/utils"
 import { AdminNav } from "@/components/admin-nav"
 import AppMenu from "@/components/app-menu"
+import { defaultFontMapper } from "@/styles/fonts"
 
 import Providers from "./providers"
 
@@ -15,7 +17,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <div
             className={cn(
               defaultFontMapper.default,
-              defaultFontMapper.serif,
               defaultFontMapper.mono,
               "flex-col items-stretch h-screen w-screen overflow-y-scroll overflow-x-hidden"
             )}

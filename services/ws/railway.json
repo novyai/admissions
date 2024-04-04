@@ -1,0 +1,19 @@
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bun run build --filter=ws-api",
+    "watchPatterns": [
+      "services/ws/**",
+      "package.json",
+      "bun.lockb",
+      "railway.json"
+    ]
+  },
+  "deploy": {
+    "numReplicas": 2,
+    "startCommand": "bun api:start --filter=ws-api",
+    "sleepApplication": false,
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

@@ -4,30 +4,13 @@ const project = resolve(process.cwd(), "tsconfig.json")
 
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: [
-    "eslint:recommended",
-    "eslint-config-turbo",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "prettier"
-  ],
-  plugins: ["@typescript-eslint", "prettier"],
-  rules: {
-    "no-prototype-builtins": "off",
-    "prettier/prettier": "error",
-    "linebreak-style": "off",
-    "semi": "off",
-    "indent": "off",
-    "@typescript-eslint/semi": "off",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        argsIgnorePattern: "^_",
-        varsIgnorePattern: "^_",
-        caughtErrorsIgnorePattern: "^_"
-      }
-    ]
+  extends: ["plugin:react/recommended", "eslint:recommended", "prettier", "eslint-config-turbo"],
+  plugins: ["@typescript-eslint", "prettier", "only-warn"],
+  globals: {
+    JSX: true
+  },
+  env: {
+    node: true
   },
   settings: {
     "import/resolver": {
@@ -37,8 +20,31 @@ module.exports = {
     }
   },
   ignorePatterns: [".*.js", "node_modules/", "dist/"],
+  rules: {
+    "no-prototype-builtins": "off",
+    "prettier/prettier": "error",
+    "linebreak-style": "off",
+    "semi": "off",
+    "indent": "off",
+    "@typescript-eslint/semi": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": 0,
+    "react/no-unknown-property": "off",
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+        caughtErrorsIgnorePattern: "^_"
+      }
+    ]
+  },
   overrides: [
-    // Force ESLint to detect .tsx files
-    { files: ["*.js?(x)", "*.ts?(x)", "*.tsx"] }
+    {
+      files: ["*.js?(x)", "*.ts?(x)"]
+    }
   ]
 }

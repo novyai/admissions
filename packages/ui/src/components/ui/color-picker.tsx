@@ -1,7 +1,7 @@
 "use client"
 
-import { Button } from "@ui/components/ui/button"
-import { Popover, PopoverContent, PopoverTrigger } from "@ui/components/ui/popover"
+import { Button } from "@repo/ui/components/ui/button"
+import { Popover, PopoverContent, PopoverTrigger } from "@repo/ui/components/ui/popover"
 import { cn } from "@ui/lib/utils"
 import { Sketch } from "@uiw/react-color"
 import { Paintbrush } from "lucide-react"

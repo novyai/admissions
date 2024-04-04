@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { UserButton } from "@clerk/nextjs"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import { Plus } from "lucide-react"
 
 import { Novy } from "@/components/novy-logo"

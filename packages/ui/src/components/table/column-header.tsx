@@ -1,14 +1,14 @@
 import * as React from "react"
 import { ArrowDownIcon, ArrowUpIcon, CaretSortIcon, EyeNoneIcon } from "@radix-ui/react-icons"
 import { Column } from "@tanstack/react-table"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@ui/components/ui/dropdown-menu"
+} from "@repo/ui/components/ui/dropdown-menu"
 import { cn } from "@ui/lib/utils"
 
 interface DataTableColumnHeaderProps<TData, TValue> extends React.HTMLAttributes<HTMLDivElement> {

@@ -1,6 +1,6 @@
 "use client"
 
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
-} from "@ui/components/ui/dropdown-menu"
+} from "@repo/ui/components/ui/dropdown-menu"
 import { MoreHorizontal } from "lucide-react"
 
 export const ScheduleTableActions = () => {

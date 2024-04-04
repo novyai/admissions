@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Dialog, DialogContent } from "@ui/components/ui/dialog"
+import { Dialog, DialogContent } from "@repo/ui/components/ui/dialog"
 
 function Modal({ children }: { children: React.ReactNode }) {
   const params = useSearchParams()

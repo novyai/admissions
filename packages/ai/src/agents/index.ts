@@ -17,6 +17,11 @@ export type CreateAgentParams = {
 export type AgentInstance = ReturnType<typeof createAgent>
 export type ConfigOverride = Partial<OpenAI.ChatCompletionCreateParams>
 
+const client = Instructor({
+  client: oai,
+  mode: "TOOLS"
+})
+
 /**
  * Create a pre-configured "agent" that can be used to generate completions
  * Messages that are passed at initialization will be pre-pended to all completions
@@ -55,18 +60,11 @@ export function createAgent<S extends z.AnyZodObject>({
      *
      * @returns {Promise<AsyncGenerator<z.infer<typeof response_model.schema>>> }
      */
-    completionStream: async (
-      configOverride: ConfigOverride
-    ): Promise<AsyncGenerator<z.infer<typeof response_model.schema>>> => {
+    completionStream: async (configOverride: ConfigOverride) => {
       const messages = [
         ...(defaultAgentParams.messages ?? []),
         ...(configOverride?.messages ?? [])
       ] as OpenAI.ChatCompletionMessageParam[]
-
-      const client = Instructor({
-        client: oai,
-        mode: "TOOLS"
-      })
 
       const extractionStream = await client.chat.completions.create({
         ...defaultAgentParams,
@@ -78,9 +76,7 @@ export function createAgent<S extends z.AnyZodObject>({
 
       return extractionStream
     },
-    completion: async (
-      configOverride: ConfigOverride
-    ): Promise<z.infer<typeof response_model.schema>> => {
+    completion: async (configOverride: ConfigOverride) => {
       const messages = [
         ...(defaultAgentParams.messages ?? []),
         ...(configOverride?.messages ?? [])
@@ -91,7 +87,7 @@ export function createAgent<S extends z.AnyZodObject>({
         mode: "TOOLS"
       })
 
-      const extractionStream = await client.chat.completions.create({
+      const extraction = await client.chat.completions.create({
         ...defaultAgentParams,
         ...configOverride,
         response_model,
@@ -99,7 +95,7 @@ export function createAgent<S extends z.AnyZodObject>({
         messages
       })
 
-      return extractionStream
+      return extraction
     }
   }
 }

@@ -1,26 +1,25 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { getCourseFromIdNameCode } from "@graph/course"
+import { rescheduleAgent } from "@repo/ai/agents/reschedule-agent"
+import { getCourseFromIdNameCode } from "@repo/graph/course"
 import { canMoveCourse } from "@repo/graph/schedule"
 import { StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@repo/ui/components/prompt-composer"
 import { useJsonStream } from "stream-hooks"
 import { z } from "zod"
 
-import { rescheduleCourseAgent } from "@/ai/agents/schema"
-
 export function ScheduleChat({ profile }: { profile: StudentProfile }) {
   const [prompt, setPrompt] = useState("")
   const [result, setResult] = useState<{
     prompt: string
-    data: Partial<z.infer<typeof rescheduleCourseAgent>>
+    data: Partial<z.infer<typeof rescheduleAgent>>
   }>({ prompt: "", data: {} })
 
   const lastPromptRef = useRef<string>("")
 
   const { startStream, stopStream, loading } = useJsonStream({
-    schema: rescheduleCourseAgent,
+    schema: rescheduleAgent,
     onReceive: data => {
       setResult(prevResult => ({
         prompt: prevResult.prompt,

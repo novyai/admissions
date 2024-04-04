@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "license": "MIT",
-  "publishConfig": {
-    "access": "public"
+  "dependencies": {
+    "typescript": "^5.4.3"
   }
 }

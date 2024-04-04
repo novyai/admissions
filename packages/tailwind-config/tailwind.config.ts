@@ -14,61 +14,77 @@ const config: Omit<Config, "content"> = {
       }
     },
     extend: {
-      flex: {
-        "2": "2 2 0%",
-        "3": "3 3 0%"
-      },
       fontFamily: {
-        default: ["var(--font-inter)", "system-ui", "sans-serif"],
+        default: ["var(--font-default)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "serif"],
-        inter: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
 
-        mono: ["var(--font-default)", "monospace"],
-        monoBold: ["var(--font-mono-bold)", "monospace"],
+        okineBold: ["var(--font-bold)"],
+        okineBoldOutline: ["var(--font-okine-bold-outline)"],
+        okineBlack: ["var(--font-okine-black)"],
+        okineBlackOutline: ["var(--font-okine-black-outline)"],
+        okine: ["var(--font-okine)"],
+        okineMedium: ["var(--font-okine-medium)"],
 
-        fusionaBold: ["var(--font-fusiona-bold)"],
-        fusiona: ["var(--font-fusiona)"],
-        fusionaBlack: ["var(--font-fusiona-black)"]
+        fitzgerald: ["var(--font-fitzgerald)"],
+        fitzgeraldItalic: ["var(--font-fitzgerald-italic)"],
+        fitzgeraldBold: ["var(--font-fitzgerald-bold)"],
+        fitzgeraldBoldItalic: ["var(--font-fitzgerald-bold-italic)"]
       },
       colors: {
-        rose: "hsl(var(--rose))",
-        purps: "hsl(var(--purps))",
-        grass: "hsl(var(--grass))",
-        cheese: "hsl(var(--cheese))",
-        beigey: "hsl(var(--beigey))",
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        link: "var(--colors-blue9)",
-        primary: {
+        "fl-pink": "var(--fl-pink)",
+        "fl-blue": "var(--fl-blue)",
+        "fl-purple": "var(--fl-purple)",
+        "fl-white": "var(--fl-white)",
+        "fl-green": "var(--fl-green)",
+        "fl-orange": "var(--fl-orange)",
+        "border": "hsl(var(--border))",
+        "input": "hsl(var(--input))",
+        "ring": "hsl(var(--ring))",
+        "background": "hsl(var(--background))",
+        "foreground": "hsl(var(--foreground))",
+        "link": "var(--colors-blue9)",
+        "primary": {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))"
         },
-        secondary: {
+        "secondary": {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))"
         },
-        destructive: {
+        "destructive": {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))"
         },
-        muted: {
+        "muted": {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))"
         },
-        accent: {
+        "accent": {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))"
         },
-        popover: {
+        "popover": {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))"
         },
-        card: {
+        "card": {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))"
+        },
+
+        "white": "var(--novel-white)",
+        "stone": {
+          50: "var(--novel-stone-50)",
+          100: "var(--novel-stone-100)",
+          200: "var(--novel-stone-200)",
+          300: "var(--novel-stone-300)",
+          400: "var(--novel-stone-400)",
+          500: "var(--novel-stone-500)",
+          600: "var(--novel-stone-600)",
+          700: "var(--novel-stone-700)",
+          800: "var(--novel-stone-800)",
+          900: "var(--novel-stone-900)"
         }
       },
       borderRadius: {
@@ -88,22 +104,12 @@ const config: Omit<Config, "content"> = {
         "fade-in": {
           "0%": { opacity: 0 },
           "100%": { opacity: 1 }
-        },
-        "peak-up": {
-          "0%": { bottom: "-100px" },
-          "100%": { bottom: 0 }
-        },
-        "slide-out": {
-          "0%": { transform: "translateY(0)", opacity: 1 },
-          "100%": { transform: "translateY(300px)", opacity: 0 }
         }
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "spin-slow": "spin 3.5s linear infinite",
-        "peak-up": "peak-up 0.4s ease-out",
-        "slide-out": "slide-out 0.4s ease-out"
+        "spin-slow": "spin 3.5s linear infinite"
       }
     }
   },

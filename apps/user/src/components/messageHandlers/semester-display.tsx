@@ -1,5 +1,5 @@
 import { StudentProfile } from "@repo/graph/types"
-import { DataTable } from "@ui/components/table"
+import { DataTable } from "@repo/ui/components/table"
 
 import { getScheduleTableColumns } from "./schedule-table"
 

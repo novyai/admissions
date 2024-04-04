@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { ChatScrollAnchor } from "@ui/components/chat-scroll-anchor"
-import { ScrollToBottom } from "@ui/components/scroll-to-bottom"
+import { ChatScrollAnchor } from "@repo/ui/components/chat-scroll-anchor"
+import { ScrollToBottom } from "@repo/ui/components/scroll-to-bottom"
 import { motion } from "framer-motion"
 
 import { cn } from "@/lib/utils"

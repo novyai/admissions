@@ -21,6 +21,12 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@repo/db": "workspace:*"
+    "@repo/db": "workspace:*",
+    "@types/dagre": "^0.7.52",
+    "dagre": "^0.8.5",
+    "graphology": "^0.25.4",
+    "graphology-dag": "^0.4.1",
+    "graphology-operators": "^1.6.0",
+    "reactflow": "^11.10.4"
   }
 }

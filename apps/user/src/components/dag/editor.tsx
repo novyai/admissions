@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react"
 import { Version } from "@db/client"
 import { getProfileFromSchedule } from "@graph/action"
 import { CourseNode, StudentProfile } from "@graph/types"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
