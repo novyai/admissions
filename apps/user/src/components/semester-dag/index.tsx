@@ -90,7 +90,6 @@ function SemesterDAGInternal({
   }
 
   const onNodeDragStart: NodeDragHandler = (_e, node: SemesterNodeType | CourseNodeType) => {
-    const intersections = getIntersectingNodes(node, false).map(n => n.id)
     const coursePathNodeIDs = getNodeIDsInCoursePath(node, nodes, edges)
 
     if (isCourseNode(node)) {
