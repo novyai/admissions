@@ -34,7 +34,11 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     currentSemester: 0
   }
 
+  console.log("baseProfile", JSON.stringify(baseProfile))
+
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
+
+  console.log("studentProfile", JSON.stringify(studentProfile))
 
   const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
