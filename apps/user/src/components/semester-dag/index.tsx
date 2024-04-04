@@ -16,7 +16,7 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css"
 
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useCallback } from "react"
 import { canMoveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { cn } from "@ui/lib/utils"
@@ -101,40 +101,41 @@ function SemesterDAGInternal({
         })
       )
     }
+  }
 
-    setNodes(ns =>
-      ns.map(n => {
-        if (isCourseNode(n)) {
-          modifyCoursePathNode(
-            n,
-            coursePathNodeIDs,
-            n => (n.style = { ...n.style, backgroundColor: "lightcyan" })
-          )
-        }
+  const onNodeDrag: NodeDragHandler = useCallback(
+    (_e, node: SemesterNodeType | CourseNodeType) => {
+      const intersections = getIntersectingNodes(node, false).map(n => n.id)
 
-        if (intersections.includes(n.id)) {
-          const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
+      setNodes(ns =>
+        ns.map(n => {
+          if (isCourseNode(n)) return n
 
-          // if node is overlapping same semester
-          if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
+          if (intersections.includes(n.id)) {
+            const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
+
+            // if node is overlapping same semester
+            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
+              return {
+                ...n,
+                className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
+              }
+            }
             return {
               ...n,
-              className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
+              className: cn(n.className, canMove.canMove ? "bg-green-200" : "bg-red-200")
             }
           }
+
           return {
             ...n,
-            className: cn(n.className, canMove.canMove ? "bg-green-200" : "bg-red-200")
+            className: cn(n.className, defaultSemesterNode.className)
           }
-        }
-
-        return {
-          ...n,
-          className: cn(n.className, defaultSemesterNode.className)
-        }
-      })
-    )
-  }
+        })
+      )
+    },
+    [getIntersectingNodes, setNodes, profile]
+  )
 
   const onNodeDragEnd: NodeDragHandler = (_, node) => {
     if (!isCourseNode(node)) return
@@ -268,6 +269,7 @@ function SemesterDAGInternal({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStart={onNodeDragStart}
+        onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragEnd}
         defaultEdgeOptions={{ hidden: true, style: { stroke: "lightskyblue" } }}
       >
