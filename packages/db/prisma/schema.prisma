@@ -31,7 +31,7 @@ enum DegreeStatus {
 
 model User {
   id                  String                @id @default(uuid())
-  uid                 String                @unique
+  uid                 String?                @unique
   email               String                @unique
   firstName           String?
   lastName            String?
