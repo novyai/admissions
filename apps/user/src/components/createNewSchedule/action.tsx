@@ -17,6 +17,7 @@ import { getAllNodesAndEdges } from "@/components/dag/action"
 export async function createNewSchedule(userId: string, programs: Program[]) {
   const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
 
+  console.log("getting required courses")
   const requiredCourses = await db.course.findMany({
     where: {
       OR: Array.from(deptCourses)
@@ -25,6 +26,8 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
       id: true
     }
   })
+
+  console.log("requiredCourses", JSON.stringify(requiredCourses))
 
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
