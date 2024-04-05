@@ -76,14 +76,12 @@ export function Editor({
   useEffect(() => {
     setStatus("pending")
     const update = async () => {
-      console.log("hello", selectedVersion)
       const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
 
-      console.log("get profile")
       setProfile(profile)
       const { defaultNodes: newDefaultNodes, defaultEdges: newDefaultEdges } =
         await getAllNodesAndEdges(profile)
-      console.log("get nodes and edges")
+
       setDefaultNodes(newDefaultNodes)
 
       setNodes(newDefaultNodes)
