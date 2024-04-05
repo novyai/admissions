@@ -6,8 +6,6 @@ import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
 import { ColumnDef } from "@tanstack/react-table"
 
-import { ScheduleChat } from "./schedule-chat"
-
 export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
     {
@@ -103,7 +101,7 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
       </div>
 
       <DataTable columns={columns} data={courses} rowCount={courses.length} />
-      <ScheduleChat profile={profile} />
+      {/* <ScheduleChat profile={profile} /> */}
     </>
   )
 }

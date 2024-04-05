@@ -3,9 +3,9 @@
 import { useRouter } from "next/navigation"
 import { Program } from "@graph/defaultCourses"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MultiSelect, Option } from "@ui/components/multiselect"
-import { Button } from "@ui/components/ui/button"
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@ui/components/ui/form"
+import { MultiSelect, Option } from "@repo/ui/components/multiselect"
+import { Button } from "@repo/ui/components/ui/button"
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@repo/ui/components/ui/form"
 import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -48,6 +48,7 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
       userId,
       result.data.options.map(option => option.value as Program)
     )
+
     router.push(`/schedule/${scheduleId}`)
   }
 
@@ -61,8 +62,10 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
             <FormItem>
               <FormLabel>{field.name}</FormLabel>
               <MultiSelect
+                name={field.name}
+                onChange={field.onChange}
+                value={field.value}
                 options={programs satisfies Option[]}
-                {...field}
                 closeOnSelect
                 trigger={trigger}
                 placeholder="Select your majors"

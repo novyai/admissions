@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import dagre from "dagre"
 import ReactFlow, {
   Background,

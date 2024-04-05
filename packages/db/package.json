@@ -1,40 +1,41 @@
 {
   "name": "@repo/db",
   "version": "1.0.0",
+  "type": "module",
+  "main": "src/client.ts",
+  "module": "src/client.ts",
   "exports": {
-    "./*": {
-      "import": [
-        "./src/*.tsx",
-        "./src/*.ts",
-        "./src/*.json"
-      ]
-    }
+    ".": {
+      "import": "./src/client.ts",
+      "require": "./src/client.ts"
+    },
+    "./queries/user": "./src/queries/user.ts",
+    "./queries/conversation": "./src/queries/conversation.ts",
+    "./data/*": "./src/data/*.json"
   },
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset --force",
-    "db:rps": "bun run db:reset && bun run db:push && bun run db:seed",
     "db:seed": "tsx src/seed.ts",
     "db:format": "prisma format",
-    "db:generate": "prisma generate",
-    "db:studio": "prisma studio",
+    "db:generate": "prisma generate --no-engine",
+    "db:dev": "docker compose -f ./admissions/docker-compose.yml up -d",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "lint": "eslint --max-warnings 0",
+    "build": "prisma generate --no-engine",
+    "prebuild": "bun run db:generate",
+    "predev": "bun run generate",
     "studio": "prisma studio"
   },
   "dependencies": {
-    "@faker-js/faker": "^8.4.0",
-    "@prisma/client": "latest",
-    "@prisma/extension-accelerate": "^0.6.2"
+    "@prisma/client": "5.12.1",
+    "@prisma/extension-accelerate": "^1.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "eslint": "^8.54.0",
-    "prisma": "latest",
-    "rimraf": "^5.0.5",
     "@repo/typescript-config": "workspace:*",
-    "tsx": "^4.4.0",
-    "typescript": "^5.3.2"
+    "prisma": "^5.12.1",
+    "rimraf": "^5.0.5"
   }
 }

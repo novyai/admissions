@@ -2,25 +2,25 @@
 
 import Link from "next/link"
 import { HydratedCourse } from "@/types"
-import { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@ui/components/table"
-import { DataTableColumnHeader } from "@ui/components/table/column-header"
-import { Button } from "@ui/components/ui/button"
-import { Checkbox } from "@ui/components/ui/checkbox"
+import { DataTable } from "@repo/ui/components/table"
+import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
+import { Button } from "@repo/ui/components/ui/button"
+import { Checkbox } from "@repo/ui/components/ui/checkbox"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle
-} from "@ui/components/ui/dialog"
+} from "@repo/ui/components/ui/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger
-} from "@ui/components/ui/dropdown-menu"
+} from "@repo/ui/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 
 export const columns: ColumnDef<HydratedCourse>[] = [

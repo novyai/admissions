@@ -3,9 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "paths": {
-      "@ai/*": ["./src/*"],
-      "@db/*": ["../../packages/db/src/*"],
-      "@constants/*": ["../../packages/constants/src/*"]
+      "@ai/*": ["./src/*"]
     },
     "baseUrl": "."
   },

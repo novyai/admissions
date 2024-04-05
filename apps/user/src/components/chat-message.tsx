@@ -1,6 +1,6 @@
 import React from "react"
 import { advisorAgentSchema } from "@ai/agents/advisor/schema"
-import { User } from "@db/client"
+import { User } from "@repo/db"
 import { StudentProfile } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 
@@ -81,7 +81,7 @@ export const MessageWrapper = React.memo(function MessageWrapper({
       })}
     >
       <div>
-        <strong className="text-xs font-okineMedium tracking-widest text-accent-foreground">
+        <strong className="text-xs font-semibold tracking-widest text-accent-foreground">
           {role === "user" ? "YOU" : "Advisor"}
         </strong>
         <div

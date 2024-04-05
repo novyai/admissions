@@ -1,13 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Button } from "@ui/components/ui/button"
-import { Dialog, DialogContent } from "@ui/components/ui/dialog"
+import { Button } from "@repo/ui/components/ui/button"
+import { Dialog, DialogContent } from "@repo/ui/components/ui/dialog"
 import { Sparkles } from "lucide-react"
 
-import { Chat } from "./chat"
+// import { Chat } from "./chat"
 
-export function StudentCommand({ studentId }: { studentId: string }) {
+export function StudentCommand() {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function StudentCommand({ studentId }: { studentId: string }) {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-2xl p-0 overflow-hidden">
-          <Chat studentId={studentId} />
+          {/* <Chat studentId={studentId} /> */}
         </DialogContent>
       </Dialog>
     </>

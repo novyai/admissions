@@ -3,19 +3,19 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { HydratedStudent } from "@/types"
-import { DegreeData } from "@db/client"
-import { ColumnDef } from "@tanstack/react-table"
-import { DataTable } from "@ui/components/table"
-import { DataTableColumnHeader } from "@ui/components/table/column-header"
-import { Button } from "@ui/components/ui/button"
-import { Checkbox } from "@ui/components/ui/checkbox"
+import { DegreeData } from "@repo/db"
+import { DataTable } from "@repo/ui/components/table"
+import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
+import { Button } from "@repo/ui/components/ui/button"
+import { Checkbox } from "@repo/ui/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger
-} from "@ui/components/ui/dropdown-menu"
+} from "@repo/ui/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { MoreHorizontal } from "lucide-react"
 

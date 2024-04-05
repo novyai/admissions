@@ -1,0 +1,2 @@
+bun run type-check
+bun run lint

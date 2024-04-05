@@ -1,5 +1,5 @@
 import { HydratedCourse } from "@/types"
-import { db } from "@db/client"
+import { db } from "@repo/db"
 
 export const getAllCourses = async ({
   skip = 0,

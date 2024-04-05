@@ -1,0 +1,24 @@
+{
+  "name": "@repo/constants",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "build": "echo 'No build step'",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "rimraf": "^5.0.5"
+  }
+}

@@ -2,6 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Input } from "@repo/ui/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@repo/ui/components/ui/table"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,15 +24,6 @@ import {
   useReactTable,
   VisibilityState
 } from "@tanstack/react-table"
-import { Input } from "@ui/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@ui/components/ui/table"
 
 import { DataTablePagination } from "./pagination"
 
@@ -31,14 +31,16 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   rowCount: number
-  search?: boolean
+  filterBy?: string
+  filterPlaceholderText?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   rowCount,
-  search = true
+  filterBy,
+  filterPlaceholderText
 }: DataTableProps<TData, TValue>) {
   const router = useRouter()
   const pathname = usePathname()
@@ -89,7 +91,8 @@ export function DataTable<TData, TValue>({
     const newSkip = pageIndex * pageSize
     const newTake = pageSize ?? 10
 
-    const params = new URLSearchParams(Object.fromEntries(searchParams))
+    const paramsString = searchParams.toString()
+    const params = new URLSearchParams(paramsString)
 
     params.set("take", `${newTake}`)
     params.set("skip", `${newSkip}`)
@@ -98,22 +101,18 @@ export function DataTable<TData, TValue>({
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageIndex, pageSize])
-
   return (
     <>
-      {search && (
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Filter conversations..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={event => {
-              const target = event.target as HTMLInputElement
-              table.getColumn("name")?.setFilterValue(target?.value)
-            }}
-            className="max-w-sm"
-          />
-        </div>
-      )}
+      <div className="flex items-center py-4">
+        <Input
+          placeholder={filterPlaceholderText}
+          value={filterBy ? (table.getColumn(filterBy)?.getFilterValue() as string) : ""}
+          onChange={event =>
+            filterBy && table.getColumn(filterBy)?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
 
       <div className="rounded-md border">
         <Table>

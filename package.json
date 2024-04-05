@@ -1,42 +1,44 @@
 {
-  "name": "base",
+  "name": "admissions",
   "private": true,
   "scripts": {
-    "build": "turbo run build --no-daemon --concurrency=11",
-    "dev": "turbo dev --no-daemon --concurrency=11",
     "lint": "turbo lint --concurrency=11",
     "clean": "turbo run clean",
     "type-check": "turbo type-check --concurrency=11",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:write": "prettier --write \"**/*.{js,json,jsx,ts,tsx}\"",
+    "build": "turbo run build --no-daemon --concurrency=11",
+    "dev": "turbo dev --no-daemon --concurrency=11",
     "start": "turbo next start",
-    "db:studio": "turbo run db:studio",
+    "api:start": "turbo run api:start",
+    "api:dev": "turbo run api:dev",
+    "db:format": "turbo run db:format",
     "db:generate": "turbo run db:generate",
-    "test": "turbo run test"
+    "db:push": "turbo run db:push",
+    "db:studio": "turbo run db:studio",
+    "db:dev": "turbo run db:dev",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/bun": "^1.0.1",
-    "husky": "^8.0.3",
+    "husky": "^9.0.11",
     "prettier": "^3.2.4",
+    "prisma": "^5.11.0",
     "turbo": "latest"
   },
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@types/dagre": "^0.7.52",
-    "dagre": "^0.8.5",
-    "graphology": "^0.25.4",
-    "graphology-dag": "^0.4.1",
-    "graphology-operators": "^1.6.0",
-    "reactflow": "^11.10.4"
-  },
   "packageManager": "bun@1.0.22",
   "workspaces": [
     "apps/*",
-    "packages/*"
-  ]
+    "packages/*",
+    "services/*"
+  ],
+  "dependencies": {
+    "@prisma/client": "5.12.1"
+  }
 }

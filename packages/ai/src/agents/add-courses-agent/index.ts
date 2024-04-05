@@ -1,4 +1,5 @@
 import { createAgent } from "@ai/agents"
+
 import { additionalCoursesSchema } from "./schema"
 
 export const generatePrimaryIdentity = (
@@ -14,14 +15,13 @@ export const generatePrimaryIdentity = (
   ${electives.map(elective => `- ${elective.courseSubject} ${elective.courseNumber}: ${elective.name}`).join("\n")}
 `
 
-
 export const addCourseAgent = createAgent({
   config: {
     messages: [],
     model: "gpt-4-turbo-preview",
     temperature: 0.5,
     max_tokens: 1000,
-    stream: false,
+    stream: false
   },
   response_model: {
     schema: additionalCoursesSchema,

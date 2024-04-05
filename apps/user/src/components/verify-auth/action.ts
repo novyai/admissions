@@ -1,7 +1,7 @@
 "use server"
 
 import { auth } from "@clerk/nextjs"
-import { db } from "@db/client"
+import { db } from "@repo/db"
 
 export const checkAuth = async () => {
   const { userId } = auth()

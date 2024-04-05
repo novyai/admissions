@@ -36,7 +36,7 @@ export default async function Page({
                 })}
               </div>
               <div>
-                <StudentCommand studentId={params.studentId} />
+                <StudentCommand />
               </div>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-between gap-2 px-4">

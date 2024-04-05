@@ -17,7 +17,7 @@ export const AnimatedBorderWrapper = ({
   return (
     <div
       className={cn(
-        `rounded-md w-full min-w-full group shadow-xl relative overflow-hidden transition-all duration-300 ease-in-out bg-gradient-to-r from-cheese to-grass`,
+        `w-full min-w-full group shadow-xl relative overflow-hidden rounded-full bg-white p-[2px] transition-all duration-300 ease-in-out bg-gradient-to-r from-cheese to-grass`,
         {
           "className": !!className,
           "p-[4px]": strokeWidth === 4,
@@ -28,7 +28,7 @@ export const AnimatedBorderWrapper = ({
       )}
     >
       <div className="animate-spin-slow absolute -top-[1200%] -bottom-[1200%] left-[30%] right-[30%] bg-gradient-to-r from-transparent via-gray-100/80 to-transparent visible"></div>
-      <div className=" relative z-50 h-full w-full">{children}</div>
+      <div className="bg-white rounded-full relative z-50 h-full w-full">{children}</div>
     </div>
   )
 }

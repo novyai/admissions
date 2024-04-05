@@ -1,4 +1,4 @@
-// import { db, Prisma } from "@db/client"
+// import { db, Prisma } from "@repo/db"
 // import cseDegree from "@db/test.json"
 // import { getStudentProfile } from "@repo/graph/profile"
 // import { BaseStudentProfile } from "@repo/graph/types"

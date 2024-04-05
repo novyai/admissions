@@ -1,7 +1,7 @@
 "use server"
 
-import { db } from "@db/client"
 import { StudentProfile } from "@graph/types"
+import { db } from "@repo/db"
 import { Node } from "reactflow"
 
 import { createBlob } from "@/lib/version-blob"
@@ -19,6 +19,7 @@ export const createVersion = async (profile: StudentProfile, scheduleId: string,
       blob
     }
   })
+
   return newVersion
 }
 

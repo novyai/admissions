@@ -1,19 +1,42 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV", "OPENAI_API_KEY", "OPENAI_ORG_ID", "WEBHOOK_SECRET"],
+  "globalEnv": [
+    "NODE_ENV",
+    "OPENAI_API_KEY",
+    "OPENAI_ORG_ID",
+    "RW_ENV",
+    "IS_LOCAL",
+    "WEBHOOK_SECRET",
+    "NEXT_PUBLIC_IS_LOCAL",
+    "NEXT_PUBLIC_RW_ENV",
+    "SERVICE_TOKEN",
+    "VERCEL_URL",
+    "LOG_LEVEL",
+    "REDISPORT",
+    "REDISURL",
+    "REDISHOST",
+    "REDISPASSWORD",
+    "REDIS_PRIVATE_URL",
+    "CLERK_USER_WEBHOOK_SECRET",
+    "PORT"
+  ],
   "pipeline": {
     "build": {
-      "dependsOn": ["db:generate", "^build"],
+      "dependsOn": ["^db:generate", "^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
+    "start": {},
+    "api:start": {},
     "lint": {},
     "test": {
       "cache": false,
       "persistent": false
     },
     "dev": {
-      "cache": false
+      "dependsOn": ["^db:generate", "^db:dev"],
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false,
@@ -26,25 +49,13 @@
     "db:generate": {
       "cache": false
     },
-    "db:migrate:dev": {
+    "db:format": {
       "cache": false
     },
-    "db:migrate:deploy": {},
     "db:push": {
       "cache": false
     },
-    "db:format": {},
-    "db:seed": {
-      "cache": false
-    },
-    "db:studio": {},
-    "db:reset": {
-      "cache": false
-    },
-    "db:rps": {
-      "cache": false
-    },
-    "format": {
+    "db:dev": {
       "cache": false
     }
   }

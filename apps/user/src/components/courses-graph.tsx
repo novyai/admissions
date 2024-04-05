@@ -1,5 +1,5 @@
 import { CourseNode } from "@repo/graph/types"
-import { LayoutedDAG } from "@ui/components/dag"
+import { LayoutedDAG } from "@repo/ui/components/dag"
 
 export function CoursesGraph({ graph }: { graph: Map<string, CourseNode> }) {
   const courses = Array.from(graph.values())

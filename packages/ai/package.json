@@ -10,23 +10,20 @@
   "scripts": {
     "lint": "eslint --max-warnings 0",
     "build": "echo 'No build step'",
-    "test": "bun test"
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "dependencies": {
+    "@repo/constants": "workspace:*",
     "@instructor-ai/instructor": "^1.0.0",
     "js-tiktoken": "^1.0.7",
-    "openai": "^4.24.7",
+    "llm-polyglot": "^0.0.3",
+    "openai": "^4.28.0",
     "zod": "latest",
     "zod-stream": "^1.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "eslint": "^8.54.0",
-    "prisma": "latest",
-    "rimraf": "^5.0.5",
     "@repo/typescript-config": "workspace:*",
-    "@repo/graph": "workspace:*",
-    "tsx": "^4.4.0",
-    "typescript": "^5.3.3"
+    "rimraf": "^5.0.5"
   }
 }

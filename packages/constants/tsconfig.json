@@ -1,0 +1,14 @@
+{
+  "extends": "@repo/typescript-config/react-library.json",
+  "include": ["src/*.ts", "next-env.d.ts", "tsup.config.ts"],
+  "exclude": ["node_modules"],
+  "declaration": true,
+  "compilerOptions": {
+    "outDir": "dist",
+    "paths": {
+      "@constants/*": ["./src/*"],
+      "@ai/*": ["../../packages/ai/src/*"]
+    },
+    "baseUrl": "."
+  }
+}

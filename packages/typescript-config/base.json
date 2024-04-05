@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
+  "schema": "https://json.schemastore.org/tsconfig",
   "display": "Default",
   "compilerOptions": {
     "lib": ["ESNext"],
@@ -12,7 +12,6 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
-
     "strict": true,
     "skipLibCheck": true,
     "noUnusedLocals": true,
@@ -20,14 +19,6 @@
     "noFallthroughCasesInSwitch": true,
 
     "useUnknownInCatchVariables": true,
-    "noPropertyAccessFromIndexSignature": true,
-
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "incremental": false,
-    "isolatedModules": true,
-    "noUncheckedIndexedAccess": true,
-    "resolveJsonModule": true
+    "noPropertyAccessFromIndexSignature": true
   }
 }

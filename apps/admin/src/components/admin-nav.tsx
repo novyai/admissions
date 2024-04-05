@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { buttonVariants } from "@ui/components/ui/button"
+import { buttonVariants } from "@repo/ui/components/ui/button"
 
 export function AdminNav() {
   const pathname = usePathname()

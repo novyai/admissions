@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
-  // directUrl    = env("DIRECT_URL")
+  directUrl    = env("DIRECT_URL")
   relationMode = "prisma"
 }
 
@@ -30,17 +30,20 @@ enum DegreeStatus {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  uid       String?   @unique
-  email     String    @unique
-  firstName String?
-  lastName  String?
-  userType  UserType
-  studentId String?   @unique
-  student   Student?  @relation(fields: [studentId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  Schedule  Schedule[]
+  id                  String                @id @default(uuid())
+  uid                 String?                @unique
+  email               String                @unique
+  firstName           String?
+  lastName            String?
+  userType            UserType
+  studentId           String?               @unique
+  student             Student?              @relation(fields: [studentId], references: [id])
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @default(now())
+  Schedule            Schedule[]
+  Conversation        Conversation[]
+  ConversationSummary ConversationSummary[]
+  Message             Message[]
 
   @@index([studentId])
 }
@@ -120,6 +123,7 @@ model Course {
   @@unique(fields: [courseNumber, courseSubject], name: "courseIdentifier")
   @@index([departmentId])
   @@index([universityId])
+  @@index([id])
 }
 
 model ConditionGroup {
@@ -175,6 +179,7 @@ model Program {
   totalDegreeHours  Int
   universityId      String
   departmentId      String
+  
   programCourses    ProgramCourse[]
   university        University          @relation(fields: [universityId], references: [id])
   department        Department          @relation(fields: [departmentId], references: [id])
@@ -260,12 +265,12 @@ model TransferGrade {
 
 model Schedule {
   id        String   @id @default(uuid())
-  userID    String    
+  userID    String
   user      User     @relation(fields: [userID], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   activeDraftId String?
-  versions       Version[]
+  versions      Version[]
 
   @@index([userID])
 }
@@ -280,4 +285,89 @@ model Version {
   blob Json
 
   @@index([scheduleId])
+}
+
+
+
+
+
+model Conversation {
+  id String @id @default(uuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  summarizedUntil DateTime?
+
+  title    String?
+  starter  Json?
+  archived Boolean @default(false)
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  artifacts Json?
+
+  messages            Message[]
+  ConversationSummary ConversationSummary[]
+
+  @@index([userId])
+}
+
+model ConversationSummary {
+  id                String       @id @default(uuid())
+  createdAt         DateTime     @default(now())
+  conversationId    String
+  conversation      Conversation @relation(fields: [conversationId], references: [id])
+  startingMessageId String       @unique()
+  endingMessageId   String       @unique()
+  from              DateTime
+  to                DateTime
+  messageCount      Int
+  summary           String       @db.LongText
+  tokenCount        Int
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@index([conversationId], name: "conversationId")
+  @@index([userId], name: "userId")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversationId String
+
+  content String      @db.LongText
+  role    MessageRole @default(user)
+
+  tokenCount Int
+  summarized Boolean @default(false)
+
+  artifacts Json?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  type MessageType @default(TEXT)
+
+  @@index([conversationId])
+  @@index([userId])
+}
+
+enum MessageType {
+  TEXT
+  MARKDOWN
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+  function
 }

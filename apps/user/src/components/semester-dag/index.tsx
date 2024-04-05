@@ -1,6 +1,6 @@
 "use client"
 
-import { PromptComposer } from "@ui/components/prompt-composer"
+import { PromptComposer } from "@repo/ui/components/prompt-composer"
 import ReactFlow, {
   Background,
   Controls,
@@ -276,8 +276,11 @@ function SemesterDAGInternal({
         <MiniMap />
         <Controls />
       </ReactFlow>
+
       <div className="w-full p-2">
         <PromptComposer
+          prompt=""
+          onChange={() => {}}
           placeholder="What courses should I add?"
           onSubmit={onSubmit}
           loading={loading}

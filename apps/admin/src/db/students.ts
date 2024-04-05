@@ -1,5 +1,5 @@
 import { HydratedStudent, StudentTranscript } from "@/types"
-import { db, Prisma } from "@db/client"
+import { db, Prisma } from "@repo/db"
 
 export const getAllStudents = async ({
   skip = 0,

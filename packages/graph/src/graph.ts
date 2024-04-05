@@ -1,10 +1,10 @@
 import { BaseStudentProfile, CourseNode, StudentProfile } from "@graph/types"
-import { CourseGraph, computeNodeStats, toCourseNode } from "./profile"
 import Graph from "graphology"
 
-export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
+import { computeNodeStats, CourseGraph, toCourseNode } from "./profile"
 
-  const graph : CourseGraph = new Graph()
+export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
+  const graph: CourseGraph = new Graph()
 
   for (const courseNode of profile.allCourses) {
     graph.addNode(courseNode.id, {
@@ -16,7 +16,7 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
       universityId: courseNode.raw_course.universityId,
 
       startTerm: null,
-      endTerm: null, 
+      endTerm: null,
 
       hasAttributes: false,
       fanOut: undefined,
@@ -39,7 +39,10 @@ export function studentProfileToGraph(profile: StudentProfile) : CourseGraph {
   return graph
 }
 
-export function graphtoStudentProfile(graph : CourseGraph, oldProfile: BaseStudentProfile) : StudentProfile {
+export function graphtoStudentProfile(
+  graph: CourseGraph,
+  oldProfile: BaseStudentProfile
+): StudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
     toCourseNode(graph, courseId, course)
   )
@@ -72,8 +75,7 @@ function buildSemesters(graph: Graph): CourseNode[][] {
 export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
 
-  return _getAllPrereqs(courseId, graph)
-    .map(prereqId => toCourseNode(graph, prereqId, undefined))
+  return _getAllPrereqs(courseId, graph).map(prereqId => toCourseNode(graph, prereqId, undefined))
 }
 
 function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
@@ -84,8 +86,9 @@ function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
 export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
 
-  return _getAllDependents(courseId, graph)
-    .map(prereqId => toCourseNode(graph, prereqId, undefined))
+  return _getAllDependents(courseId, graph).map(prereqId =>
+    toCourseNode(graph, prereqId, undefined)
+  )
 }
 
 function _getAllDependents(courseId: string, graph: CourseGraph): string[] {

@@ -4,15 +4,15 @@ import {
   DoubleArrowLeftIcon,
   DoubleArrowRightIcon
 } from "@radix-ui/react-icons"
-import { Table } from "@tanstack/react-table"
-import { Button } from "@ui/components/ui/button"
+import { Button } from "@repo/ui/components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from "@ui/components/ui/select"
+} from "@repo/ui/components/ui/select"
+import { Table } from "@tanstack/react-table"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
