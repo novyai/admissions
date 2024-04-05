@@ -1,5 +1,4 @@
 import { addChatStreamJob } from "@/queues/chat-stream"
-import { addUserProfilePipelineJob } from "@/queues/profile-generation"
 import { Elysia, t } from "elysia"
 
 import { logger } from "@/lib/logger"
@@ -40,7 +39,7 @@ export const qGroup = new Elysia({ prefix: "/q" })
           conversationId: t.String(),
           messageStreamIndex: t.Number(),
           isInitialMessage: t.Boolean(),
-          endUserId: t.String(),
+          userId: t.String(),
           meta: t.Record(t.String(), t.Unknown()),
           streamId: t.String(),
           prompt: t.String()
