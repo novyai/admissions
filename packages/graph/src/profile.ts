@@ -6,7 +6,6 @@ import { Attributes } from "graphology-types"
 import { ConditionGroup, Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 import { graphtoStudentProfile } from "./graph"
-import { Edge } from "reactflow"
 
 type CourseAttributes = {
   semester?: number
@@ -181,7 +180,7 @@ export async function addCourseToGraph(
 
           // edges represent prerequisites pointing at the course they are a prerequisite for
           if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-            graph.addDirectedEdge(prerequisite.courseId, course.id)
+            graph.addDirectedEdge(prerequisite.courseId, course.id, { "type": condition.type })
           }
         }
       }
@@ -212,6 +211,7 @@ async function countRequiredCoursesInPrerequisiteTree(courseId: string, profile:
 
 export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {
   var semester = 1
+  
   forEachTopologicalGeneration(graph, coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
       if (semester === 1) {
@@ -264,6 +264,11 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
 
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
+      // don't directly schedule corequisites -- we'll add them when we schedule their parent
+      .filter(courseId => {
+        const edges = graph.mapOutEdges(courseId, (_, edge) => edge.type)
+        return edges.length === 0 || !edges.every(type => type === "COREQUISITE")
+      })
       .map(courseId => graph.getNodeAttributes(courseId))
       .sort((courseA, courseB) => (courseA.slack ?? 0) - (courseB.slack ?? 0))
   )
@@ -287,17 +292,24 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
       firstDeferredCourseId = null
     }
 
-    if (
-      graph
-        .mapInNeighbors(course.id, (_prereqId, prereq) => prereq.semester)
+    const allPrereqsCompleted = graph
+        .filterInNeighbors(course.id, prereqId => graph.getEdgeAttribute(prereqId, course.id, "type") === "PREREQUISITE")
+        .map(prereqId => graph.getNodeAttribute(prereqId, "semester"))
         .every(semester => semester! < currentSemester)
-    ) {
+
+    const corequisites = graph.filterInEdges(course.id, (_, edge) => edge.type === 'COREQUISITE')
+      .map(edgeId => graph.source(edgeId))
+      .map(nodeId => graph.getNodeAttributes(nodeId))
+
+    if (allPrereqsCompleted && (corequisites.length + coursesInCurrentSemester + 1 <= profile.coursePerSemester)) {
       // if all of the prereqs were completed in previous semesters, we can add this course to the current one
-      console.log(
-        `Adding ${course["courseSubject"]}-${course["courseNumber"]}: ${course["name"]} to schedule in semester ${currentSemester}`
-      )
-      graph.setNodeAttribute(course["id"], "semester", currentSemester)
+      updateSemesterInGraph(graph, course, currentSemester)
       coursesInCurrentSemester += 1
+
+      for (const corequisite of corequisites) {
+        updateSemesterInGraph(graph, corequisite, currentSemester)
+        coursesInCurrentSemester += 1
+      }
     } else {
       // otherwise we need to defer this course
       console.log(
@@ -309,6 +321,13 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
       sortedCourses.push(course)
     }
   }
+}
+
+function updateSemesterInGraph(graph: CourseGraph, course: CourseAttributes, currentSemester: number) {
+      console.log(
+        `Adding ${course.courseSubject}-${course.courseNumber}: ${course.name} to schedule in semester ${currentSemester}`
+      )
+      graph.setNodeAttribute(course.id, "semester", currentSemester)
 }
 
 
