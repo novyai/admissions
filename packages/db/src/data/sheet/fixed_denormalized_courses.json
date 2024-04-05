@@ -580,7 +580,7 @@
         "logicalOperator": "OR",
         "conditions": [
           {
-            "type":"PREREQUISITE",
+            "type": "PREREQUISITE",
             "minimumGrade": "C",
             "prerequisites": [
               {
@@ -594,30 +594,30 @@
     ]
   },
   {
-    "courseSubject":"MAC",
-    "courseNumber":"2282",
-    "name":"Engineering Calculus II",
+    "courseSubject": "MAC",
+    "courseNumber": "2282",
+    "name": "Engineering Calculus II",
     "conditions": [
       {
-        "logicalOperator":"OR",
-        "conditions":[
+        "logicalOperator": "OR",
+        "conditions": [
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "MAC",
-                "courseNumber":"2281"
+                "courseNumber": "2281"
               }
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "MAC",
-                "courseNumber":"2311"
+                "courseNumber": "2311"
               }
             ]
           }
@@ -631,12 +631,12 @@
     "name": "IT Object Oriented Programming",
     "conditions": [
       {
-        "logicalOperator":"OR",
+        "logicalOperator": "OR",
         "conditions": [
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "COP",
                 "courseNumber": "2512"
@@ -644,9 +644,9 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "COP",
                 "courseNumber": "2510"
@@ -654,9 +654,9 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "COP",
                 "courseNumber": "2930"
@@ -668,30 +668,30 @@
     ]
   },
   {
-    "courseSubject":"CIS",
-    "courseNumber":"3213",
+    "courseSubject": "CIS",
+    "courseNumber": "3213",
     "name": "Foundations of Cybersecurity",
-    "conditions":[
+    "conditions": [
       {
-        "logicalOperator":"OR",
-        "conditions":[
+        "logicalOperator": "OR",
+        "conditions": [
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "COP",
-                "courseNumber":"2512"
+                "courseNumber": "2512"
               }
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C",
-            "prerequisites":[
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
               {
                 "courseSubject": "COP",
-                "courseNumber":"2510"
+                "courseNumber": "2510"
               }
             ]
           }
@@ -701,11 +701,11 @@
   },
   {
     "courseSubject": "PHY",
-    "courseNumber":"2048",
-    "name":"General Physics I",
+    "courseNumber": "2048",
+    "name": "General Physics I",
     "conditions": [
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -718,19 +718,19 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2048L"
+                "courseSubject": "PHY",
+                "courseNumber": "2048L"
               }
             ]
           }
         ]
       },
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -743,12 +743,12 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2048L"
+                "courseSubject": "PHY",
+                "courseNumber": "2048L"
               }
             ]
           }
@@ -758,11 +758,11 @@
   },
   {
     "courseSubject": "PHY",
-    "courseNumber":"2049",
-    "name":"General Physics II",
+    "courseNumber": "2049",
+    "name": "General Physics II",
     "conditions": [
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -775,8 +775,8 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C-",
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
                 "courseSubject": "PHY",
@@ -785,19 +785,19 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2049L"
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
               }
             ]
           }
         ]
       },
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -810,8 +810,8 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C-",
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
                 "courseSubject": "PHY",
@@ -820,19 +820,19 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2049L"
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
               }
             ]
           }
         ]
       },
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -845,8 +845,8 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C-",
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
                 "courseSubject": "PHY",
@@ -855,19 +855,19 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2049L"
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
               }
             ]
           }
         ]
       },
       {
-        "logicalOperator":"AND",
+        "logicalOperator": "AND",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -880,8 +880,8 @@
             ]
           },
           {
-            "type":"PREREQUISITE",
-            "minimumGrade":"C-",
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
                 "courseSubject": "PHY",
@@ -890,12 +890,12 @@
             ]
           },
           {
-            "type":"COREQUISITE",
-            "minimumGrade":"C-",
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
             "prerequisites": [
               {
-                "courseSubject":"PHY",
-                "courseNumber":"2049L"
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
               }
             ]
           }
@@ -912,7 +912,7 @@
         "logicalOperator": "OR",
         "conditions": [
           {
-            "type":"PREREQUISITE",
+            "type": "PREREQUISITE",
             "minimumGrade": "C",
             "prerequisites": [
               {

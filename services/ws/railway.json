@@ -2,12 +2,7 @@
   "build": {
     "builder": "NIXPACKS",
     "buildCommand": "bun run build --filter=ws-api",
-    "watchPatterns": [
-      "services/ws/**",
-      "package.json",
-      "bun.lockb",
-      "railway.json"
-    ]
+    "watchPatterns": ["services/ws/**", "package.json", "bun.lockb", "railway.json"]
   },
   "deploy": {
     "numReplicas": 2,

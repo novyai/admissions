@@ -2,6 +2,15 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { Input } from "@repo/ui/components/ui/input"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "@repo/ui/components/ui/table"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -15,15 +24,6 @@ import {
   useReactTable,
   VisibilityState
 } from "@tanstack/react-table"
-import { Input } from "@repo/ui/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@repo/ui/components/ui/table"
 
 import { DataTablePagination } from "./pagination"
 

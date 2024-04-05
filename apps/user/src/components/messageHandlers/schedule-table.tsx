@@ -2,9 +2,9 @@
 
 import { getAllPrereqs } from "@repo/graph/graph"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
-import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
+import { ColumnDef } from "@tanstack/react-table"
 
 import { MdxContent } from "../mdxContent"
 

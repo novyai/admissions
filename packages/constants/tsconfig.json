@@ -7,7 +7,7 @@
     "outDir": "dist",
     "paths": {
       "@constants/*": ["./src/*"],
-      "@ai/*": ["../../packages/ai/src/*"],
+      "@ai/*": ["../../packages/ai/src/*"]
     },
     "baseUrl": "."
   }

@@ -27,18 +27,17 @@ import { rescheduleCourseSchema } from "./schema"
 // const primaryIdentity = generatePrimaryIdentity(testData.Program, testData.Courses)
 
 export const rescheduleAgent = createAgent({
-  config: 
-  {
+  config: {
     messages: [
       {
         role: "system",
-        content: ''
+        content: ""
       }
     ],
     model: "gpt-4-turbo-preview",
     temperature: 0.5,
     max_tokens: 1000,
-    stream: false,
+    stream: false
   },
   response_model: {
     schema: rescheduleCourseSchema,

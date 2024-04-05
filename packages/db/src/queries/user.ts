@@ -7,4 +7,3 @@ export const getUserById = async ({ id }: { id: string }) => {
 export const getUserByExternalId = async ({ id }: { id: string }) => {
   return await db.user.findUnique({ where: { uid: id } })
 }
-

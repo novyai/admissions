@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { HydratedCourse } from "@/types"
-import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
 import { Button } from "@repo/ui/components/ui/button"
@@ -21,6 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger
 } from "@repo/ui/components/ui/dropdown-menu"
+import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal } from "lucide-react"
 
 export const columns: ColumnDef<HydratedCourse>[] = [

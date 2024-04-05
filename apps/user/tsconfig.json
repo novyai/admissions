@@ -7,21 +7,11 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@ui/*": [
-        "../../packages/ui/src/*"
-      ],
-      "@db/*": [
-        "../../packages/db/src/*"
-      ],
-      "@graph/*": [
-        "../../packages/graph/src/*"
-      ],
-      "@ai/*": [
-        "../../packages/ai/src/*"
-      ]
+      "@/*": ["./src/*"],
+      "@ui/*": ["../../packages/ui/src/*"],
+      "@db/*": ["../../packages/db/src/*"],
+      "@graph/*": ["../../packages/graph/src/*"],
+      "@ai/*": ["../../packages/ai/src/*"]
     },
     "baseUrl": ".",
     "declaration": false,
@@ -44,7 +34,5 @@
     "../../packages/graph/src/**/*.ts",
     "../../packages/ai/src/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
