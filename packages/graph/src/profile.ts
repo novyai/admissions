@@ -6,6 +6,7 @@ import { Attributes } from "graphology-types"
 import { ConditionGroup, Course, db } from "../../db/src/client"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 import { graphtoStudentProfile } from "./graph"
+import { Edge } from "reactflow"
 
 type CourseAttributes = {
   semester?: number
@@ -26,7 +27,11 @@ type CourseAttributes = {
     }
   )
 
-export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
+type EdgeAttributes = {
+  type: "PREREQUISITE" | "COREQUISITE"
+}
+
+export type CourseGraph = Graph<CourseAttributes, EdgeAttributes, Attributes>
 
 /**
  * Load all courses into a student's profile and build their schedule
@@ -148,9 +153,9 @@ export async function addCourseToGraph(
           count: await countRequiredCoursesInPrerequisiteTree(condition.prerequisites[0]!.courseId, profile)
         })))
       
-      const prerequisites = conditionsWithCounts.reduce((acc, cur) => cur.count > acc.count ? cur : acc).condition.prerequisites
+      const condition = conditionsWithCounts.reduce((acc, cur) => cur.count > acc.count ? cur : acc).condition
 
-      for (const prerequisite of prerequisites) {
+      for (const prerequisite of condition.prerequisites) {
         // if a course is completed, assume that it's prerequisites are completed
         if (courseIsCompleted) {
           completedCourseIds.push(prerequisite.courseId)
@@ -160,7 +165,7 @@ export async function addCourseToGraph(
 
         // edges represent prerequisites pointing at the course they are a prerequisite for
         if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-          graph.addDirectedEdge(prerequisite.courseId, course.id)
+          graph.addDirectedEdge(prerequisite.courseId, course.id, { "type": condition.type })
         }
       }
 
