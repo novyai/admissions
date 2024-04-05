@@ -1,9 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { Version } from "@db/client"
-import { getProfileFromSchedule } from "@graph/action"
-import { CourseNode, StudentProfile } from "@graph/types"
+import { Version } from "@repo/db"
+import { getProfileFromSchedule } from "@repo/graph/action"
+import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { Button } from "@repo/ui/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
@@ -76,10 +76,14 @@ export function Editor({
   useEffect(() => {
     setStatus("pending")
     const update = async () => {
+      console.log("hello", selectedVersion)
       const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
+
+      console.log("get profile")
       setProfile(profile)
       const { defaultNodes: newDefaultNodes, defaultEdges: newDefaultEdges } =
         await getAllNodesAndEdges(profile)
+      console.log("get nodes and edges")
       setDefaultNodes(newDefaultNodes)
 
       setNodes(newDefaultNodes)

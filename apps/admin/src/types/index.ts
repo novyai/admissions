@@ -8,7 +8,7 @@ import {
   TransferGrade,
   UniversityGrade,
   User
-} from "@db/client"
+} from "@repo/db"
 
 export type HydratedStudent = {
   user: User

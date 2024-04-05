@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { HydratedStudent } from "@/types"
-import { DegreeData } from "@db/client"
+import { DegreeData } from "@repo/db"
 import { ColumnDef } from "@tanstack/react-table"
 import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"

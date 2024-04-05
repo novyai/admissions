@@ -1,12 +1,13 @@
 {
   "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "paths": {
       "@db/*": ["./src/*"]
     },
     "baseUrl": "."
   },
-  "include": ["src/*.ts", "next-env.d.ts", "tsup.config.ts"],
+  "include": ["**/*.ts", "**/*.tsx", "tests"],
   "exclude": ["node_modules"]
 }

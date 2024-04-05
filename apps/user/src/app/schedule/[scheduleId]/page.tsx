@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation"
 import { auth } from "@clerk/nextjs"
-import { db } from "@db/client"
+import { db } from "@repo/db"
 
 import { Editor } from "@/components/dag/editor"
 

@@ -1,6 +1,6 @@
 import { headers } from "next/headers"
 import { WebhookEvent } from "@clerk/nextjs/server"
-import { db } from "@db/client"
+import { db } from "@repo/db"
 import { Webhook } from "svix"
 
 export async function POST(req: Request) {

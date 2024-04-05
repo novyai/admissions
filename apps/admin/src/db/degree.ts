@@ -1,4 +1,4 @@
-import { db, Prisma } from "@db/client"
+import { db, Prisma } from "@repo/db"
 
 import { getCourseWithPrereqs } from "./courses"
 

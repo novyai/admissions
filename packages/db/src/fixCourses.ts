@@ -1,4 +1,4 @@
-import { db, LogicalOperator, RequirementType } from "@db/client"
+import { db, LogicalOperator, RequirementType } from "@repo/db"
 import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.json"
 
 export async function fixPrereqs() {

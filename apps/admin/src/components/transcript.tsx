@@ -1,6 +1,6 @@
 import { getStudentGPA, getTranscriptForStudent } from "@/db/students"
 import { HydratedUniversityGrade } from "@/types"
-import { TransferGrade } from "@db/client"
+import { TransferGrade } from "@repo/db"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 import {
   Table,

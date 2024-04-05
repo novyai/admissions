@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { AdvisorAgent } from "@ai/agents/advisor/schema"
-import { User } from "@db/client"
+import { User } from "@repo/db"
 import { StudentProfile } from "@repo/graph/types"
 
 import { MdxContent } from "./mdxContent"

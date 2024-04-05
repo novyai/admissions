@@ -7,9 +7,7 @@ export const doThingParams = z.object({
   thing: z.string().describe("The thing to do")
 })
 
-export const ActionPayload = z.discriminatedUnion("action", [
-  doThingParams,
-])
+export const ActionPayload = z.discriminatedUnion("action", [doThingParams])
 
 export const coreAgentSchema = z.object({
   content: z
@@ -19,9 +17,7 @@ export const coreAgentSchema = z.object({
     ),
   action: z
     .enum([...Object.values(CORE_AGENT_ACTIONS)] as [string, ...string[]])
-    .describe(
-      "an optional action for the agent to fire"
-    )
+    .describe("an optional action for the agent to fire")
     .optional(),
   actionParams: ActionPayload.optional().describe(
     "Parameters for the action call, structured based on the action type. Pay very close attention to these details."

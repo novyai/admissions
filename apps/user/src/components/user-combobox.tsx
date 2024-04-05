@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { User } from "@db/client"
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons"
+import { User } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import {
   Command,

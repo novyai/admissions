@@ -22,19 +22,25 @@ export function canMoveCourse(
     }
   }
 
-  if (profile.semesters[toSemester - 1] && profile.semesters[toSemester]!.length >= profile.coursePerSemester) {
+  if (
+    profile.semesters[toSemester - 1] &&
+    profile.semesters[toSemester]!.length >= profile.coursePerSemester
+  ) {
     return {
       canMove: false,
       reason: `Semester ${toSemester} is full.`
     }
   }
 
-  const graph : CourseGraph = studentProfileToGraph(profile)
+  const graph: CourseGraph = studentProfileToGraph(profile)
   return _canMoveCourse(courseId, toSemester, graph)
 }
 
-function _canMoveCourse(courseId: string, toSemester: number, graph: CourseGraph) : { canMove: false; reason: string } | { canMove: true } {
-
+function _canMoveCourse(
+  courseId: string,
+  toSemester: number,
+  graph: CourseGraph
+): { canMove: false; reason: string } | { canMove: true } {
   // Does the course exist in the profile?
   const fromSemester = graph.getNodeAttributes(courseId).semester
 
@@ -43,9 +49,10 @@ function _canMoveCourse(courseId: string, toSemester: number, graph: CourseGraph
     return { canMove: false, reason: "Course not found in the student's schedule." }
   }
 
-  // Check if moving the course violates any prerequisite requirements. Only need to check the direct 
+  // Check if moving the course violates any prerequisite requirements. Only need to check the direct
   // prereqs because we assume that the current schedule is valid
-  const allPrerequestNotCompletedBefore = graph.mapInNeighbors(courseId, (_prereqId, prereq) => prereq)
+  const allPrerequestNotCompletedBefore = graph
+    .mapInNeighbors(courseId, (_prereqId, prereq) => prereq)
     .filter(prereq => prereq.semester && prereq.semester >= toSemester)
 
   if (allPrerequestNotCompletedBefore.length > 0) {
@@ -58,7 +65,8 @@ function _canMoveCourse(courseId: string, toSemester: number, graph: CourseGraph
   }
 
   // Find all courses that list the moving course as a prerequisite
-  const allDependentsNotCompletedAfter = graph.mapOutNeighbors(courseId, (_dependentId, dependent) => dependent)
+  const allDependentsNotCompletedAfter = graph
+    .mapOutNeighbors(courseId, (_dependentId, dependent) => dependent)
     .filter(dependent => dependent.semester && dependent.semester <= toSemester)
 
   if (allDependentsNotCompletedAfter.length > 0) {
@@ -74,7 +82,7 @@ function _canMoveCourse(courseId: string, toSemester: number, graph: CourseGraph
 }
 
 export function moveCourse(courseId: string, toSemester: number, profile: StudentProfile) {
-  const graph : CourseGraph = studentProfileToGraph(profile)
+  const graph: CourseGraph = studentProfileToGraph(profile)
   const canMove = _canMoveCourse(courseId, toSemester, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)

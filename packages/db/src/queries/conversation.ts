@@ -1,6 +1,6 @@
 "use server"
 
-import Prisma, { db, MessageRole, MessageType } from "@db/client"
+import Prisma, { db, MessageRole, MessageType } from "@repo/db"
 
 export const getConversationById = async ({ id }: { id: string }) => {
   return await db.conversation.findUnique({
@@ -211,7 +211,7 @@ export const createConversation = async ({
       messages: true
     },
     data: {
-      endUser: {
+      user: {
         connect: {
           id: userId
         }

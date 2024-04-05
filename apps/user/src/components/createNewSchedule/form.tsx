@@ -48,6 +48,7 @@ export function CreateNewScheduleForm({ userId }: { userId: string }) {
       userId,
       result.data.options.map(option => option.value as Program)
     )
+
     router.push(`/schedule/${scheduleId}`)
   }
 

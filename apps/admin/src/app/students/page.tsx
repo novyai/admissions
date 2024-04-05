@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { getAllStudents } from "@/db/students"
-import { Prisma } from "@db/client"
+import { Prisma } from "@repo/db"
 import { Loader2 } from "lucide-react"
 
 import { StudentsTable } from "@/components/students-table"

@@ -1,6 +1,6 @@
 import fs from "fs/promises"
 import path from "path"
-import { db, Department, LogicalOperator, RequirementType } from "@db/client"
+import { db, Department, LogicalOperator, RequirementType } from "@repo/db"
 import gradeMetricData from "@db/data/sheet/grades_data.json"
 import conditionGroupsData from "@db/data/sheet/New_ConditionGroups.json"
 import conditionsData from "@db/data/sheet/New_Conditions.json"

@@ -10,7 +10,8 @@
       "require": "./src/client.ts"
     },
     "./queries/user": "./src/queries/user.ts",
-    "./queries/conversation": "./src/queries/conversation.ts"
+    "./queries/conversation": "./src/queries/conversation.ts",
+    "./data/*": "./src/data/*.json"
   },
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
@@ -21,7 +22,7 @@
     "db:generate": "prisma generate --no-engine",
     "db:dev": "docker compose -f ./admissions/docker-compose.yml up -d",
     "lint": "eslint --max-warnings 0",
-    "build": "prisma generate",
+    "build": "prisma generate --no-engine",
     "prebuild": "bun run db:generate",
     "predev": "bun run generate",
     "studio": "prisma studio"

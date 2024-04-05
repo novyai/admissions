@@ -276,6 +276,7 @@ function SemesterDAGInternal({
         <MiniMap />
         <Controls />
       </ReactFlow>
+
       <div className="w-full p-2">
         <PromptComposer
           placeholder="What courses should I add?"

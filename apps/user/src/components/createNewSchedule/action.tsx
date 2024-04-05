@@ -1,9 +1,9 @@
 "use server"
 
-import { db } from "@db/client"
 import { Program, programHandler } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
+import { db } from "@repo/db"
 
 import { createBlob } from "@/lib/version-blob"
 import { getAllNodesAndEdges } from "@/components/dag/action"
@@ -16,7 +16,6 @@ import { getAllNodesAndEdges } from "@/components/dag/action"
  */
 export async function createNewSchedule(userId: string, programs: Program[]) {
   const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
-
   const requiredCourses = await db.course.findMany({
     where: {
       OR: Array.from(deptCourses)
@@ -35,7 +34,6 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
   }
 
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
-
   const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
   const schedule = await db.schedule.create({

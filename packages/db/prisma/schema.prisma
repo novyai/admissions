@@ -123,6 +123,7 @@ model Course {
   @@unique(fields: [courseNumber, courseSubject], name: "courseIdentifier")
   @@index([departmentId])
   @@index([universityId])
+  @@index([id])
 }
 
 model ConditionGroup {

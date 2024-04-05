@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { redirect, RedirectType } from "next/navigation"
 import { auth } from "@clerk/nextjs"
-import { db } from "@db/client"
+import { db } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import {
   Table,

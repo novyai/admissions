@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint --max-warnings 0",
+    "build": "echo 'No build step'"
+  },
   "exports": {
     "./*": {
       "import": [
@@ -13,16 +17,14 @@
     }
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
+    "@repo/typescript-config": "workspace:*",
+    "rimraf": "^5.0.5"
   },
   "dependencies": {
     "@repo/db": "workspace:*",
     "@types/dagre": "^0.7.52",
+
     "dagre": "^0.8.5",
     "graphology": "^0.25.4",
     "graphology-dag": "^0.4.1",

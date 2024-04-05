@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@ai/agents/advisor/schema"
-import { User } from "@db/client"
 import { StudentProfile } from "@graph/types"
-import { PromptComposer } from "@repo/ui/components/prompt-composer"
+import { User } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import OpenAI from "openai"
 import { useJsonStream } from "stream-hooks"
@@ -31,16 +30,12 @@ export function Chat({
   student: User
 }) {
   const [messages, setMessages] = useState<CustomMessage[]>([])
-
   const [profile, setProfile] = useState(studentProfile)
-
   const [partial, setPartial] = useState<Partial<AdvisorAgent> | null>({})
-
   const [suggestedResponses, setSuggestedResponses] = useState<string[]>([])
-
   const lastPromptRef = useRef<string>("")
 
-  const { startStream, stopStream, loading } = useJsonStream({
+  const { startStream } = useJsonStream({
     schema: advisorAgentSchema,
     onReceive: (data: Partial<AdvisorAgent>) => {
       setPartial(data)
@@ -172,9 +167,7 @@ export function Chat({
             </Button>
           ))}
         </div>
-        <div className="flex w-full gap-4 items-center p-4">
-          <PromptComposer jumbo loading={loading} onSubmit={submitMessage} onCancel={stopStream} />
-        </div>
+        <div className="flex w-full gap-4 items-center p-4"></div>
       </div>
     </>
   )
