@@ -25,6 +25,8 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     }
   })
 
+  console.log("requiredCourses", JSON.stringify(requiredCourses))
+
   const baseProfile: BaseStudentProfile = {
     requiredCourses: requiredCourses.map(course => course.id),
     transferCredits: [],
@@ -32,6 +34,8 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     coursePerSemester: 6,
     currentSemester: 0
   }
+
+  console.log("baseProfile", JSON.stringify(baseProfile))
 
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
   const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
