@@ -7,8 +7,8 @@ import { Loader2 } from "lucide-react"
 import { AnimatedBorderWrapper } from "./animated-border-wrapper"
 
 export interface PromptComposerProps {
-  prompt: string
-  onChange: (event: string) => void
+  prompt?: string
+  onChange?: (event: string) => void
   onSubmit: (value: string) => void
   loading: boolean
   onCancel?: () => void
@@ -54,15 +54,14 @@ export function PromptComposer({
               {...inputProps}
               disabled={loading}
               autoFocus
-              onChange={event => onChange((event.target as HTMLInputElement).value)}
+              onChange={event => onChange && onChange((event.target as HTMLInputElement).value)}
               onKeyDown={handleKeyDown}
               placeholder={placeholder ?? "Ask me anything..."}
               value={prompt}
               className={cn(
                 "border-2 border-foreground text-foreground focus:z-100 placeholder:text-foreground/70 relative flex h-11 w-full rounded-full bg-background py-3 pr-[52px] text-sm outline-none disabled:cursor-not-allowed disabled:opacity-[1] disabled:bg-muted disabled:placeholder-text-foreground/50 disabled:text-foreground/50",
                 {
-                  "text-lg placeholder:text-lg py-6 h-14": jumbo,
-                  "border-purps": loading
+                  "text-lg placeholder:text-lg py-6 h-14": jumbo
                 }
               )}
             />

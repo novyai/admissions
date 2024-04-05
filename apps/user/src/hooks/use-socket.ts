@@ -7,13 +7,13 @@ export function useSocket({
   listeners = {},
   reconnectAttempts = 3,
   reconnectInterval = 5000,
-  endUserId,
+  userId,
   streamId
 }: {
   listeners: SocketListeners
   reconnectAttempts?: number
   reconnectInterval?: number
-  endUserId: string | null
+  userId: string | null
   streamId: string
 }) {
   const [isConnected, setIsConnected] = useState(false)
@@ -59,7 +59,7 @@ export function useSocket({
     if (isConnected) return
 
     try {
-      const socketParams = `?streamId=${streamId}&endUserId=${endUserId}&id=${endUserId}`
+      const socketParams = `?streamId=${streamId}&userId=${userId}&id=${userId}`
 
       const newConnect = new WebSocket(`${SOCKET_BASE_URL}${socketParams}`)
 
@@ -112,7 +112,7 @@ export function useSocket({
   useEffect(() => {
     setInitialLoad(false)
 
-    if (isInitialLoad || !endUserId || socket?.current || isConnected) return
+    if (isInitialLoad || !userId || socket?.current || isConnected) return
 
     connect()
 

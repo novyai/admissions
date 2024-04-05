@@ -14,7 +14,11 @@ export const SOCKET_EVENTS = {
 
 export type ConversationStreamData = {
   data: {
-    data: unknown
+    data: {
+      content: string
+      action?: string
+      actionParams?: unknown
+    }
     streamId: string
     userId: string
     complete?: boolean

@@ -21,7 +21,6 @@ export const SemesterDisplay = ({
       columns={getScheduleTableColumns(profile)}
       data={semesterCourses}
       rowCount={semesterCourses.length}
-      search={false}
     />
   )
 }

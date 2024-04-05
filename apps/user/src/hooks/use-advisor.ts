@@ -1,31 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ConversationStreamData, EventSearchResult, SOCKET_EVENTS } from "@repo/constants"
+import { ConversationStreamData, SOCKET_EVENTS } from "@repo/constants"
 import { Message, MessageRole } from "@repo/db"
 import { toast } from "sonner"
 
 import { useSocket } from "@/hooks/use-socket"
-
-import useLocalStorage from "./use-local-storage"
 
 const NO_RESPONSE_TIMEOUT = 10000
 
 export function useAdvisor({
   conversationId,
   initialMessages = [],
-  endUserId
+  userId
 }: {
   initialMessages?: Message[]
   conversationId: string
   artifacts?: {}
-  endUserId: string | null
+  userId: string | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
-  const [localArtifacts, setLocalArtifacts] = useState<EventSearchResult[] | null>(null)
-
-  const [suggestedResponses, setSuggestedResponses] = useLocalStorage<string[]>(
-    `${conversationId}-suggestedResponses`,
-    []
-  )
 
   const [loading, setLoading] = useState(false)
   const [waiting, setWaiting] = useState(false)
@@ -35,8 +27,8 @@ export function useAdvisor({
   const lastPrompt = useRef<string>("")
 
   const { isConnected } = useSocket({
-    endUserId,
-    streamId: `${conversationId}-${endUserId}`,
+    userId,
+    streamId: `${conversationId}-${userId}`,
     listeners: {
       [SOCKET_EVENTS.START_CONVERSATION_STREAM]: () => {
         setLoading(true)
@@ -45,18 +37,6 @@ export function useAdvisor({
       [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: () => {
         setLoading(false)
         setWaiting(false)
-      },
-      [SOCKET_EVENTS.EVENT_SEARCH_RESULTS]: ({ data }) => {
-        setLocalArtifacts(data)
-      },
-      [SOCKET_EVENTS.CREATE_PURCHASE_LINK]: data => {
-        setMessages([
-          ...lastMessages.current,
-          {
-            content: `purchase data: ${JSON.stringify(data)}`,
-            role: "assistant"
-          }
-        ])
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
         data,
@@ -115,11 +95,8 @@ export function useAdvisor({
             prompt: prompt,
             conversationId,
             messageStreamIndex,
-            endUserId,
-            streamId: `${conversationId}-${endUserId}`,
-            meta: {
-              ...localArtifacts
-            }
+            userId,
+            streamId: `${conversationId}-${userId}`
           })
         })
       } catch (e) {
@@ -130,7 +107,7 @@ export function useAdvisor({
         toast("We couldn't send your message. Please try again.")
       }
     },
-    [conversationId, loading, localArtifacts, messages, endUserId]
+    [conversationId, loading, messages, userId]
   )
 
   useEffect(() => {
@@ -149,14 +126,11 @@ export function useAdvisor({
   }, [loading])
 
   return {
-    artifacts: localArtifacts,
     loading: loading,
     sendMessage,
     isConnected,
-    ready: !!endUserId,
+    ready: !!userId,
     waiting,
-    messages: messages.filter(m => m.role === "assistant" || m.role === "user"),
-    suggestedResponses,
-    clearSuggestions: () => setSuggestedResponses([])
+    messages: messages.filter(m => m.role === "assistant" || m.role === "user")
   }
 }
