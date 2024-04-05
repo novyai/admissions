@@ -74,6 +74,7 @@ export const addCourseToGraph = ({
     universityId: course.universityId,
     startTerm: course.startTerm,
     endTerm: course.endTerm,
+
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,

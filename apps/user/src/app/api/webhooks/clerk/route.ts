@@ -4,11 +4,10 @@ import { db } from "@repo/db"
 import { Webhook } from "svix"
 
 export async function POST(req: Request) {
-  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
-  const WEBHOOK_SECRET = process.env["WEBHOOK_SECRET"]
+  const CLERK_USER_WEBHOOK_SECRET = process.env?.["CLERK_USER_WEBHOOK_SECRET"]
 
-  if (!WEBHOOK_SECRET) {
-    throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local")
+  if (!CLERK_USER_WEBHOOK_SECRET) {
+    throw new Error("Missing CLERK_USER_WEBHOOK_SECRET value.")
   }
 
   // Get the headers
@@ -29,7 +28,7 @@ export async function POST(req: Request) {
   const body = JSON.stringify(payload)
 
   // Create a new Svix instance with your secret.
-  const wh = new Webhook(WEBHOOK_SECRET)
+  const wh = new Webhook(CLERK_USER_WEBHOOK_SECRET)
 
   let evt: WebhookEvent
 
@@ -63,7 +62,7 @@ export async function POST(req: Request) {
         email,
         firstName: d.first_name,
         lastName: d.last_name,
-        userType: "STUDENT" // Assuming 'userType' is a required field based on the lint context
+        userType: "STUDENT"
       },
       update: {
         email,

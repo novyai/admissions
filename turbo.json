@@ -18,6 +18,7 @@
     "REDISHOST",
     "REDISPASSWORD",
     "REDIS_PRIVATE_URL",
+    "CLERK_USER_WEBHOOK_SECRET",
     "PORT"
   ],
   "pipeline": {

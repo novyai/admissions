@@ -1,7 +1,7 @@
 {
   "name": "olmpa-api",
   "version": "0.0.1",
-  "description": "",
+  "description": "Omnifarious-llm-mediated-polymorphic-automation",
   "publishConfig": {
     "access": "public"
   },

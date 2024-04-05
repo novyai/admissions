@@ -122,6 +122,7 @@ createWorker(async job => {
       return void 0 as void
     }
   }
+
   const getMessagesStep = createJobStep<
     void,
     {
@@ -373,6 +374,8 @@ createWorker(async job => {
       })
     }
   )
+
+  ///////
 
   const [_, conversationMessages] = await Promise.all([
     await saveUserMessageStep.run(),

@@ -1,49 +1,49 @@
-import { primaryIdentity } from "@ai/agents/advisor"
-import { advisorAgentSchema } from "@ai/agents/advisor/schema"
-import { oai } from "@ai/lib/oai"
-import OpenAI from "openai"
-import { OAIStream, withResponseModel } from "zod-stream"
+import { NextResponse } from "next/server"
+import { Q_BASE_URL } from "@/constants"
+
+export const runtime = "edge"
 
 export async function POST(request: Request): Promise<Response> {
-  const {
-    messages
-  }: {
-    messages: OpenAI.ChatCompletionCreateParams["messages"]
-  } = await request.json()
-
   try {
-    const params = withResponseModel({
-      response_model: {
-        schema: advisorAgentSchema,
-        name: "USF CSE Advisor"
-      },
-      params: {
-        messages: [
-          {
-            role: "system",
-            content: primaryIdentity
-          },
-          ...messages
-        ],
-        model: "gpt-4-turbo-preview"
-      },
-      mode: "TOOLS"
+    const {
+      userId,
+      prompt,
+      conversationId,
+      streamId,
+      messageStreamIndex,
+      meta = {}
+    } = await request.json()
+
+    if (!userId) {
+      return NextResponse.json({ message: "could send messages." }, { status: 403 })
+    }
+
+    if (prompt?.length > 1500) {
+      return NextResponse.json(
+        { message: "Message is too long." },
+        { status: 400, statusText: "Message is too long." }
+      )
+    }
+
+    await fetch(`${Q_BASE_URL}/add/chat-stream?serviceToken=${process.env["SERVICE_TOKEN"]}`, {
+      method: "POST",
+      body: JSON.stringify({
+        id: `conversation-stream-${streamId}-${messageStreamIndex}`,
+        data: {
+          conversationId,
+          userId,
+          streamId,
+          prompt,
+          meta,
+          isInitialMessage: false,
+          messageStreamIndex
+        }
+      })
     })
 
-    // make a completion call with your generated params
-    const extractionStream = await oai.chat.completions.create({
-      ...params,
-      stream: true
-    })
-
-    const my_stream = OAIStream({
-      res: extractionStream
-    })
-    return new Response(my_stream)
+    return new Response("ok")
   } catch (error) {
     console.error(error)
-    return new Response("Could not complete chat request.", {
-      status: 500
-    })
+    return new Response("Could not complete chat request.")
   }
 }

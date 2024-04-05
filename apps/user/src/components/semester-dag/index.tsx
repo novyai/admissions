@@ -279,6 +279,8 @@ function SemesterDAGInternal({
 
       <div className="w-full p-2">
         <PromptComposer
+          prompt=""
+          onChange={() => {}}
           placeholder="What courses should I add?"
           onSubmit={onSubmit}
           loading={loading}

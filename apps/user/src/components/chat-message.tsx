@@ -81,7 +81,7 @@ export const MessageWrapper = React.memo(function MessageWrapper({
       })}
     >
       <div>
-        <strong className="text-xs font-okineMedium tracking-widest text-accent-foreground">
+        <strong className="text-xs font-semibold tracking-widest text-accent-foreground">
           {role === "user" ? "YOU" : "Advisor"}
         </strong>
         <div

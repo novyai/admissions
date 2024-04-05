@@ -18,26 +18,8 @@ const config: Omit<Config, "content"> = {
         default: ["var(--font-default)", "system-ui", "sans-serif"],
         serif: ["var(--font-serif)", "serif"],
         mono: ["var(--font-mono)", "monospace"],
-
-        okineBold: ["var(--font-bold)"],
-        okineBoldOutline: ["var(--font-okine-bold-outline)"],
-        okineBlack: ["var(--font-okine-black)"],
-        okineBlackOutline: ["var(--font-okine-black-outline)"],
-        okine: ["var(--font-okine)"],
-        okineMedium: ["var(--font-okine-medium)"],
-
-        fitzgerald: ["var(--font-fitzgerald)"],
-        fitzgeraldItalic: ["var(--font-fitzgerald-italic)"],
-        fitzgeraldBold: ["var(--font-fitzgerald-bold)"],
-        fitzgeraldBoldItalic: ["var(--font-fitzgerald-bold-italic)"]
       },
       colors: {
-        "fl-pink": "var(--fl-pink)",
-        "fl-blue": "var(--fl-blue)",
-        "fl-purple": "var(--fl-purple)",
-        "fl-white": "var(--fl-white)",
-        "fl-green": "var(--fl-green)",
-        "fl-orange": "var(--fl-orange)",
         "border": "hsl(var(--border))",
         "input": "hsl(var(--input))",
         "ring": "hsl(var(--ring))",

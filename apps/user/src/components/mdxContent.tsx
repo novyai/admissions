@@ -18,8 +18,7 @@ export const MdxContent = React.memo(function MdxContent({
 }) {
   if (!content?.length) {
     return (
-      <div className="w-full h-24 p-8 flex flex-col items-center gap-1 uppercase text-xs font-okineMedium tracking-widest animate-pulse">
-        Gathering information
+      <div className="w-full h-6 p-8 flex flex-col gap-1 uppercase text-xs font-semibold tracking-widest animate-pulse">
         <MessageLoader />
       </div>
     )
