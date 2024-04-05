@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "lint": "eslint --max-warnings 0",
-    "build": "echo 'No build step'"
+    "build": "echo 'No build step'",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
   "exports": {
     "./*": {

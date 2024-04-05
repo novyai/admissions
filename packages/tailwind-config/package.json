@@ -6,6 +6,9 @@
     "postcss.config.js",
     "tailwind.config.js"
   ],
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
+  },
   "dependencies": {
     "@radix-ui/colors": "^1.0.1",
     "@tailwindcss/typography": "^0.5.9",
