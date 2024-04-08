@@ -26,7 +26,7 @@ import { z } from "zod"
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
 import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
 import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./semester-node"
-import { getEdgesIDsInCoursePath, getNodeIDsInCoursePath } from "./utils"
+import { getNodeIDsInCoursePath, modifyCoursePathEdge, modifyCoursePathNode } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
@@ -68,25 +68,18 @@ function SemesterDAGInternal({
 }: SemesterDAGProps) {
   const { getIntersectingNodes } = useReactFlow()
 
-  const modifyCoursePathEdge = (
-    edge: Edge,
-    connectedNodeIDs: string[],
-    modifyEdge: (edge: Edge) => void
-  ) => {
-    const connectedEdgeIDs = getEdgesIDsInCoursePath(connectedNodeIDs, edges)
-    if (connectedEdgeIDs.includes(edge.id)) {
-      modifyEdge(edge)
-    }
-  }
-
-  const modifyCoursePathNode = (
-    node: CourseNodeType,
-    connectedNodeIDs: string[],
-    modifyNode: (node: CourseNodeType) => void
-  ) => {
-    if (connectedNodeIDs.includes(node.id)) {
-      modifyNode(node)
-    }
+  const handleReset = (node: CourseNodeType) => {
+    resetNodePlacement(node.id)
+    setNodes(nds =>
+      nds.map(n =>
+        n.type === "semesterNode" ?
+          {
+            ...n,
+            className: cn(defaultSemesterNode.className)
+          }
+        : n
+      )
+    )
   }
 
   const onNodeDragStart: NodeDragHandler = (_e, node: SemesterNodeType | CourseNodeType) => {
@@ -95,7 +88,7 @@ function SemesterDAGInternal({
     if (isCourseNode(node)) {
       setEdges(es =>
         es.map(e => {
-          modifyCoursePathEdge(e, coursePathNodeIDs, e => (e.hidden = false))
+          modifyCoursePathEdge(e, es, coursePathNodeIDs, e => (e.hidden = false))
           return e
         })
       )
@@ -111,10 +104,10 @@ function SemesterDAGInternal({
           if (isCourseNode(n)) return n
 
           if (intersections.includes(n.id)) {
-            const canMove = canMoveCourse(node.id, n.data.semester - 1, profile)
+            const canMove = canMoveCourse(node.id, n.data.semester, profile)
 
             // if node is overlapping same semester
-            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
+            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semesterIndex) {
               return {
                 ...n,
                 className: cn(
@@ -135,7 +128,7 @@ function SemesterDAGInternal({
 
           return {
             ...n,
-            className: cn(n.className, defaultSemesterNode.className)
+            className: cn(defaultSemesterNode.className)
           }
         })
       )
@@ -149,7 +142,7 @@ function SemesterDAGInternal({
 
     setEdges(es =>
       es.map(e => {
-        modifyCoursePathEdge(e, coursePathNodeIDs, e => (e.hidden = true))
+        modifyCoursePathEdge(e, es, coursePathNodeIDs, e => (e.hidden = true))
         return e
       })
     )
@@ -157,7 +150,7 @@ function SemesterDAGInternal({
     setNodes(ns =>
       ns.map(n => {
         if (isCourseNode(n)) {
-          modifyCoursePathNode(n, coursePathNodeIDs, n => (n.style = { ...n.style }))
+          modifyCoursePathNode(n, coursePathNodeIDs, n => n)
         }
         return n
       })
@@ -167,17 +160,17 @@ function SemesterDAGInternal({
 
     if (intersections.length === 0) {
       console.error("TODO: NOT DROPPED IN A SEMESTER")
-      resetNodePlacement(node.id)
+      handleReset(node)
       return
     } else if (intersections.length >= 2) {
       console.error("Cannot add to multiple semesters")
-      resetNodePlacement(node.id)
+      handleReset(node)
       return
     }
 
     if (intersections.length !== 1 || !intersections[0]) {
       console.log("no intersections")
-      resetNodePlacement(node.id)
+      handleReset(node)
       return
     }
 
@@ -187,26 +180,16 @@ function SemesterDAGInternal({
 
     if (!semester) {
       console.log("Cannot add to transfer node")
-      resetNodePlacement(node.id)
+      handleReset(node)
       return
     }
 
-    const canMove = canMoveCourse(node.id, semester - 1, profile)
+    const canMove = canMoveCourse(node.id, semester, profile)
     if (!canMove.canMove) {
       console.error("Cannot add to semester", canMove.reason)
-      resetNodePlacement(node.id)
-      setNodes(nds =>
-        nds.map(n =>
-          n.id === droppedIn.id ?
-            {
-              ...n,
-              className: cn(n.className, defaultSemesterNode.className)
-            }
-          : n
-        )
-      )
+      handleReset(node)
     } else {
-      console.log("moving", node.id, "to", semester, semester - 1)
+      console.log("moving", node.id, "to", semester)
       setNodes(nds =>
         nds.map(n =>
           n.id === node.id ?
@@ -218,7 +201,7 @@ function SemesterDAGInternal({
           : n.id === droppedIn.id ?
             {
               ...n,
-              className: cn(n.className, defaultSemesterNode.className)
+              className: cn(defaultSemesterNode.className)
             }
           : n
         )
