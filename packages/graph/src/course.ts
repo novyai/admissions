@@ -5,9 +5,9 @@ export const getCourseFromIdNameCode = (profile: StudentProfile, courseQuery: st
 
   const course =
     courses.find(c => c.name == courseQuery) ??
-    courses.find(
-      c => `${c.raw_course.courseSubject} ${c.raw_course.courseNumber}` == courseQuery
-    ) ??
+    // courses.find(
+    //   c => `${c.raw_course.courseSubject} ${c.raw_course.courseNumber}` == courseQuery
+    // ) ??
     courses.find(c => c.id == courseQuery)
 
   if (course === undefined) {

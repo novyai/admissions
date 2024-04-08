@@ -49,8 +49,7 @@ export async function POST(request: Request): Promise<Response> {
       latestFinish: undefined,
       dependents: Array.from(new Set(newCourseRawData.dependentMap.get(c.id) || [])),
       prerequisites: Array.from(new Set(newCourseRawData.prereqMap.get(c.id) || [])),
-      name: c.name,
-      raw_course: c
+      name: c.name
     }))
 
     const graph = new Map<string, CourseNode>()
