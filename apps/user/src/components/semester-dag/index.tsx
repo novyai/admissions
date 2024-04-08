@@ -117,12 +117,19 @@ function SemesterDAGInternal({
             if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semester) {
               return {
                 ...n,
-                className: cn(n.className, defaultSemesterNode.className, "bg-green-200")
+                className: cn(
+                  n.className,
+                  defaultSemesterNode.className,
+                  "bg-green-200 dark:bg-green-800"
+                )
               }
             }
             return {
               ...n,
-              className: cn(n.className, canMove.canMove ? "bg-green-200" : "bg-red-200")
+              className: cn(
+                n.className,
+                canMove.canMove ? "bg-green-200 dark:bg-green-800" : "bg-red-200 dark:bg-red-800"
+              )
             }
           }
 
@@ -150,11 +157,7 @@ function SemesterDAGInternal({
     setNodes(ns =>
       ns.map(n => {
         if (isCourseNode(n)) {
-          modifyCoursePathNode(
-            n,
-            coursePathNodeIDs,
-            n => (n.style = { ...n.style, backgroundColor: "whitesmoke" })
-          )
+          modifyCoursePathNode(n, coursePathNodeIDs, n => (n.style = { ...n.style }))
         }
         return n
       })
@@ -164,23 +167,27 @@ function SemesterDAGInternal({
 
     if (intersections.length === 0) {
       console.error("TODO: NOT DROPPED IN A SEMESTER")
+      resetNodePlacement(node.id)
       return
     } else if (intersections.length >= 2) {
       console.error("Cannot add to multiple semesters")
+      resetNodePlacement(node.id)
       return
     }
 
     if (intersections.length !== 1 || !intersections[0]) {
       console.log("no intersections")
+      resetNodePlacement(node.id)
       return
     }
 
     const droppedIn: SemesterNodeType = intersections[0]
 
-    const semester = "semester" in droppedIn.data ? droppedIn.data.semester : undefined
+    const semester = "semesterIndex" in droppedIn.data ? droppedIn.data.semesterIndex : undefined
 
     if (!semester) {
       console.log("Cannot add to transfer node")
+      resetNodePlacement(node.id)
       return
     }
 

@@ -52,3 +52,25 @@ export const getEdgesIDsInCoursePath = (connectedNodeIDs: string[], allEdges: Ed
   )
   return connectedEdges.map(edge => edge.id)
 }
+
+export const modifyCoursePathEdge = (
+  edge: Edge,
+  edges: Edge[],
+  connectedNodeIDs: string[],
+  modifyEdge: (edge: Edge) => void
+) => {
+  const connectedEdgeIDs = getEdgesIDsInCoursePath(connectedNodeIDs, edges)
+  if (connectedEdgeIDs.includes(edge.id)) {
+    modifyEdge(edge)
+  }
+}
+
+export const modifyCoursePathNode = (
+  node: CourseNodeType,
+  connectedNodeIDs: string[],
+  modifyNode: (node: CourseNodeType) => void
+) => {
+  if (connectedNodeIDs.includes(node.id)) {
+    modifyNode(node)
+  }
+}

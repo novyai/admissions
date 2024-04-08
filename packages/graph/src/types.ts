@@ -10,6 +10,9 @@ export type CourseNode = {
 }
 
 export type BaseStudentProfile = {
+  /**
+   * All courses that are required for the student to finish their degree.
+   */
   requiredCourses: string[]
   transferCredits: string[]
   timeToGraduate: number // in semesters

@@ -64,7 +64,7 @@ export const addCourseToGraph = ({
 
   if (!course) {
     console.log(course)
-    return
+    throw new Error(`Course not found ${courseId}`)
   }
 
   graph.addNode(courseId, {

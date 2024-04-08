@@ -39,11 +39,13 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
         in: uniqueCourseIds
       }
     },
-    include: {
+    select: {
+      id: true,
+      name: true,
       conditions: {
-        include: {
+        select: {
           conditions: {
-            include: {
+            select: {
               prerequisites: true
             }
           }
@@ -57,8 +59,8 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
     courseMap.set(course.id, course)
   })
 
-  for await (const course of courses) {
-    await addCourseToGraph({
+  for (const course of courses) {
+    addCourseToGraph({
       graph,
       courseMap,
       courseId: course.id

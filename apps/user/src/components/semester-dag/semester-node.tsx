@@ -2,7 +2,7 @@ import { Node, NodeProps } from "reactflow"
 
 export type SemesterNodeData =
   | {
-      semester: number
+      semesterIndex: number
     }
   | {
       transfer: true
@@ -29,7 +29,7 @@ export const defaultSemesterNode: Partial<Node> = {
 export function SemesterNode({ data }: SemesterNodeProps) {
   return (
     <div className="flex w-full h-full justify-center pt-2">
-      <p>{"transfer" in data ? `Transfer Credits` : `Semester ${data.semester}`}</p>
+      <p>{"transfer" in data ? `Transfer Credits` : `Semester ${data.semesterIndex}`}</p>
     </div>
   )
 }
