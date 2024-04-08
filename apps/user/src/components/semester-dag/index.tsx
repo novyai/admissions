@@ -98,16 +98,18 @@ function SemesterDAGInternal({
   const onNodeDrag: NodeDragHandler = useCallback(
     (_e, node: SemesterNodeType | CourseNodeType) => {
       const intersections = getIntersectingNodes(node, false).map(n => n.id)
+      if (!isCourseNode(node)) return
 
       setNodes(ns =>
-        ns.map(n => {
-          if (isCourseNode(n)) return n
+        ns.map((n: CourseNodeType | SemesterNodeType) => {
+          if (isCourseNode(n) || "transfer" in n.data) return n
 
           if (intersections.includes(n.id)) {
-            const canMove = canMoveCourse(node.id, n.data.semester, profile)
+            const canMove = canMoveCourse(node.id, n.data.semesterIndex, profile)
 
             // if node is overlapping same semester
-            if ("semesterIndex" in node.data && node.data.semesterIndex === n.data.semesterIndex) {
+            if (node.data.semesterIndex === n.data.semesterIndex) {
+              console.log("overlapping same semester")
               return {
                 ...n,
                 className: cn(
@@ -117,6 +119,7 @@ function SemesterDAGInternal({
                 )
               }
             }
+            console.log("canMove", canMove)
             return {
               ...n,
               className: cn(
@@ -125,6 +128,7 @@ function SemesterDAGInternal({
               )
             }
           }
+          console.log("not overlapping")
 
           return {
             ...n,
