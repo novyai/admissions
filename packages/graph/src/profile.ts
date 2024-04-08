@@ -62,7 +62,7 @@ export const addCourseToGraph = ({
 
   if (!course) {
     console.log(course)
-    throw new Error(`Course with id ${courseId} not found`)
+    return
   }
 
   graph.addNode(courseId, {
@@ -95,15 +95,15 @@ export const addCourseToGraph = ({
           completedCourseIds.push(prerequisite.courseId)
         }
 
-        // addCourseToGraph({
-        //   courseId: prerequisite.courseId,
-        //   graph,
-        //   courseMap
-        // })
+        addCourseToGraph({
+          courseId: prerequisite.courseId,
+          graph,
+          courseMap
+        })
 
-        // if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-        //   graph.addDirectedEdge(prerequisite.courseId, course.id)
-        // }
+        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+          graph.addDirectedEdge(prerequisite.courseId, course.id)
+        }
       })
     })
   })
