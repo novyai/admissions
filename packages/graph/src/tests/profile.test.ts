@@ -1,4 +1,3 @@
-import { getProfileFromSchedule } from "@graph/action"
 import { buildSemesters, graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
@@ -31,7 +30,6 @@ test("student profile to graph", async () => {
 
   const graph = studentProfileToGraph(profile)
   const studentProfile = graphToStudentProfile(graph, mathProfile)
-  const redoneGraph = studentProfileToGraph(studentProfile)
   expect(studentProfile).toEqual(profile)
 })
 

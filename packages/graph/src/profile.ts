@@ -4,15 +4,8 @@ import { forEachTopologicalGeneration, topologicalGenerations } from "graphology
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
 
-import {
-  _getAllDependents,
-  buildSemesters,
-  getAllDependents,
-  getAllPrereqs,
-  graphToStudentProfile,
-  studentProfileToGraph
-} from "./graph"
-import { _canMoveCourse, canMoveCourse } from "./schedule"
+import { _getAllDependents, graphToStudentProfile } from "./graph"
+import { _canMoveCourse } from "./schedule"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 type CourseAttributes = {
