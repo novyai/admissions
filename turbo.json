@@ -43,7 +43,6 @@
       "persistent": false
     },
     "type-check": {
-      "cache": false,
       "persistent": false
     },
     "db:generate": {
