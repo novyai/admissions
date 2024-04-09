@@ -24,7 +24,6 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "lint": "eslint --max-warnings 0",
     "build": "prisma generate --no-engine",
-    "prebuild": "bun run db:generate",
     "predev": "bun run generate",
     "studio": "prisma studio"
   },

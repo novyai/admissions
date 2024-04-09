@@ -1,5 +1,3 @@
-import { Course } from "@repo/db"
-
 export type CourseNode = {
   id: string
   name: string
@@ -9,7 +7,6 @@ export type CourseNode = {
   earliestFinish?: number
   latestFinish?: number
   fanOut?: number // Number of courses that depend on this course
-  raw_course: Course
 }
 
 export type BaseStudentProfile = {

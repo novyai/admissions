@@ -64,7 +64,7 @@ export function getIP(
 ): string | undefined | null {
   let clientIP: string | undefined | null = null
   for (const header of ipHeaders) {
-    clientIP = headers.get(header)
+    clientIP = headers.toJSON()[header]
     if (clientIP !== null && typeof clientIP == "string") {
       if (clientIP.includes(",")) {
         clientIP = clientIP.split(",")[0]

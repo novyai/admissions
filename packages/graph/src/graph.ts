@@ -9,14 +9,7 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
   for (const courseNode of profile.allCourses) {
     graph.addNode(courseNode.id, {
       id: courseNode.id,
-      courseSubject: courseNode.raw_course.courseSubject,
-      courseNumber: courseNode.raw_course.courseNumber,
       name: courseNode.name,
-      departmentId: courseNode.raw_course.departmentId,
-      universityId: courseNode.raw_course.universityId,
-
-      startTerm: null,
-      endTerm: null,
 
       hasAttributes: false,
       fanOut: undefined,

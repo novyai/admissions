@@ -1,6 +1,6 @@
 import { getDegreeData } from "@/db/degree"
 import { addCourseAgent, generatePrimaryIdentity } from "@ai/agents/add-courses-agent"
-import { currentUser } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs"
 import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
@@ -23,8 +23,8 @@ export async function POST(request: Request): Promise<Response> {
     prevNodes: Node[]
   } = await request.json()
 
-  const user = await currentUser()
-  if (!user) {
+  const { userId } = auth()
+  if (!userId) {
     throw new Error("User unauthenticated")
   }
 
@@ -49,8 +49,7 @@ export async function POST(request: Request): Promise<Response> {
       latestFinish: undefined,
       dependents: Array.from(new Set(newCourseRawData.dependentMap.get(c.id) || [])),
       prerequisites: Array.from(new Set(newCourseRawData.prereqMap.get(c.id) || [])),
-      name: c.name,
-      raw_course: c
+      name: c.name
     }))
 
     const graph = new Map<string, CourseNode>()

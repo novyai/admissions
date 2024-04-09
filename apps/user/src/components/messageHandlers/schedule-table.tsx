@@ -35,10 +35,7 @@ export const getScheduleTableColumns = (profile: StudentProfile): ColumnDef<Cour
       return (
         <div>
           {row.original.name}
-          <small className="text-gray-400">
-            {" "}
-            ({row.original.raw_course.courseSubject} {row.original.raw_course.courseNumber})
-          </small>
+          <small className="text-gray-400"> ({row.original.name})</small>
         </div>
       )
     }

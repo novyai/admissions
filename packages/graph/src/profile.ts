@@ -1,4 +1,4 @@
-import Prisma, { ConditionGroup, Course, db } from "@repo/db"
+import Prisma, { ConditionGroup, db } from "@repo/db"
 import Graph from "graphology"
 import { forEachTopologicalGeneration, topologicalGenerations } from "graphology-dag"
 import { reverse } from "graphology-operators"
@@ -9,25 +9,42 @@ import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 type CourseAttributes = {
   semester?: number
-} & Course &
-  (
-    | {
-        hasAttributes: false
-        fanOut: undefined
-        earliestFinish: undefined
-        latestFinish: undefined
-        slack: undefined
-      }
-    | {
-        hasAttributes: true
-        fanOut: number
-        earliestFinish: number
-        latestFinish: number
-        slack: number
-      }
-  )
+  id: string
+  name: string
+} & (
+  | {
+      hasAttributes: false
+      fanOut: undefined
+      earliestFinish: undefined
+      latestFinish: undefined
+      slack: undefined
+    }
+  | {
+      hasAttributes: true
+      fanOut: number
+      earliestFinish: number
+      latestFinish: number
+      slack: number
+    }
+)
 
 export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
+
+const COURSE_PAYLOAD = {
+  select: {
+    name: true,
+    id: true,
+    conditions: {
+      select: {
+        conditions: {
+          select: {
+            prerequisites: true
+          }
+        }
+      }
+    }
+  }
+}
 
 export const addCourseToGraph = ({
   courseId,
@@ -36,22 +53,7 @@ export const addCourseToGraph = ({
 }: {
   courseId: string
   graph: CourseGraph
-  courseMap: Map<
-    string,
-    Prisma.CourseGetPayload<{
-      include: {
-        conditions: {
-          include: {
-            conditions: {
-              include: {
-                prerequisites: true
-              }
-            }
-          }
-        }
-      }
-    }>
-  >
+  courseMap: Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD>>
 }) => {
   if (graph.hasNode(courseId)) {
     return
@@ -62,19 +64,12 @@ export const addCourseToGraph = ({
 
   if (!course) {
     console.log(course)
-    throw new Error(`Course with id ${courseId} not found`)
+    return
   }
 
   graph.addNode(courseId, {
     id: course.id,
-    courseSubject: course.courseSubject,
-    courseNumber: course.courseNumber,
     name: course.name,
-    departmentId: course.departmentId,
-    universityId: course.universityId,
-    startTerm: course.startTerm,
-    endTerm: course.endTerm,
-
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,
@@ -95,15 +90,15 @@ export const addCourseToGraph = ({
           completedCourseIds.push(prerequisite.courseId)
         }
 
-        // addCourseToGraph({
-        //   courseId: prerequisite.courseId,
-        //   graph,
-        //   courseMap
-        // })
+        addCourseToGraph({
+          courseId: prerequisite.courseId,
+          graph,
+          courseMap
+        })
 
-        // if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-        //   graph.addDirectedEdge(prerequisite.courseId, course.id)
-        // }
+        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+          graph.addDirectedEdge(prerequisite.courseId, course.id)
+        }
       })
     })
   })
@@ -171,7 +166,7 @@ export const getStudentProfileFromRequirements = async (
 
   graph.forEachNode((_courseId, course) => {
     console.log(
-      `${course.courseSubject}-${course.courseNumber}: ${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
+      `${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
     )
   })
 
@@ -328,16 +323,12 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
         .every(semester => semester! < currentSemester)
     ) {
       // if all of the prereqs were completed in previous semesters, we can add this course to the current one
-      console.log(
-        `Adding ${course["courseSubject"]}-${course["courseNumber"]}: ${course["name"]} to schedule in semester ${currentSemester}`
-      )
+      console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course["id"], "semester", currentSemester)
       coursesInCurrentSemester += 1
     } else {
       // otherwise we need to defer this course
-      console.log(
-        `Deferring ${course["courseSubject"]}-${course["courseNumber"]}: ${course["name"]} to schedule in semester ${currentSemester}`
-      )
+      console.log(`Deferring ${course["name"]} to schedule in semester ${currentSemester}`)
       if (firstDeferredCourseId === null) {
         firstDeferredCourseId = course["id"]
       }
@@ -363,18 +354,6 @@ export function toCourseNode(
     fanOut: course["fanOut"],
 
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
-    prerequisites: graph.mapInboundNeighbors(courseId, prereqId => prereqId),
-
-    raw_course: {
-      id: courseId,
-      name: course["name"],
-      courseSubject: course["courseSubject"],
-      courseNumber: course["courseNumber"],
-      departmentId: course["departmentId"],
-      universityId: course["universityId"],
-
-      startTerm: course["startTerm"],
-      endTerm: course["endTerm"]
-    }
+    prerequisites: graph.mapInboundNeighbors(courseId, prereqId => prereqId)
   }
 }

@@ -61,7 +61,7 @@ export function Editor({
     const semesters = Array.from(new Set(courseNodes.map(n => n.data.semesterIndex)))
     console.log(semesters)
     const semesterCourses = semesters.map(s =>
-      courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data.raw_course)
+      courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
     ) as unknown as CourseNode[][]
 
     const newProfile: StudentProfile = { ...profile!, semesters: semesterCourses }
