@@ -13,11 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TURBO_REMOTE_ONLY: true
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
 
       - name: Setup bun
         uses: oven-sh/setup-bun@v1
@@ -32,6 +34,6 @@ jobs:
       - name: Install Dependencies
         run: bun i
         
-      - run: bun run build
-      - run: bun run type-check
+      - name: Run Checks
+        run: bun run type-check
       - run: bun run lint
