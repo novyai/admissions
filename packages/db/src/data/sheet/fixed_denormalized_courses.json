@@ -924,5 +924,49 @@
         ]
       }
     ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2283",
+    "name": "Engineering Calculus III",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2311",
+    "name": "Calculus I",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "1147"
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
