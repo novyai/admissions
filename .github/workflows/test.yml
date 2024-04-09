@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TURBO_REMOTE_ONLY: true
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
     steps:
       - uses: actions/checkout@v3
