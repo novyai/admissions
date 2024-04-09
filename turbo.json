@@ -44,7 +44,6 @@
     },
     "type-check": {
       "dependsOn": ["^db:generate"],
-      "cache": false,
       "persistent": false
     },
     "db:generate": {
