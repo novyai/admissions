@@ -43,6 +43,7 @@
       "persistent": false
     },
     "type-check": {
+      "dependsOn": ["^db:generate"],
       "cache": false,
       "persistent": false
     },
