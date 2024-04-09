@@ -372,42 +372,42 @@ async function insertDegreeData() {
   }
 }
 
-async function insertProgramCourses() {
-  try {
-    const programCourseJson = await fs.readFile(
-      path.resolve("./src/data/programs/ElectiveCourses.json"),
-      "utf-8"
-    )
+// async function insertProgramCourses() {
+//   try {
+//     const programCourseJson = await fs.readFile(
+//       path.resolve("./src/data/programs/ElectiveCourses.json"),
+//       "utf-8"
+//     )
 
-    const programCourseArray = JSON.parse(programCourseJson)
+//     const programCourseArray = JSON.parse(programCourseJson)
 
-    for (const pc of programCourseArray) {
-      const [courseSubject, courseNumber] = pc.courseId.split(" ")
-      await db.electiveCourse.create({
-        data: {
-          category: pc.category,
-          program: {
-            connect: {
-              id: pc.programId
-            }
-          },
-          course: {
-            connect: {
-              courseIdentifier: {
-                courseSubject,
-                courseNumber
-              }
-            }
-          }
-        }
-      })
-    }
+//     for (const pc of programCourseArray) {
+//       const [courseSubject, courseNumber] = pc.courseId.split(" ")
+//       await db.electiveCourse.create({
+//         data: {
+//           category: pc.category,
+//           program: {
+//             connect: {
+//               id: pc.programId
+//             }
+//           },
+//           course: {
+//             connect: {
+//               courseIdentifier: {
+//                 courseSubject,
+//                 courseNumber
+//               }
+//             }
+//           }
+//         }
+//       })
+//     }
 
-    console.log("Program courses inserted successfully.")
-  } catch (error) {
-    console.error("Error inserting program courses:", error)
-  }
-}
+//     console.log("Program courses inserted successfully.")
+//   } catch (error) {
+//     console.error("Error inserting program courses:", error)
+//   }
+// }
 
 async function main() {
   try {
