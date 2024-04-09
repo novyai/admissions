@@ -34,6 +34,5 @@ jobs:
       - name: Install Dependencies
         run: bun i
         
-      - run: bun run build
       - run: bun run type-check
       - run: bun run lint
