@@ -3,12 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { pushCourseAndDependents } from "@graph/profile"
 import { Conversation, Message, MessageRole, Version } from "@repo/db"
 import { getProfileFromSchedule } from "@repo/graph/action"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
-import { Button } from "@repo/ui/components/ui/button"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
@@ -37,7 +34,7 @@ export function Editor({
   }
   scheduleId: string
 }) {
-  const [versions, setVersions] = useState<Version[]>(initialVersions)
+  const [_versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
   const [profile, setProfile] = useState<StudentProfile>()
 
@@ -66,7 +63,7 @@ export function Editor({
     (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
     []
   )
-  const [status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
+  const [_status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
   const saveVersion = async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
     setStatus("saving")
@@ -123,15 +120,15 @@ export function Editor({
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
 
-  const pushClass = async (courseId: string) => {
-    const graph = studentProfileToGraph(profile!)
+  // const pushClass = async (courseId: string) => {
+  //   const graph = studentProfileToGraph(profile!)
 
-    const newGraph = pushCourseAndDependents(graph, courseId)
-    const newProfile = graphToStudentProfile(newGraph, profile!)
-    const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-    setProfile(newProfile)
-    await saveVersion(defaultNodes)
-  }
+  //   const newGraph = pushCourseAndDependents(graph, courseId)
+  //   const newProfile = graphToStudentProfile(newGraph, profile!)
+  //   const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+  //   setProfile(newProfile)
+  //   await saveVersion(defaultNodes)
+  // }
 
   const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
     conversationId: conversation.id,
@@ -236,31 +233,5 @@ export function Editor({
         />
       </div>
     </Tabs>
-  )
-}
-
-function VersionList({
-  versions,
-  selectedVersion,
-  setSelectedVersion
-}: {
-  versions: Version[]
-  selectedVersion: Version
-  setSelectedVersion: (version: Version) => void
-}) {
-  return (
-    <>
-      {versions.map(version => {
-        return (
-          <Button
-            variant={selectedVersion?.id === version.id ? "default" : "outline"}
-            key={version.id}
-            onClick={() => setSelectedVersion(version)}
-          >
-            {version.id.substring(0, 4)} - {version.createdAt.toISOString()}
-          </Button>
-        )
-      })}
-    </>
   )
 }
