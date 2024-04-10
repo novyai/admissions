@@ -6,7 +6,6 @@
     "access": "public"
   },
   "scripts": {
-    "test": "bun test --coverage --verbose",
     "api:start": "bun ./src/index.ts",
     "dev": "bun --watch ./src/index.ts",
     "lint": "TIMING=1 eslint src/**/*.ts* --fix",
