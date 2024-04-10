@@ -2,7 +2,6 @@
 
 import { StudentProfile } from "@graph/types"
 import { db } from "@repo/db"
-import { Node } from "reactflow"
 
 import { createBlob } from "@/lib/version-blob"
 import {
@@ -11,7 +10,14 @@ import {
   getUnassignedNodesAndEdges
 } from "@/components/semester-dag/graph-to-node-utils"
 
-export const createVersion = async (profile: StudentProfile, scheduleId: string, nodes: Node[]) => {
+import { CourseNodeType } from "../semester-dag/course-node"
+import { SemesterNodeType } from "../semester-dag/semester-node"
+
+export const createVersion = async (
+  profile: StudentProfile,
+  scheduleId: string,
+  nodes: (SemesterNodeType | CourseNodeType)[]
+) => {
   const blob = JSON.stringify(createBlob(profile, nodes))
   const newVersion = await db.version.create({
     data: {

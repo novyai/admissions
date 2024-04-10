@@ -20,8 +20,6 @@ import { Dispatch, SetStateAction, useCallback } from "react"
 import { canMoveCourse } from "@graph/schedule"
 import { StudentProfile } from "@graph/types"
 import { cn } from "@ui/lib/utils"
-import { useJsonStream } from "stream-hooks"
-import { z } from "zod"
 
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
 import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
@@ -194,62 +192,22 @@ function SemesterDAGInternal({
       handleReset(node)
     } else {
       console.log("moving", node.id, "to", semester)
-      setNodes(nds =>
-        nds.map(n =>
-          n.id === node.id ?
-            {
-              ...n,
-              className: cn(n.className, defaultCourseNode.className),
-              data: { ...n.data, semesterIndex: semester }
-            }
-          : n.id === droppedIn.id ?
-            {
-              ...n,
-              className: cn(defaultSemesterNode.className)
-            }
-          : n
-        )
+      const newNodes = nodes.map(n =>
+        n.id === node.id ?
+          {
+            ...n,
+            className: cn(n.className, defaultCourseNode.className),
+            data: { ...n.data, semesterIndex: semester }
+          }
+        : n.id === droppedIn.id ?
+          {
+            ...n,
+            className: cn(defaultSemesterNode.className)
+          }
+        : n
       )
+      saveVersion(newNodes)
     }
-  }
-
-  const { startStream, loading } = useJsonStream({
-    schema: z.object({
-      nodes: z.array(z.custom<CourseNodeType>()),
-      edges: z.array(z.custom<Edge>())
-    }),
-    onEnd: async ({ nodes, edges }) => {
-      setNodes(nodes)
-      setEdges(edges)
-      saveVersion(nodes)
-    }
-  })
-
-  const onSubmit = function (value: string) {
-    startStream({
-      url: "/api/ai/dag-chat",
-      body: {
-        messages: [
-          {
-            role: "user",
-            content: value
-          }
-        ],
-        electives: [
-          {
-            courseSubject: "CAP",
-            courseNumber: "4034",
-            name: "Computer Animation Fundamentals"
-          },
-          {
-            courseNumber: "4103",
-            courseSubject: "CAP",
-            name: "Mobile Biometrics"
-          }
-        ],
-        prevNodes: nodes
-      }
-    })
   }
 
   return (
@@ -270,16 +228,6 @@ function SemesterDAGInternal({
         <MiniMap />
         <Controls />
       </ReactFlow>
-
-      <div className="w-full p-2">
-        <PromptComposer
-          prompt=""
-          onChange={() => {}}
-          placeholder="What courses should I add?"
-          onSubmit={onSubmit}
-          loading={loading}
-        />
-      </div>
     </div>
   )
 }
