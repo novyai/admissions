@@ -29,10 +29,8 @@
     "start": {},
     "api:start": {},
     "lint": {},
-    "test": {
-      "cache": false,
-      "persistent": false
-    },
+    "test": {},
+    "test:watch": {},
     "dev": {
       "dependsOn": ["^db:generate", "^db:dev"],
       "cache": false,
