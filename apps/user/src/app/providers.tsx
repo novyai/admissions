@@ -5,6 +5,7 @@ import { getUserByExternalId } from "@/actions/user"
 import { useUser } from "@clerk/nextjs"
 import { User } from "@repo/db"
 import { Toaster } from "@repo/ui/components/ui/toaster"
+import { TooltipProvider } from "@ui/components/ui/tooltip"
 import { ThemeProvider } from "next-themes"
 
 interface AppData {
@@ -75,7 +76,7 @@ export default function Providers({ children }: { children: ReactNode }) {
       >
         <Toaster />
         <UserProvider />
-        {children}
+        <TooltipProvider>{children}</TooltipProvider>
       </AppContext.Provider>
     </ThemeProvider>
   )

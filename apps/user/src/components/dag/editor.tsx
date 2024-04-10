@@ -1,13 +1,19 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
+import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { pushCourseAndDependents } from "@graph/profile"
 import { Version } from "@repo/db"
 import { getProfileFromSchedule } from "@repo/graph/action"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { Button } from "@repo/ui/components/ui/button"
+import { PromptComposer } from "@ui/components/prompt-composer"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
+import { useAdvisor } from "@/hooks/use-advisor"
 import { SemesterDAG } from "@/components/semester-dag"
 
 import { CourseNodeType } from "../semester-dag/course-node"
@@ -98,9 +104,38 @@ export function Editor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion])
 
+  const { user } = useUser()
+
+  const router = useRouter()
+  if (!user?.id) {
+    router.replace("/sign-in")
+  }
+
+  const { sendMessage, loading } = useAdvisor({
+    conversationId: "123",
+    userId: user?.id ?? null
+  })
+
+  const pushClass = async (courseId: string) => {
+    const graph = studentProfileToGraph(profile!)
+
+    const newGraph = pushCourseAndDependents(graph, courseId)
+    const newProfile = graphToStudentProfile(newGraph, profile!)
+    const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+    setProfile(newProfile)
+    await saveVersion(defaultNodes)
+  }
+
   return (
     <>
       <div className="flex flex-col gap-y-4">
+        <Button
+          onClick={async () => {
+            await pushClass("1665c198-ca4c-4864-940a-dc30eb56c254")
+          }}
+        >
+          Push Prec alc
+        </Button>
         <Button disabled={status !== "dirty"} onClick={() => saveVersion(nodes)}>
           {status === "dirty" ? "Save Changes" : "No Changes"}
         </Button>
@@ -116,17 +151,30 @@ export function Editor({
             <div className="flex w-full h-full items-center justify-center">
               <Loader2 className="h-4 w-4 animate-spin" />
             </div>
-          : <SemesterDAG
-              resetNodePlacement={resetNodePlacement}
-              profile={profile}
-              saveVersion={saveVersion}
-              nodes={nodes}
-              edges={edges}
-              setNodes={setNodes}
-              setEdges={setEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-            />
+          : <div className="flex flex-col w-full h-full">
+              <div className="flex-grow">
+                <SemesterDAG
+                  resetNodePlacement={resetNodePlacement}
+                  profile={profile}
+                  saveVersion={saveVersion}
+                  nodes={nodes}
+                  edges={edges}
+                  setNodes={setNodes}
+                  setEdges={setEdges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                />
+              </div>
+              <div className="w-full p-2">
+                <PromptComposer
+                  prompt=""
+                  onChange={() => {}}
+                  placeholder="What courses should I add?"
+                  onSubmit={sendMessage}
+                  loading={loading}
+                />
+              </div>
+            </div>
           }
         </div>
       </div>
