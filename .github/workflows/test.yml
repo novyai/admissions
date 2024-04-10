@@ -38,3 +38,4 @@ jobs:
       - name: Run Checks
         run: bun run type-check
       - run: bun run lint
+      - run: bun run test

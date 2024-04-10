@@ -15,7 +15,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
       ...defaultSemesterNode,
       id: `semester-${index}`,
       position: { x: index * (SEMESTER_NODE_WIDTH + 25), y: 0 },
-      data: { semester: index + 1 }
+      data: { semesterIndex: index }
     }
   })
 
@@ -30,8 +30,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
           id: course.id,
           parentNode: `semester-${semIndex}`,
           position: { x: 5, y: 50 + courseIndex * 50 },
-          data: { semesterIndex: semIndex + 1, ...course },
-          style: { backgroundColor: "whitesmoke" }
+          data: { semesterIndex: semIndex, ...course }
         }
       })
     )

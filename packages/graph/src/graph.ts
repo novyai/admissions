@@ -7,6 +7,7 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
   const graph: CourseGraph = new Graph()
 
   for (const courseNode of profile.allCourses) {
+    const sem = profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id))
     graph.addNode(courseNode.id, {
       id: courseNode.id,
       name: courseNode.name,
@@ -16,8 +17,7 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
       earliestFinish: undefined,
       latestFinish: undefined,
       slack: undefined,
-
-      semester: profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id))
+      semester: sem
     })
   }
 
@@ -32,13 +32,14 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
   return graph
 }
 
-export function graphtoStudentProfile(
+export function graphToStudentProfile(
   graph: CourseGraph,
   oldProfile: BaseStudentProfile
 ): StudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
     toCourseNode(graph, courseId, course)
   )
+
   return {
     ...oldProfile,
     allCourses: allCourses,
@@ -50,16 +51,24 @@ export function graphtoStudentProfile(
   }
 }
 
-function buildSemesters(graph: Graph): CourseNode[][] {
-  const semesters: CourseNode[][] = graph
+export function buildSemesters(graph: Graph) {
+  const semesters = graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
     .reduce((acc: CourseNode[][], course: CourseNode) => {
       const semesterIndex: number = graph.getNodeAttribute(course.id, "semester")
-      if (semesterIndex > 0) {
-        // courses with a semesterIndex of 0 are already completed
-        acc[semesterIndex - 1] = acc[semesterIndex - 1] || []
-        acc[semesterIndex - 1]?.push(course)
+      if (semesterIndex in acc) {
+        acc[semesterIndex].push(course)
+        return acc
       }
+
+      while (acc.length < semesterIndex) {
+        acc.push([])
+      }
+
+      // courses with a semesterIndex of 0 are already completed
+      acc[semesterIndex] = acc[semesterIndex] || []
+      acc[semesterIndex]?.push(course)
+
       return acc
     }, [])
   return semesters
@@ -71,7 +80,7 @@ export const getAllPrereqs = (courseId: string, profile: StudentProfile): Course
   return _getAllPrereqs(courseId, graph).map(prereqId => toCourseNode(graph, prereqId, undefined))
 }
 
-function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
+export function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
   const prereqs = graph.inNeighbors(courseId)
   return [...prereqs, ...prereqs.flatMap(p => _getAllPrereqs(p, graph))]
 }
@@ -84,7 +93,7 @@ export const getAllDependents = (courseId: string, profile: StudentProfile): Cou
   )
 }
 
-function _getAllDependents(courseId: string, graph: CourseGraph): string[] {
+export function _getAllDependents(courseId: string, graph: CourseGraph): string[] {
   const prereqs = graph.outNeighbors(courseId)
   return [...prereqs, ...prereqs.flatMap(p => _getAllDependents(p, graph))]
 }

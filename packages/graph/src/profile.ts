@@ -4,7 +4,8 @@ import { forEachTopologicalGeneration, topologicalGenerations } from "graphology
 import { reverse } from "graphology-operators"
 import { Attributes } from "graphology-types"
 
-import { graphtoStudentProfile } from "./graph"
+import { _getAllDependents, graphToStudentProfile } from "./graph"
+import { _canMoveCourse } from "./schedule"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 type CourseAttributes = {
@@ -63,8 +64,7 @@ export const addCourseToGraph = ({
   const course = courseMap.get(courseId)
 
   if (!course) {
-    console.log(course)
-    return
+    throw new Error(`Course not found ${courseId}`)
   }
 
   graph.addNode(courseId, {
@@ -164,13 +164,13 @@ export const getStudentProfileFromRequirements = async (
   computeNodeStats(graph, profile)
   scheduleCourses(graph, profile)
 
-  graph.forEachNode((_courseId, course) => {
-    console.log(
-      `${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
-    )
-  })
+  // graph.forEachNode((_courseId, course) => {
+  //   console.log(
+  //     `${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
+  //   )
+  // })
 
-  return graphtoStudentProfile(graph, profile)
+  return graphToStudentProfile(graph, profile)
 }
 
 async function getCourseWithPreqs(courseId: string) {
@@ -288,7 +288,7 @@ function calculateFanOut(graph: CourseGraph, courseId: string): number {
  * @param profile
  */
 function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
-  var currentSemester = 1
+  var currentSemester = 0
   var coursesInCurrentSemester = 0
   var firstDeferredCourseId = null
 
@@ -301,17 +301,12 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   while (sortedCourses.length > 0) {
     const course = sortedCourses.shift()!
 
-    if (course.semester === 0) {
-      // course is already completed, skip scheduling
-      continue
-    }
-
     // check if the semester is full already and increment if it is
     if (
       coursesInCurrentSemester >= profile.coursePerSemester ||
       course["id"] === firstDeferredCourseId
     ) {
-      console.log(`Semester ${currentSemester} complete`)
+      // console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
       coursesInCurrentSemester = 0
       firstDeferredCourseId = null
@@ -323,12 +318,12 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
         .every(semester => semester! < currentSemester)
     ) {
       // if all of the prereqs were completed in previous semesters, we can add this course to the current one
-      console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
+      // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course["id"], "semester", currentSemester)
       coursesInCurrentSemester += 1
     } else {
       // otherwise we need to defer this course
-      console.log(`Deferring ${course["name"]} to schedule in semester ${currentSemester}`)
+      // console.log(`Deferring ${course["name"]} to schedule in semester ${currentSemester}`)
       if (firstDeferredCourseId === null) {
         firstDeferredCourseId = course["id"]
       }
@@ -356,4 +351,65 @@ export function toCourseNode(
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
     prerequisites: graph.mapInboundNeighbors(courseId, prereqId => prereqId)
   }
+}
+
+/**
+ * Pushes a course and all of its dependents to a later semester while keeping a valid schedule.
+ * @param graph The course graph.
+ * @param profile The student profile containing scheduling constraints.
+ * @param courseId The ID of the course to be pushed.
+ */
+export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
+  // Step 1: Identify the Course and Its Dependents
+  const dependents = _getAllDependents(courseId, graph)
+
+  // Step 2: Next semester
+  const currSemesterIndex = graph.getNodeAttribute(courseId, "semester")
+  if (currSemesterIndex === undefined) {
+    throw new Error(`Could not move ${courseId} because it has no semester`)
+  }
+  const nextSemesterIndex = currSemesterIndex + 1
+
+  // if no courses depend on it, just push it a semester that makes sense
+  if (dependents.length === 0) {
+    const mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
+    if (mv.canMove) {
+      graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
+    } else {
+      throw new Error(`Could not move ${courseId} because of ${mv.reason}`)
+    }
+
+    return graph
+  }
+
+  // if there are courses that depend on it, we need to find the earliest semester that they can all be pushed to
+
+  // Step 3: Update the Course and Dependents
+
+  let mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
+  while (!mv.canMove) {
+    // if there is a dependent issue, push them
+    if (mv.reason.type === "dependent") {
+      mv.reason.courseId.forEach(depId => {
+        graph = pushCourseAndDependents(graph, depId)
+        console.log(
+          "after moving",
+          graph.getNodeAttribute(depId, "name"),
+          "to",
+          graph.getNodeAttribute(depId, "semester")
+        )
+      })
+      mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
+      continue
+    }
+
+    throw new Error(`Could not move ${courseId} because of ${JSON.stringify(mv.reason)}`)
+  }
+
+  // now we can move:
+  if (mv.canMove) {
+    graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
+  }
+
+  return graph
 }

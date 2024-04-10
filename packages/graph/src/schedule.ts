@@ -1,7 +1,23 @@
-import { graphtoStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { StudentProfile } from "@graph/types"
 
 import { CourseGraph } from "./profile"
+
+type CannotMoveReason = {
+  reason:
+    | {
+        type: "prereq" | "dependent"
+        courseId: string[]
+      }
+    | { type: "graduation" }
+    | {
+        type: "full"
+        semesterIndex: number
+      }
+    | { type: "not-found-in-schedule" }
+
+  canMove: false
+}
 
 /**
  * Checks if a course can be moved to a different semester without violating prerequisites and graduation time.
@@ -13,22 +29,27 @@ import { CourseGraph } from "./profile"
 export function canMoveCourse(
   courseId: string,
   toSemester: number,
-  profile: StudentProfile
-): { canMove: false; reason: string } | { canMove: true } {
-  if (toSemester >= profile.timeToGraduate) {
+  profile: StudentProfile,
+  ignoreGraduation: boolean = false
+): CannotMoveReason | { canMove: true } {
+  if (!ignoreGraduation && toSemester >= profile.timeToGraduate) {
     return {
       canMove: false,
-      reason: "Cannot move course beyond the student's time to graduate."
+      reason: { type: "graduation" }
     }
   }
 
   if (
+    toSemester in profile.semesters &&
     profile.semesters[toSemester - 1] &&
     profile.semesters[toSemester]!.length >= profile.coursePerSemester
   ) {
     return {
       canMove: false,
-      reason: `Semester ${toSemester} is full.`
+      reason: {
+        type: "full",
+        semesterIndex: toSemester
+      }
     }
   }
 
@@ -36,17 +57,17 @@ export function canMoveCourse(
   return _canMoveCourse(courseId, toSemester, graph)
 }
 
-function _canMoveCourse(
+export function _canMoveCourse(
   courseId: string,
   toSemester: number,
   graph: CourseGraph
-): { canMove: false; reason: string } | { canMove: true } {
+): CannotMoveReason | { canMove: true } {
   // Does the course exist in the profile?
   const fromSemester = graph.getNodeAttributes(courseId).semester
 
   // Ensure the course exists in the fromSemester
   if (fromSemester === undefined) {
-    return { canMove: false, reason: "Course not found in the student's schedule." }
+    return { canMove: false, reason: { type: "not-found-in-schedule" } }
   }
 
   // Check if moving the course violates any prerequisite requirements. Only need to check the direct
@@ -58,9 +79,11 @@ function _canMoveCourse(
   if (allPrerequestNotCompletedBefore.length > 0) {
     return {
       canMove: false,
-      reason: `Course ${courseId} cannot be moved to semester ${toSemester} because the following prerequisites are not met: ${allPrerequestNotCompletedBefore.map(
-        prereq => `\n- ${prereq.name}`
-      )}.`
+
+      reason: {
+        type: "prereq",
+        courseId: allPrerequestNotCompletedBefore.map(prereq => prereq.id)
+      }
     }
   }
 
@@ -72,9 +95,10 @@ function _canMoveCourse(
   if (allDependentsNotCompletedAfter.length > 0) {
     return {
       canMove: false,
-      reason: `Course ${courseId} cannot be moved to semester ${toSemester} because the following dependent courses' prerequisites would no longer be met: ${allDependentsNotCompletedAfter.map(
-        dependent => `\n- ${dependent.name}`
-      )}.`
+      reason: {
+        type: "dependent",
+        courseId: allDependentsNotCompletedAfter.map(dependent => dependent.id)
+      }
     }
   }
 
@@ -86,7 +110,7 @@ export function moveCourse(courseId: string, toSemester: number, profile: Studen
   const canMove = _canMoveCourse(courseId, toSemester, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)
-    return graphtoStudentProfile(graph, profile)
+    return graphToStudentProfile(graph, profile)
   }
   return profile
 }
