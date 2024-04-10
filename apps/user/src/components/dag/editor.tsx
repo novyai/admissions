@@ -37,7 +37,7 @@ export function Editor({
   }
   scheduleId: string
 }) {
-  const [versions, setVersions] = useState<Version[]>(initialVersions)
+  const [_versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
   const [profile, setProfile] = useState<StudentProfile>()
 
@@ -123,15 +123,15 @@ export function Editor({
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
 
-  const pushClass = async (courseId: string) => {
-    const graph = studentProfileToGraph(profile!)
+  // const pushClass = async (courseId: string) => {
+  //   const graph = studentProfileToGraph(profile!)
 
-    const newGraph = pushCourseAndDependents(graph, courseId)
-    const newProfile = graphToStudentProfile(newGraph, profile!)
-    const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-    setProfile(newProfile)
-    await saveVersion(defaultNodes)
-  }
+  //   const newGraph = pushCourseAndDependents(graph, courseId)
+  //   const newProfile = graphToStudentProfile(newGraph, profile!)
+  //   const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+  //   setProfile(newProfile)
+  //   await saveVersion(defaultNodes)
+  // }
 
   const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
     conversationId: conversation.id,
