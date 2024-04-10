@@ -1,6 +1,5 @@
 "use client"
 
-import { PromptComposer } from "@repo/ui/components/prompt-composer"
 import ReactFlow, {
   Background,
   Controls,
