@@ -1,21 +1,23 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { pushCourseAndDependents } from "@graph/profile"
-import { Version } from "@repo/db"
+import { Conversation, Message, MessageRole, Version } from "@repo/db"
 import { getProfileFromSchedule } from "@repo/graph/action"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
-import { Button } from "@repo/ui/components/ui/button"
 import { PromptComposer } from "@ui/components/prompt-composer"
+import { ScrollArea } from "@ui/components/ui/scroll-area"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
+import { cn } from "@/lib/utils"
 import { useAdvisor } from "@/hooks/use-advisor"
 import { SemesterDAG } from "@/components/semester-dag"
 
+import { AssistantChat } from "../assistant-chat"
+import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
@@ -23,12 +25,16 @@ import { createVersion, getAllNodesAndEdges } from "./action"
 
 export function Editor({
   versions: initialVersions,
+  conversation,
   scheduleId
 }: {
   versions: Version[]
+  conversation: Conversation & {
+    messages: Message[]
+  }
   scheduleId: string
 }) {
-  const [versions, setVersions] = useState<Version[]>(initialVersions)
+  const [_versions, setVersions] = useState<Version[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
   const [profile, setProfile] = useState<StudentProfile>()
 
@@ -57,7 +63,7 @@ export function Editor({
     (changes: EdgeChange[]) => setEdges(eds => applyEdgeChanges(changes, eds)),
     []
   )
-  const [status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
+  const [_status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
   const saveVersion = async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
     setStatus("saving")
@@ -111,99 +117,121 @@ export function Editor({
     router.replace("/sign-in")
   }
 
-  const { sendMessage, loading } = useAdvisor({
-    conversationId: "123",
-    userId: user?.id ?? null
+  const [prompt, setPrompt] = useState("")
+  const ChatScrollerRef = useRef<HTMLDivElement>(null)
+
+  // const pushClass = async (courseId: string) => {
+  //   const graph = studentProfileToGraph(profile!)
+
+  //   const newGraph = pushCourseAndDependents(graph, courseId)
+  //   const newProfile = graphToStudentProfile(newGraph, profile!)
+  //   const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+  //   setProfile(newProfile)
+  //   await saveVersion(defaultNodes)
+  // }
+
+  const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
+    conversationId: conversation.id,
+    initialMessages: conversation?.messages ?? [],
+    userId: conversation.userId
   })
 
-  const pushClass = async (courseId: string) => {
-    const graph = studentProfileToGraph(profile!)
-
-    const newGraph = pushCourseAndDependents(graph, courseId)
-    const newProfile = graphToStudentProfile(newGraph, profile!)
-    const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-    setProfile(newProfile)
-    await saveVersion(defaultNodes)
+  function scrollToEnd({ now = false }: { now?: boolean }) {
+    ChatScrollerRef?.current?.scrollTo({
+      top: ChatScrollerRef?.current?.scrollHeight,
+      behavior: now ? "auto" : "smooth"
+    })
   }
 
+  async function submitMessage(content: string, role?: MessageRole) {
+    if (loading) {
+      return
+    }
+
+    setPrompt("")
+    scrollToEnd({ now: true })
+
+    sendMessage(content, role)
+
+    setTimeout(() => {
+      scrollToEnd({})
+    }, 1000)
+  }
+
+  const handleInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    setPrompt(event.target.value ?? "")
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (event.key === "Enter") {
+      event.preventDefault()
+      submitMessage(prompt)
+    }
+  }
+
+  useEffect(() => {
+    setTimeout(() => {
+      scrollToEnd({ now: true })
+    }, 0)
+  }, [])
+
   return (
-    <>
-      <div className="flex flex-col gap-y-4">
-        <Button
-          onClick={async () => {
-            await pushClass("1665c198-ca4c-4864-940a-dc30eb56c254")
-          }}
-        >
-          Push Prec alc
-        </Button>
-        <Button disabled={status !== "dirty"} onClick={() => saveVersion(nodes)}>
-          {status === "dirty" ? "Save Changes" : "No Changes"}
-        </Button>
-        <VersionList
-          versions={versions}
-          selectedVersion={selectedVersion}
-          setSelectedVersion={setSelectedVersion}
-        />
-      </div>
-      <div className="flex flex-col w-full h-full">
-        <div className="relative flex-1 min-h-[50vh] rounded-xl border">
-          {!profile ?
-            <div className="flex w-full h-full items-center justify-center">
-              <Loader2 className="h-4 w-4 animate-spin" />
-            </div>
-          : <div className="flex flex-col w-full h-full">
-              <div className="flex-grow">
-                <SemesterDAG
-                  resetNodePlacement={resetNodePlacement}
-                  profile={profile}
-                  saveVersion={saveVersion}
-                  nodes={nodes}
-                  edges={edges}
-                  setNodes={setNodes}
-                  setEdges={setEdges}
-                  onNodesChange={onNodesChange}
-                  onEdgesChange={onEdgesChange}
-                />
-              </div>
-              <div className="w-full p-2">
-                <PromptComposer
-                  prompt=""
-                  onChange={() => {}}
-                  placeholder="What courses should I add?"
-                  onSubmit={sendMessage}
+    <Tabs defaultValue="schedule" className="flex flex-col w-full h-full gap-2">
+      <TabsList className="grid grid-cols-2">
+        <TabsTrigger value="schedule">Schedule</TabsTrigger>
+        <TabsTrigger value="advisor">Advisor</TabsTrigger>
+      </TabsList>
+
+      {!profile ?
+        <div className="flex flex-grow items-center justify-center">
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </div>
+      : <>
+          <TabsContent value="schedule" className="flex flex-grow w-full h-full rounded-xl border">
+            <SemesterDAG
+              resetNodePlacement={resetNodePlacement}
+              profile={profile}
+              saveVersion={saveVersion}
+              nodes={nodes}
+              edges={edges}
+              setNodes={setNodes}
+              setEdges={setEdges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+            />
+          </TabsContent>
+          <TabsContent value="advisor" className="flex flex-grow">
+            <ScrollArea className={cn("h-[calc(100dvh-140px)] w-full", {})} ref={ChatScrollerRef}>
+              <div className="max-w-7xl mx-auto px-6">
+                <AssistantChat
+                  messages={messages}
+                  disabled={!ready}
+                  submitMessage={submitMessage}
                   loading={loading}
                 />
+                {ChatScrollerRef?.current && (
+                  <ChatScrollAnchor
+                    trackVisibility={waiting || loading}
+                    scrollerRef={ChatScrollerRef}
+                  />
+                )}
               </div>
-            </div>
-          }
-        </div>
-      </div>
-    </>
-  )
-}
+            </ScrollArea>
+          </TabsContent>
+        </>
+      }
 
-function VersionList({
-  versions,
-  selectedVersion,
-  setSelectedVersion
-}: {
-  versions: Version[]
-  selectedVersion: Version
-  setSelectedVersion: (version: Version) => void
-}) {
-  return (
-    <>
-      {versions.map(version => {
-        return (
-          <Button
-            variant={selectedVersion?.id === version.id ? "default" : "outline"}
-            key={version.id}
-            onClick={() => setSelectedVersion(version)}
-          >
-            {version.id.substring(0, 4)} - {version.createdAt.toISOString()}
-          </Button>
-        )
-      })}
-    </>
+      <div className="w-full">
+        <PromptComposer
+          disabled={!ready || !isConnected}
+          placeholder={"Ask me anything..."}
+          loading={loading}
+          onChange={handleInput}
+          onKeyDown={handleKeyDown}
+          onSubmit={submitMessage}
+          prompt={prompt}
+        />
+      </div>
+    </Tabs>
   )
 }

@@ -229,6 +229,45 @@ export const createConversation = async ({
     }
   })
 }
+
+export const createConversationFromClerkUser = async ({
+  title,
+  initialMessage,
+  userId
+}: {
+  title?: string
+  userId: string
+  initialMessage?: {
+    content: string
+    role: MessageRole
+    type: MessageType
+    tokenCount: number
+  }
+}) => {
+  return await db.conversation.create({
+    include: {
+      messages: true
+    },
+    data: {
+      user: {
+        connect: {
+          uid: userId
+        }
+      },
+      title,
+      messages:
+        initialMessage ?
+          {
+            create: {
+              ...initialMessage,
+              userId
+            }
+          }
+        : undefined
+    }
+  })
+}
+
 export const createMessages = async ({
   conversationId,
   messages
