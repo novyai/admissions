@@ -1,17 +1,18 @@
 "use server"
 
+import { createUserFromClerkUser } from "@/actions/user"
 import { auth } from "@clerk/nextjs"
-import { db } from "@repo/db"
 
 export const checkAuth = async () => {
-  const { userId } = auth()
+  const { user } = auth()
 
-  if (!userId) {
+  if (!user || !user.id) {
     return false
   }
 
-  const user = await db.user.findUnique({ where: { uid: userId } })
-  if (!user) {
+  const dbUser = await createUserFromClerkUser(user)
+
+  if (!dbUser) {
     return false
   }
   return true

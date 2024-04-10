@@ -26,7 +26,7 @@ export function AuthVerify() {
       }, 1000)
     }
 
-    router.push("/create")
+    router.push("/schedule")
   }
 
   useEffect(() => {
