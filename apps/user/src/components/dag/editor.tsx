@@ -6,12 +6,12 @@ import { useUser } from "@clerk/nextjs"
 import { getCourseFromIdNameCode } from "@graph/course"
 import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { pushCourseAndDependents } from "@graph/profile"
+import * as Separator from "@radix-ui/react-separator"
 import { Conversation, Message, MessageRole, Version } from "@repo/db"
 import { getProfileFromSchedule } from "@repo/graph/action"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
@@ -195,18 +195,13 @@ export function Editor({
   }, [])
 
   return (
-    <Tabs defaultValue="schedule" className="flex flex-col w-full h-full gap-2">
-      <TabsList className="grid grid-cols-2">
-        <TabsTrigger value="schedule">Schedule</TabsTrigger>
-        <TabsTrigger value="advisor">Advisor</TabsTrigger>
-      </TabsList>
-
+    <div className="w-full">
       {!profile ?
         <div className="flex flex-grow items-center justify-center">
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <>
-          <TabsContent value="schedule" className="flex flex-grow w-full h-full rounded-xl border">
+          <div className="flex w-full h-[95%] rounded-xl border">
             <SemesterDAG
               resetNodePlacement={resetNodePlacement}
               profile={profile}
@@ -218,29 +213,32 @@ export function Editor({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
             />
-          </TabsContent>
-          <TabsContent value="advisor" className="flex flex-grow">
-            <ScrollArea className={cn("h-[calc(100dvh-140px)] w-full", {})} ref={ChatScrollerRef}>
-              <div className="max-w-7xl mx-auto px-6">
-                <AssistantChat
-                  messages={messages}
-                  disabled={!ready}
-                  submitMessage={submitMessage}
-                  loading={loading}
-                />
-                {ChatScrollerRef?.current && (
-                  <ChatScrollAnchor
-                    trackVisibility={waiting || loading}
-                    scrollerRef={ChatScrollerRef}
+            <div className="basis-1/3 p-4">
+              <ScrollArea
+                className="h-full rounded-xl shadow-lg border border-slate-200"
+                ref={ChatScrollerRef}
+              >
+                <div className="max-w-7xl mx-auto px-6">
+                  <AssistantChat
+                    messages={messages}
+                    disabled={!ready}
+                    submitMessage={submitMessage}
+                    loading={loading}
                   />
-                )}
-              </div>
-            </ScrollArea>
-          </TabsContent>
+                  {ChatScrollerRef?.current && (
+                    <ChatScrollAnchor
+                      trackVisibility={waiting || loading}
+                      scrollerRef={ChatScrollerRef}
+                    />
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
         </>
       }
 
-      <div className="w-full">
+      <div className="w-full h-[5%]">
         <PromptComposer
           disabled={!ready || !isConnected}
           placeholder={"Ask me anything..."}
@@ -251,6 +249,6 @@ export function Editor({
           prompt={prompt}
         />
       </div>
-    </Tabs>
+    </div>
   )
 }
