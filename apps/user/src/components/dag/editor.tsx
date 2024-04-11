@@ -1,8 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
-import { useUser } from "@clerk/nextjs"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
@@ -70,7 +68,6 @@ export function Editor({
     const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
 
     const semesters = Array.from(new Set(courseNodes.map(n => n.data.semesterIndex)))
-    console.log(semesters)
     const semesterCourses = semesters.map(s =>
       courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
     ) as unknown as CourseNode[][]
@@ -92,7 +89,6 @@ export function Editor({
         defaultNodes: newDefaultNodes,
         defaultEdges: newDefaultEdges
       } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
-
       setProfile(profile)
       setDefaultNodes(newDefaultNodes)
 
@@ -109,13 +105,6 @@ export function Editor({
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedVersion])
-
-  const { user } = useUser()
-
-  const router = useRouter()
-  if (!user?.id) {
-    router.replace("/sign-in")
-  }
 
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)

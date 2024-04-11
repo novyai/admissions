@@ -49,7 +49,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
       }
     })
   })
-
+  console.log(nodes)
   return { nodes, edges }
 }
 
@@ -134,7 +134,6 @@ export const getUnassignedNodesAndEdges = async (
     ({ id }) => !nodes.map(n => n.id).includes(id)
   )
 
-  console.log(coursesNotInSemesterOrTransferNode)
   const unassignedNodes: CourseNodeType[] = coursesNotInSemesterOrTransferNode.map((course, i) => {
     return getOutsideCourseNode(course, { x: -400 - 200 * i, y: 50 })
   })

@@ -32,7 +32,6 @@ export const getCoursesForProgram = async (program: Program) => {
 
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
-  console.log("p", profile.programs)
   const programCourseData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
   const requiredCoursesNotInProgram = await db.course.findMany({
@@ -62,8 +61,6 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     courseMap.set(course.id, course)
   })
 
-  console.log("requiredCoursesData", allRequiredCourses.length)
-
   programCourseData.forEach(program => {
     program.requiredCourses?.forEach(course => {
       addCourseToGraph({
@@ -92,7 +89,10 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     })
   )
 
-  computeNodeStats(graph, profile)
+  profile.semesters.forEach((sem, i) => {
+    sem.forEach(c => graph.setNodeAttribute(c, "semester", i))
+  })
+
   return graph
 }
 
@@ -102,6 +102,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
  */
 export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
   const graph = await createGraph({ ...profile, semesters: [] })
+  computeNodeStats(graph, profile)
   scheduleCourses(graph, profile)
   return graphToHydratedStudentProfile(graph, profile)
 }

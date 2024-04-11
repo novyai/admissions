@@ -4,16 +4,16 @@ import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { expect, test } from "bun:test"
 
-test("blob", async () => {
-  const profile: BaseStudentProfile = {
-    programs: [ProgramOption.CS],
-    requiredCourses: [],
-    transferCredits: [],
-    timeToGraduate: 4,
-    currentSemester: 1,
-    coursePerSemester: 5
-  }
+const profile: BaseStudentProfile = {
+  programs: [ProgramOption.CS],
+  requiredCourses: [],
+  transferCredits: [],
+  timeToGraduate: 4,
+  currentSemester: 1,
+  coursePerSemester: 5
+}
 
+test("blob", async () => {
   const hydrate = await getStudentProfileFromRequirements(profile)
   const blob = createBlob(hydrate)
   const parsed = parseBlob(blob)

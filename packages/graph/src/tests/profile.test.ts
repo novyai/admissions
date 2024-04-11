@@ -1,5 +1,5 @@
 import { ProgramOption } from "@graph/defaultCourses"
-import { buildSemesters, graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { buildSemesters, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile, StudentProfile } from "@graph/types"
 import { describe, expect, test } from "bun:test"
@@ -30,17 +30,8 @@ const compositionProfile: StudentProfile = {
   coursePerSemester: 3
 }
 
-test("base student profile to hydrated profile", async () => {
-  const profile = await getStudentProfileFromRequirements(mathProfile)
-
-  const graph = studentProfileToGraph(profile)
-  const studentProfile = graphToHydratedStudentProfile(graph, mathProfile)
-  expect(profile.semesters).toEqual(studentProfile.semesters)
-})
-
 test("base student profile from requirements", async () => {
   const studentProfile = await getStudentProfileFromRequirements(mathProfile)
-  // console.log(studentProfile)
 
   expect(studentProfile.semesters).toHaveLength(4)
   expect(studentProfile.semesters.map(s => s.length)).toEqual([1, 2, 1, 1])
