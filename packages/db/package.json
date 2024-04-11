@@ -25,7 +25,8 @@
     "lint": "eslint --max-warnings 0",
     "build": "prisma generate --no-engine",
     "predev": "bun run generate",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "5.12.1",
