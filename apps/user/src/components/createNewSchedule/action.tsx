@@ -1,6 +1,6 @@
 "use server"
 
-import { Program, programHandler } from "@graph/defaultCourses"
+import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
@@ -15,20 +15,12 @@ import { getAllNodesAndEdges } from "@/components/dag/action"
  * @returns The ID of the newly created schedule
  */
 export async function createNewSchedule(userId: string, programs: Program[]) {
-  const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
-  const requiredCourses = await db.course.findMany({
-    where: {
-      OR: Array.from(deptCourses)
-    },
-    select: {
-      id: true
-    }
-  })
+  
 
-  console.log("requiredCourses", JSON.stringify(requiredCourses))
 
   const baseProfile: BaseStudentProfile = {
-    requiredCourses: requiredCourses.map(course => course.id),
+    programs,
+    requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
     coursePerSemester: 6,

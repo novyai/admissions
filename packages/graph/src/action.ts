@@ -4,7 +4,9 @@ import { db } from "@repo/db"
 import Graph from "graphology"
 import { z } from "zod"
 
-import { addCourseToGraph, computeNodeStats, CourseGraph, toCourseNode } from "./profile"
+import { COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import { toCourseNode } from "./profile"
+import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 const blobSchema = z.object({
@@ -28,44 +30,30 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
   }
 
   const { profile, nodes } = parsedBlob.data
-  const graph: CourseGraph = new Graph()
 
   const courseIds = [...nodes.map(n => n.id), ...profile.semesters.flat()]
   const uniqueCourseIds = [...new Set(courseIds)]
 
-  const courses = await db.course.findMany({
+  const graph: CourseGraph = new Graph()
+
+  const requiredCoursesData = await db.course.findMany({
     where: {
       id: {
         in: uniqueCourseIds
       }
     },
-    select: {
-      id: true,
-      name: true,
-      conditions: {
-        select: {
-          conditions: {
-            select: {
-              prerequisites: true
-            }
-          }
-        }
-      }
-    }
+    ...COURSE_PAYLOAD_QUERY
   })
 
-  const courseMap = new Map()
-  courses.forEach(course => {
+  const courseMap = new Map<string, CoursePayload>()
+
+  requiredCoursesData.forEach(course => {
     courseMap.set(course.id, course)
   })
 
-  for (const course of courses) {
-    addCourseToGraph({
-      graph,
-      courseMap,
-      courseId: course.id
-    })
-  }
+  requiredCoursesData.forEach(course => {
+    courseMap.set(course.id, course)
+  })
 
   computeNodeStats(graph, profile)
 
@@ -84,7 +72,7 @@ export async function getProfileFromSchedule(blob: string): Promise<StudentProfi
 
   return {
     ...profile,
-    allCourses,
+    // allCourses,
     graph: profileGraph,
     semesters: profile.semesters.map(s =>
       s.map(c => toCourseNode(graph, c, graph.getNodeAttributes(c)))

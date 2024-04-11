@@ -1,7 +1,7 @@
 import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { StudentProfile } from "@graph/types"
 
-import { CourseGraph } from "./profile"
+import { CourseGraph } from "./course"
 
 type CannotMoveReason = {
   reason:

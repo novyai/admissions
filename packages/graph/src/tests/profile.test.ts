@@ -1,9 +1,12 @@
 import { buildSemesters, graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
-import { BaseStudentProfile } from "@graph/types"
+import { StudentProfile } from "@graph/types"
 import { describe, expect, test } from "bun:test"
 
-const mathProfile: BaseStudentProfile = {
+const mathProfile: StudentProfile = {
+  programs: [],
+  semesters: [],
+  graph: new Map(),
   requiredCourses: [
     "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
     "cb604716-5332-4835-a798-9f6f23bd2651",
@@ -17,7 +20,10 @@ const mathProfile: BaseStudentProfile = {
   coursePerSemester: 3
 }
 
-const compositionProfile: BaseStudentProfile = {
+const compositionProfile: StudentProfile = {
+  programs: [],
+  semesters: [],
+  graph: new Map(),
   requiredCourses: ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
   transferCredits: [],
   timeToGraduate: 4,

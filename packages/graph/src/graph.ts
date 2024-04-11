@@ -1,12 +1,14 @@
 import { BaseStudentProfile, CourseNode, StudentProfile } from "@graph/types"
 import Graph from "graphology"
 
-import { computeNodeStats, CourseGraph, toCourseNode } from "./profile"
+import { CourseGraph } from "./course"
+import { toCourseNode } from "./profile"
+import { computeNodeStats } from "./stats"
 
 export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
   const graph: CourseGraph = new Graph()
 
-  for (const courseNode of profile.allCourses) {
+  for (const courseNode of profile.semesters.flat()) {
     const sem = profile.semesters.findIndex(s => s.some(c => c.id === courseNode.id))
     graph.addNode(courseNode.id, {
       id: courseNode.id,
@@ -21,7 +23,7 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
     })
   }
 
-  for (const courseNode of profile.allCourses) {
+  for (const courseNode of profile.semesters.flat()) {
     for (const prereq of courseNode.prerequisites) {
       graph.addDirectedEdge(prereq, courseNode.id)
     }
@@ -42,7 +44,7 @@ export function graphToStudentProfile(
 
   return {
     ...oldProfile,
-    allCourses: allCourses,
+    // allCourses: allCourses,
     graph: allCourses.reduce(
       (acc, course) => acc.set(course.id, course),
       new Map<string, CourseNode>()

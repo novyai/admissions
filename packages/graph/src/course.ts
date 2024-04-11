@@ -1,4 +1,4 @@
-import Prisma, { db } from "@repo/db"
+import Prisma from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
@@ -70,11 +70,13 @@ export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
 export const addCourseToGraph = ({
   courseId,
   graph,
-  courseMap
+  courseMap,
+  profile
 }: {
   courseId: string
   graph: CourseGraph
   courseMap: Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>
+  profile: StudentProfile
 }) => {
   if (graph.hasNode(courseId)) {
     return
@@ -108,7 +110,12 @@ export const addCourseToGraph = ({
   // recurse down the branch that has the most required courses.
   const conditionGroupsWithCounts = course.conditions.map(conditionGroup => ({
     conditionGroup: conditionGroup,
-    requiredCoursesInTree: countRequiredCoursesInConditionGroup(conditionGroup, graph, courseMap)
+    requiredCoursesInTree: countRequiredCoursesInConditionGroup(
+      conditionGroup,
+      graph,
+      courseMap,
+      profile
+    )
   }))
 
   conditionGroupsWithCounts.sort((a, b) => b.requiredCoursesInTree - a.requiredCoursesInTree)
@@ -125,7 +132,8 @@ export const addCourseToGraph = ({
           count: countRequiredCoursesInPrerequisiteTree(
             condition.prerequisites[0]!.courseId,
             graph,
-            courseMap
+            courseMap,
+            profile
           )
         }))
 
@@ -142,7 +150,8 @@ export const addCourseToGraph = ({
         addCourseToGraph({
           courseId: prerequisite.courseId,
           graph,
-          courseMap
+          courseMap,
+          profile
         })
 
         // edges represent prerequisites pointing at the course they are a prerequisite for
@@ -158,7 +167,7 @@ export const addCourseToGraph = ({
             completedCourseIds.push(prerequisite.courseId)
           }
 
-          addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap })
+          addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap, profile })
 
           // edges represent prerequisites pointing at the course they are a prerequisite for
           if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
@@ -191,27 +200,27 @@ export const addCourseToGraph = ({
   // })
 }
 
-async function getCourseWithPreqs(courseId: string) {
-  return db.course.findUnique({
-    where: {
-      id: courseId
-    },
-    select: {
-      id: true,
-      courseNumber: true,
-      courseSubject: true,
-      name: true,
-      departmentId: true,
-      universityId: true,
-      conditions: {
-        include: {
-          conditions: {
-            include: {
-              prerequisites: true
-            }
-          }
-        }
-      }
-    }
-  })
-}
+// async function getCourseWithPreqs(courseId: string) {
+//   return db.course.findUnique({
+//     where: {
+//       id: courseId
+//     },
+//     select: {
+//       id: true,
+//       courseNumber: true,
+//       courseSubject: true,
+//       name: true,
+//       departmentId: true,
+//       universityId: true,
+//       conditions: {
+//         include: {
+//           conditions: {
+//             include: {
+//               prerequisites: true
+//             }
+//           }
+//         }
+//       }
+//     }
+//   })
+// }

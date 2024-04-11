@@ -8,7 +8,7 @@ import { defaultSemesterNode, SEMESTER_NODE_WIDTH, SemesterNodeType } from "./se
 export const isCourseNode = (n: Node): n is CourseNodeType => n.type === "courseNode"
 export const isSemesterNode = (n: Node): n is SemesterNodeType => n.type === "semesterNode"
 
-export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
+export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
     return {
@@ -38,7 +38,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
 
   nodes.push(...childNodes)
 
-  const edges: Edge[] = allCourses.flatMap(course => {
+  const edges: Edge[] = semesters.flat().flatMap(course => {
     return course.prerequisites.map(prereq => {
       return {
         id: `${prereq}-${course.id}`,

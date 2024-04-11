@@ -10,7 +10,7 @@ import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
-const getCoursesForProgram = async (program: Program) => {
+export const getCoursesForProgram = async (program: Program) => {
   const { requiredCourses, extraToQuery } = programHandler[program]
 
   return {
@@ -198,4 +198,3 @@ export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
 
   return graph
 }
-export { computeNodeStats, CourseGraph }

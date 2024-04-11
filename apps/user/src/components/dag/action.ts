@@ -31,13 +31,12 @@ export const createVersion = async (
 
 export const getAllNodesAndEdges = async ({
   semesters,
-  allCourses,
+  // allCourses,
   graph,
   transferCredits
 }: StudentProfile) => {
   const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
     semesters,
-    allCourses
   )
 
   // if there are transfer credits, we want to render them and their edges
