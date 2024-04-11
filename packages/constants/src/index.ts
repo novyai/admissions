@@ -79,5 +79,11 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
     description: `does a thing./..`,
     narrative: "When a user does x, u should do a thing...",
     sideEffect: true
+  },
+  [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: {
+    actionType: CORE_AGENT_ACTIONS.RESCHEDULE_COURSE,
+    description: "Takes a courseName and reschedules a course.",
+    narrative: "",
+    sideEffect: false
   }
 } as const

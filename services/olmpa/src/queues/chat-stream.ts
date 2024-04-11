@@ -1,4 +1,4 @@
-import { coreAgentSchema, doThingParams } from "@ai/agents/core/schema"
+import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@ai/agents/core/schema"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
 import z from "zod"
@@ -25,6 +25,7 @@ type ActionParams = {
   ) ?
     z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.DO_THING ? z.infer<typeof doThingParams>
+  : K extends typeof CORE_AGENT_ACTIONS.RESCHEDULE_COURSE ? z.infer<typeof rescheduleCourseParams>
   : never
 }
 
@@ -246,7 +247,7 @@ createWorker(async job => {
       }
 
       const action = completion.action as keyof typeof CORE_AGENT_ACTIONS
-      const actionParams = completion.actionParams as ActionParams[typeof action]
+      const actionParams = completion.actionParams as unknown as ActionParams[typeof action]
       const actionHandler = actionHandlers[action] as ActionHandler<typeof action>
 
       const actionDef = CORE_AGENT_ACTION_DEFINITIONS[action]
