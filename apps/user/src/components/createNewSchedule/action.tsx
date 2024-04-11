@@ -41,18 +41,8 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
         }
       }
     },
-    include: {
-      versions: {
-        select: {
-          scheduleId: true,
-          blob: true,
-          createdAt: true,
-          id: true
-        },
-        orderBy: {
-          createdAt: "asc"
-        }
-      }
+    select: {
+      id: true
     }
   })
 
