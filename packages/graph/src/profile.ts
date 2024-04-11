@@ -3,7 +3,7 @@ import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
 import { Program, programHandler } from "./defaultCourses"
 import { _getAllDependents, graphToStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
@@ -37,10 +37,22 @@ export const getStudentProfileFromRequirements = async (
 
   const requiredCoursesData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
+  const requiredCoursesNotInProgram = await db.course.findMany({
+    where: {
+      id: {
+        in: profile.requiredCourses
+      }
+    },
+    ...COURSE_PAYLOAD_QUERY
+  })
+
   const courseMap = new Map<string, CoursePayload>()
+
+  const allRequiredCourses = [...profile.requiredCourses]
 
   requiredCoursesData.forEach(program => {
     program.requiredCourses.forEach(course => {
+      allRequiredCourses.push(course.id)
       courseMap.set(course.id, course)
     })
     program.extraToQuery.forEach(course => {
@@ -48,11 +60,37 @@ export const getStudentProfileFromRequirements = async (
     })
   })
 
+  requiredCoursesNotInProgram.forEach(course => {
+    courseMap.set(course.id, course)
+  })
+
   requiredCoursesData.forEach(program => {
     program.requiredCourses.forEach(course => {
-      courseMap.set(course.id, course)
+      addCourseToGraph({
+        courseId: course.id,
+        graph,
+        courseMap,
+        requiredCourses: allRequiredCourses
+      })
+    })
+    program.extraToQuery.forEach(course => {
+      addCourseToGraph({
+        courseId: course.id,
+        graph,
+        courseMap,
+        requiredCourses: allRequiredCourses
+      })
     })
   })
+
+  requiredCoursesNotInProgram.map(c =>
+    addCourseToGraph({
+      courseId: c.id,
+      graph,
+      courseMap,
+      requiredCourses: allRequiredCourses
+    })
+  )
 
   computeNodeStats(graph, profile)
   scheduleCourses(graph, profile)

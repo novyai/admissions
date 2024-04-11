@@ -71,12 +71,12 @@ export const addCourseToGraph = ({
   courseId,
   graph,
   courseMap,
-  profile
+  requiredCourses
 }: {
   courseId: string
   graph: CourseGraph
   courseMap: Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>
-  profile: StudentProfile
+  requiredCourses: string[]
 }) => {
   if (graph.hasNode(courseId)) {
     return
@@ -114,7 +114,7 @@ export const addCourseToGraph = ({
       conditionGroup,
       graph,
       courseMap,
-      profile
+      requiredCourses
     )
   }))
 
@@ -133,7 +133,7 @@ export const addCourseToGraph = ({
             condition.prerequisites[0]!.courseId,
             graph,
             courseMap,
-            profile
+            requiredCourses
           )
         }))
 
@@ -151,7 +151,7 @@ export const addCourseToGraph = ({
           courseId: prerequisite.courseId,
           graph,
           courseMap,
-          profile
+          requiredCourses
         })
 
         // edges represent prerequisites pointing at the course they are a prerequisite for
@@ -167,7 +167,7 @@ export const addCourseToGraph = ({
             completedCourseIds.push(prerequisite.courseId)
           }
 
-          addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap, profile })
+          addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap, requiredCourses })
 
           // edges represent prerequisites pointing at the course they are a prerequisite for
           if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
