@@ -19,6 +19,8 @@ export function useAdvisor({
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
+  const [action, setAction] = useState<{ action?: string; actionParams?: unknown }>()
+
   const [loading, setLoading] = useState(false)
   const [waiting, setWaiting] = useState(false)
   const loadingTimeoutRef = useRef<number | null>(null)
@@ -38,6 +40,9 @@ export function useAdvisor({
         setLoading(false)
         setWaiting(false)
       },
+      [SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM]: ({ data }) => {
+        setAction({ action: data.action, actionParams: data.actionParams })
+      },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
         data,
         complete = false,
@@ -53,6 +58,7 @@ export function useAdvisor({
         lastMessages.current = updatedMessages
 
         setMessages(updatedMessages)
+        setAction(action)
 
         if (!loading && !complete) {
           setLoading(true)
@@ -110,6 +116,8 @@ export function useAdvisor({
     [conversationId, loading, messages, userId]
   )
 
+  const clearAction = () => setAction(undefined)
+
   useEffect(() => {
     if (loading) {
       if (loadingTimeoutRef.current) {
@@ -128,9 +136,11 @@ export function useAdvisor({
   return {
     loading: loading,
     sendMessage,
+    clearAction,
     isConnected,
     ready: !!userId,
     waiting,
-    messages: messages.filter(m => m.role === "assistant" || m.role === "user")
+    messages: messages.filter(m => m.role === "assistant" || m.role === "user"),
+    action: action
   }
 }

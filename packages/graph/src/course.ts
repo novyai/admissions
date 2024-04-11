@@ -4,7 +4,7 @@ export const getCourseFromIdNameCode = (profile: StudentProfile, courseQuery: st
   const courses = [...profile.graph.values()]
 
   const course =
-    courses.find(c => c.name == courseQuery) ??
+    courses.find(c => c.name.toLowerCase() == courseQuery.toLowerCase()) ??
     // courses.find(
     //   c => `${c.raw_course.courseSubject} ${c.raw_course.courseNumber}` == courseQuery
     // ) ??

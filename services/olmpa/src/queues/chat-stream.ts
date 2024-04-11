@@ -367,6 +367,13 @@ createWorker(async job => {
         }
       }
 
+      publish({
+        type: SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM,
+        data: {
+          data: final
+        }
+      })
+
       await saveAssistantResponseStep.run({ content: final?.content ?? "" })
 
       return complete({
