@@ -3,11 +3,28 @@ import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import { COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import { Program, programHandler } from "./defaultCourses"
 import { _getAllDependents, graphToStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
+
+const getCoursesForProgram = async (program: Program) => {
+  const { requiredCourses, extraToQuery } = programHandler[program]
+
+  return {
+    program,
+    requiredCourses: await db.course.findMany({
+      where: requiredCourses,
+      ...COURSE_PAYLOAD_QUERY
+    }),
+    extraToQuery: await db.course.findMany({
+      where: extraToQuery,
+      ...COURSE_PAYLOAD_QUERY
+    })
+  }
+}
 
 /**
  * Load all courses into a student's profile and build their schedule
@@ -18,26 +35,22 @@ export const getStudentProfileFromRequirements = async (
 ): Promise<StudentProfile> => {
   const graph: CourseGraph = new Graph()
 
-  const requiredCoursesData = await db.course.findMany({
-    where: {
-      id: {
-        in: profile.requiredCourses
-      }
-    },
-    ...COURSE_PAYLOAD_QUERY
-  })
+  const requiredCoursesData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
   const courseMap = new Map<string, CoursePayload>()
 
-  requiredCoursesData.forEach(course => {
-    courseMap.set(course.id, course)
+  requiredCoursesData.forEach(program => {
+    program.requiredCourses.forEach(course => {
+      courseMap.set(course.id, course)
+    })
+    program.extraToQuery.forEach(course => {
+      courseMap.set(course.id, course)
+    })
   })
 
-  profile.requiredCourses.forEach(courseId => {
-    addCourseToGraph({
-      courseId,
-      graph,
-      courseMap
+  requiredCoursesData.forEach(program => {
+    program.requiredCourses.forEach(course => {
+      courseMap.set(course.id, course)
     })
   })
 

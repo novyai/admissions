@@ -1,3 +1,5 @@
+import { Program } from "./defaultCourses"
+
 export type CourseNode = {
   id: string
   name: string
@@ -15,6 +17,7 @@ export type BaseStudentProfile = {
    */
   requiredCourses: string[]
   transferCredits: string[]
+  programs: Program[]
   timeToGraduate: number // in semesters
   currentSemester: number
   coursePerSemester: number
