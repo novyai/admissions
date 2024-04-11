@@ -105,7 +105,10 @@ export const addCourseToGraph = ({
     graph.setNodeAttribute(courseId, "semester", 0)
   }
 
-  // ANDREW
+  if (course.conditions.length === 0) {
+    return
+  }
+
   // condition groups are implicitly ORed, so we only need to recurse down one.
   // recurse down the branch that has the most required courses.
   const conditionGroupsWithCounts = course.conditions.map(conditionGroup => ({
@@ -125,41 +128,17 @@ export const addCourseToGraph = ({
   if (conditionGroup) {
     // for OR conditions, we only need to recurse down the condition that has the most required courses
     if (conditionGroup.logicalOperator === "OR") {
-      const conditionsWithCounts = conditionGroup.conditions
-        .filter(condition => condition.prerequisites.length > 0)
-        .map(condition => ({
-          condition: condition,
-          count: countRequiredCoursesInPrerequisiteTree(
-            condition.prerequisites[0]!.courseId,
-            graph,
-            courseMap,
-            requiredCourses
-          )
-        }))
-
-      const prerequisites = conditionsWithCounts.reduce((acc, cur) =>
-        cur.count > acc.count ? cur : acc
-      ).condition.prerequisites
-
-      for (const prerequisite of prerequisites) {
-        // if a course is completed, assume that it's prerequisites are completed
-        if (courseIsCompleted) {
-          completedCourseIds.push(prerequisite.courseId)
-        }
-
-        addCourseToGraph({
-          courseId: prerequisite.courseId,
-          graph,
-          courseMap,
-          requiredCourses
-        })
-
-        // edges represent prerequisites pointing at the course they are a prerequisite for
-        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-          graph.addDirectedEdge(prerequisite.courseId, course.id)
-        }
-      }
+      pickOrCondition(
+        conditionGroup,
+        course,
+        graph,
+        courseMap,
+        requiredCourses,
+        courseIsCompleted,
+        completedCourseIds
+      )
     } else {
+      // AND CONDITION
       for (const condition of conditionGroup.conditions) {
         for (const prerequisite of condition.prerequisites) {
           // if a course is completed, assume that it's prerequisites are completed
@@ -224,3 +203,52 @@ export const addCourseToGraph = ({
 //     }
 //   })
 // }
+
+function pickOrCondition(
+  conditionGroup: CoursePayload["conditions"][number],
+  course: CoursePayload,
+  graph: CourseGraph,
+  courseMap: Map<string, CoursePayload>,
+  requiredCourses: string[],
+  courseIsCompleted: boolean,
+  completedCourseIds: string[]
+) {
+  const conditionsWithCounts = conditionGroup.conditions
+    .filter(condition => condition.prerequisites.length > 0)
+    .map(condition => ({
+      condition: condition,
+      count: countRequiredCoursesInPrerequisiteTree(
+        condition.prerequisites[0]!.courseId,
+        graph,
+        courseMap,
+        requiredCourses
+      )
+    }))
+
+  if (conditionsWithCounts.length === 0) {
+    return
+  }
+
+  const prerequisites = conditionsWithCounts.reduce((acc, cur) =>
+    cur.count > acc.count ? cur : acc
+  ).condition.prerequisites
+
+  for (const prerequisite of prerequisites) {
+    // if a course is completed, assume that it's prerequisites are completed
+    if (courseIsCompleted) {
+      completedCourseIds.push(prerequisite.courseId)
+    }
+
+    addCourseToGraph({
+      courseId: prerequisite.courseId,
+      graph,
+      courseMap,
+      requiredCourses
+    })
+
+    // edges represent prerequisites pointing at the course they are a prerequisite for
+    if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+      graph.addDirectedEdge(prerequisite.courseId, course.id)
+    }
+  }
+}
