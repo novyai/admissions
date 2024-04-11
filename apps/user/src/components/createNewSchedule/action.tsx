@@ -1,11 +1,10 @@
 "use server"
 
+import { createBlob } from "@graph/blob"
 import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
-
-import { createBlob } from "@/lib/version-blob"
 
 /**
  * Create a new schedule and its first version for the user
@@ -23,8 +22,6 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     currentSemester: 0
   }
 
-  console.log("baseProfile", JSON.stringify(baseProfile))
-
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
   const schedule = await db.schedule.create({
@@ -32,7 +29,7 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
       userID: userId,
       versions: {
         create: {
-          blob: JSON.stringify(createBlob(studentProfile))
+          blob: createBlob(studentProfile)
         }
       }
     },

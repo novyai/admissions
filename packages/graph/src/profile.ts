@@ -5,10 +5,10 @@ import { Attributes } from "graphology-types"
 
 import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
 import { Program, programHandler } from "./defaultCourses"
-import { _getAllDependents, graphToStudentProfile } from "./graph"
+import { _getAllDependents, graphToHydratedStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
-import { BaseStudentProfile, CourseNode } from "./types"
+import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 export const getCoursesForProgram = async (program: Program) => {
   const { requiredCourses, extraToQuery } = programHandler[program]
@@ -30,13 +30,9 @@ export const getCoursesForProgram = async (program: Program) => {
   }
 }
 
-/**
- * Load all courses into a student's profile and build their schedule
- * @param profile the basic information about the student's profile
- */
-export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
+export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
-
+  console.log("p", profile.programs)
   const programCourseData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
   const requiredCoursesNotInProgram = await db.course.findMany({
@@ -97,15 +93,17 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
   )
 
   computeNodeStats(graph, profile)
+  return graph
+}
+
+/**
+ * Load all courses into a student's profile and build their schedule
+ * @param profile the basic information about the student's profile
+ */
+export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
+  const graph = await createGraph({ ...profile, semesters: [] })
   scheduleCourses(graph, profile)
-
-  // graph.forEachNode((_courseId, course) => {
-  //   console.log(
-  //     `${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
-  //   )
-  // })
-
-  return graphToStudentProfile(graph, profile)
+  return graphToHydratedStudentProfile(graph, profile)
 }
 
 /**

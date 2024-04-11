@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
 import { Conversation, Message, MessageRole } from "@repo/db"
-import { CourseNode, StudentProfile } from "@repo/graph/types"
+import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
@@ -37,7 +37,7 @@ export function Editor({
 }) {
   const [_versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<VersionWithoutBlob>(initialVersions[0]!)
-  const [profile, setProfile] = useState<StudentProfile>()
+  const [profile, setProfile] = useState<HydratedStudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
@@ -55,9 +55,7 @@ export function Editor({
 
   const resetNodePlacement = (id: string) => {
     const pos = defaultNodes.find(n => n.id === id)?.position!
-    console.log(`resetting node ${id} to ${pos.x},${pos.y}`)
     setNodes(nds => nds.map(n => (n.id === id ? { ...n, position: pos } : n)))
-    console.log("fixed")
   }
 
   const onEdgesChange = useCallback(
@@ -77,7 +75,7 @@ export function Editor({
       courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
     ) as unknown as CourseNode[][]
 
-    const newProfile: StudentProfile = { ...profile!, semesters: semesterCourses }
+    const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
 
     const version = await createVersion(newProfile, scheduleId)
     setVersions(prev => [...prev, version])

@@ -1,6 +1,6 @@
 import { AdvisorAgent } from "@ai/agents/advisor/schema"
 import { User } from "@repo/db"
-import { StudentProfile } from "@repo/graph/types"
+import { HydratedStudentProfile } from "@repo/graph/types"
 
 import { MdxContent } from "./mdxContent"
 
@@ -8,8 +8,8 @@ export const AdvisorMessageBody = ({
   advisor_output
 }: {
   advisor_output: AdvisorAgent["advisor_output"]
-  studentProfile: StudentProfile
-  setStudentProfile: (profile: StudentProfile) => void
+  studentProfile: HydratedStudentProfile
+  setStudentProfile: (profile: HydratedStudentProfile) => void
   student: User
 }) => {
   return (

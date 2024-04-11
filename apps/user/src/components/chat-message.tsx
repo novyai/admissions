@@ -1,7 +1,7 @@
 import React from "react"
 import { advisorAgentSchema } from "@ai/agents/advisor/schema"
 import { User } from "@repo/db"
-import { StudentProfile } from "@repo/graph/types"
+import { HydratedStudentProfile } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 
 import { AdvisorMessageBody } from "./advisor-chat"
@@ -11,8 +11,8 @@ import { MdxContent } from "./mdxContent"
 type ChatMessageParams = {
   partial?: boolean
   student: User
-  studentProfile: StudentProfile
-  setStudentProfile: (profile: StudentProfile) => void
+  studentProfile: HydratedStudentProfile
+  setStudentProfile: (profile: HydratedStudentProfile) => void
   message: CustomMessage
 }
 export const ChatMessage = ({

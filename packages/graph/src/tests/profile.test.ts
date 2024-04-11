@@ -1,5 +1,5 @@
-import { Program } from "@graph/defaultCourses"
-import { buildSemesters, graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { ProgramOption } from "@graph/defaultCourses"
+import { buildSemesters, graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile, StudentProfile } from "@graph/types"
 import { describe, expect, test } from "bun:test"
@@ -30,23 +30,20 @@ const compositionProfile: StudentProfile = {
   coursePerSemester: 3
 }
 
-test("student profile to graph", async () => {
+test("base student profile to hydrated profile", async () => {
   const profile = await getStudentProfileFromRequirements(mathProfile)
 
   const graph = studentProfileToGraph(profile)
-  const studentProfile = graphToStudentProfile(graph, mathProfile)
+  const studentProfile = graphToHydratedStudentProfile(graph, mathProfile)
   expect(profile.semesters).toEqual(studentProfile.semesters)
 })
 
-test("student profile from requirements", async () => {
+test("base student profile from requirements", async () => {
   const studentProfile = await getStudentProfileFromRequirements(mathProfile)
   // console.log(studentProfile)
 
-  expect(studentProfile.semesters[0]).toHaveLength(1)
-  expect(studentProfile.semesters[1]).toHaveLength(2)
-  expect(studentProfile.semesters[2]).toHaveLength(1)
-  expect(studentProfile.semesters[3]).toHaveLength(1)
   expect(studentProfile.semesters).toHaveLength(4)
+  expect(studentProfile.semesters.map(s => s.length)).toEqual([1, 2, 1, 1])
 })
 
 describe("pushing classes", () => {
@@ -129,7 +126,7 @@ describe("pushing classes", () => {
 })
 
 const csProfile: BaseStudentProfile = {
-  programs: [Program.CS],
+  programs: [ProgramOption.CS],
   requiredCourses: [],
   transferCredits: [],
   timeToGraduate: 4,

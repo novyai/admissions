@@ -1,5 +1,5 @@
-import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { StudentProfile } from "@graph/types"
+import { graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { HydratedStudentProfile } from "@graph/types"
 
 import { CourseGraph } from "./course"
 
@@ -29,7 +29,7 @@ type CannotMoveReason = {
 export function canMoveCourse(
   courseId: string,
   toSemester: number,
-  profile: StudentProfile,
+  profile: HydratedStudentProfile,
   ignoreGraduation: boolean = false
 ): CannotMoveReason | { canMove: true } {
   if (!ignoreGraduation && toSemester >= profile.timeToGraduate) {
@@ -105,12 +105,12 @@ export function _canMoveCourse(
   return { canMove: true }
 }
 
-export function moveCourse(courseId: string, toSemester: number, profile: StudentProfile) {
+export function moveCourse(courseId: string, toSemester: number, profile: HydratedStudentProfile) {
   const graph: CourseGraph = studentProfileToGraph(profile)
   const canMove = _canMoveCourse(courseId, toSemester, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)
-    return graphToStudentProfile(graph, profile)
+    return graphToHydratedStudentProfile(graph, profile)
   }
   return profile
 }

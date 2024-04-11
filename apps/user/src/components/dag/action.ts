@@ -1,19 +1,19 @@
 "use server"
 
-import { graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { HydratedStudentProfile, StudentProfile } from "@graph/types"
+import { createBlob, parseBlob } from "@graph/blob"
+import { graphToHydratedStudentProfile } from "@graph/graph"
+import { createGraph } from "@graph/profile"
+import { HydratedStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
-import { z } from "zod"
 
-import { createBlob } from "@/lib/version-blob"
 import {
   getSemesterNodesAndEdges,
   getTransferNodesAndEdges,
   getUnassignedNodesAndEdges
 } from "@/components/semester-dag/graph-to-node-utils"
 
-export const createVersion = async (profile: StudentProfile, scheduleId: string) => {
-  const blob = JSON.stringify(createBlob(profile))
+export const createVersion = async (profile: HydratedStudentProfile, scheduleId: string) => {
+  const blob = createBlob(profile)
   const newVersion = await db.version.create({
     data: {
       scheduleId,
@@ -60,19 +60,6 @@ export const getAllNodesAndEdges = async ({
   return { defaultNodes, defaultEdges }
 }
 
-const blobSchema = z.object({
-  profile: z.custom<StudentProfile>(),
-  nodes: z.array(
-    z.object({
-      id: z.string(),
-      position: z.object({
-        x: z.number(),
-        y: z.number()
-      })
-    })
-  )
-})
-
 export async function hydratedProfileAndNodesByVersion(versionId: string) {
   const version = await db.version.findUnique({
     where: {
@@ -87,20 +74,11 @@ export async function hydratedProfileAndNodesByVersion(versionId: string) {
     throw new Error(`Could not find version with id ${versionId}`)
   }
 
-  const parsedBlob = blobSchema.safeParse(JSON.parse(version.blob as string))
+  const profile = parseBlob(version.blob)
 
-  if (!parsedBlob.success) {
-    throw new Error(parsedBlob.error.message)
-  }
+  const graph = await createGraph(profile)
 
-  const { profile } = parsedBlob.data
-
-  console.log(profile)
-
-  const graph = studentProfileToGraph(profile)
-
-  const hydratedProfile = graphToStudentProfile(graph, profile)
-
+  const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
   const { defaultNodes, defaultEdges } = await getAllNodesAndEdges(hydratedProfile)
 
   return { profile: hydratedProfile, defaultNodes, defaultEdges }

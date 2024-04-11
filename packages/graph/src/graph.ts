@@ -1,8 +1,7 @@
 import {
-  BaseStudentProfile,
   CourseNode,
   HydratedStudentProfile,
-  StudentProfile
+  BaseStudentProfile as StudentProfile
 } from "@graph/types"
 import Graph from "graphology"
 
@@ -10,7 +9,7 @@ import { CourseGraph } from "./course"
 import { toCourseNode } from "./profile"
 import { computeNodeStats } from "./stats"
 
-export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
+export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGraph {
   const graph: CourseGraph = new Graph()
 
   for (const courseNode of profile.semesters.flat()) {
@@ -39,9 +38,9 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
   return graph
 }
 
-export function graphToStudentProfile(
+export function graphToHydratedStudentProfile(
   graph: CourseGraph,
-  profile: BaseStudentProfile
+  profile: StudentProfile
 ): HydratedStudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
     toCourseNode(graph, courseId, course)
@@ -81,7 +80,7 @@ export function buildSemesters(graph: Graph) {
   return semesters
 }
 
-export const getAllPrereqs = (courseId: string, profile: StudentProfile): CourseNode[] => {
+export const getAllPrereqs = (courseId: string, profile: HydratedStudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
 
   return _getAllPrereqs(courseId, graph).map(prereqId => toCourseNode(graph, prereqId, undefined))
@@ -92,7 +91,10 @@ export function _getAllPrereqs(courseId: string, graph: CourseGraph): string[] {
   return [...prereqs, ...prereqs.flatMap(p => _getAllPrereqs(p, graph))]
 }
 
-export const getAllDependents = (courseId: string, profile: StudentProfile): CourseNode[] => {
+export const getAllDependents = (
+  courseId: string,
+  profile: HydratedStudentProfile
+): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
 
   return _getAllDependents(courseId, graph).map(prereqId =>

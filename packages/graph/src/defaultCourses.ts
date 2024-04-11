@@ -1,10 +1,13 @@
 import { Prisma } from "@repo/db"
 import cseDegree from "@repo/db/data/cse_requirments"
 
-export enum Program {
-  "CS" = "CS",
-  "DS" = "DS"
+export const ProgramOption = {
+  CS: "CS" as const,
+  DS: "DS" as const
 }
+
+export const Programs = ["CS", "DS"] as const
+export type Program = (typeof Programs)[number]
 
 const CSE: Prisma.CourseScalarWhereInput = {
   OR: cseDegree.map((course): Prisma.CourseWhereInput => {
@@ -23,7 +26,7 @@ type ProgramsCourses = {
 }
 
 export const programHandler: Record<Program, ProgramsCourses> = {
-  [Program.CS]: {
+  [ProgramOption.CS]: {
     requiredCourses: CSE,
     extraToQuery: {
       id: {
@@ -38,7 +41,7 @@ export const programHandler: Record<Program, ProgramsCourses> = {
       }
     }
   },
-  [Program.DS]: {
+  [ProgramOption.DS]: {
     requiredCourses: undefined,
     extraToQuery: undefined
   }
