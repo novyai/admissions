@@ -225,7 +225,7 @@ function SemesterDAGInternal({
       >
         <Background />
         <MiniMap />
-        <Controls />
+        <Controls position="top-left" />
       </ReactFlow>
     </div>
   )
