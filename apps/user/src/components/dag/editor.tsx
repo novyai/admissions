@@ -22,6 +22,7 @@ import { SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
+import { MdxContent } from "../mdxContent"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
@@ -214,32 +215,46 @@ export function Editor({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
             />
-            <div className="basis-1/3 p-4">
-              <ScrollArea
-                className="h-full rounded-xl shadow-lg border border-slate-200"
-                ref={ChatScrollerRef}
-              >
-                <div className="max-w-7xl mx-auto px-6">
-                  <AssistantChat
-                    messages={messages}
-                    disabled={!ready}
-                    submitMessage={submitMessage}
-                    loading={loading}
-                  />
-                  {ChatScrollerRef?.current && (
-                    <ChatScrollAnchor
-                      trackVisibility={waiting || loading}
-                      scrollerRef={ChatScrollerRef}
-                    />
-                  )}
-                </div>
-              </ScrollArea>
+            <div className="basis-2/5 py-4 px-2">
+              <div className="h-full rounded-xl shadow-lg border border-slate-200">
+                <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
+                  AI Advisor
+                </h2>
+                <Separator.Root className="bg-slate-100 h-[0.1rem]" />
+                <ScrollArea ref={ChatScrollerRef}>
+                  <div className="mx-auto">
+                    <div className="px-1">
+                      {messages.length > 0 ?
+                        <AssistantChat
+                          messages={messages}
+                          disabled={!ready}
+                          submitMessage={submitMessage}
+                          loading={loading}
+                        />
+                      : <MdxContent
+                          className="py-2 px-2"
+                          content={
+                            "Hello! I'm the AI course advisor for USF's Computer Science program. I'm here to help you with course information, scheduling, and any other academic guidance you might need throughout your journey at USF. How can I assist you today?"
+                          }
+                        />
+                      }
+                    </div>
+
+                    {ChatScrollerRef?.current && (
+                      <ChatScrollAnchor
+                        trackVisibility={waiting || loading}
+                        scrollerRef={ChatScrollerRef}
+                      />
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
             </div>
           </div>
           <div className="relative w-full h-[5%]">
             <SuggestedPrompts
               handleClick={(prompt: string) => submitMessage(prompt, "user")}
-              prompts={["Who are you?", "Reschedule Data Structures"]}
+              prompts={["What can you do?", "Reschedule Data Structures"]}
             />
             <PromptComposer
               disabled={!ready || !isConnected}

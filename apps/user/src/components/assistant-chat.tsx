@@ -148,7 +148,7 @@ export const AssistantChat = React.memo(function AssistantChat(chatProps: {
   const { messages, ...messageProps } = chatProps
   return (
     <>
-      <ul className="space-y-1 pt-4 pb-20 px-0">
+      <ul className="space-y-1 pb-20 px-0">
         {chatProps.messages.map((message, index) => {
           const lastMessageAndIsBotMessage =
             index === messages?.length - 1 && message.role === "assistant"
