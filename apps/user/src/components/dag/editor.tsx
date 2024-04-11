@@ -11,6 +11,7 @@ import { Conversation, Message, MessageRole, Version } from "@repo/db"
 import { getProfileFromSchedule } from "@repo/graph/action"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
+import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
@@ -235,20 +236,23 @@ export function Editor({
               </ScrollArea>
             </div>
           </div>
+          <div className="relative w-full h-[5%]">
+            <SuggestedPrompts
+              handleClick={(prompt: string) => submitMessage(prompt, "user")}
+              prompts={["Who are you?", "Reschedule Data Structures"]}
+            />
+            <PromptComposer
+              disabled={!ready || !isConnected}
+              placeholder={"Ask me anything..."}
+              loading={loading}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              onSubmit={submitMessage}
+              prompt={prompt}
+            />
+          </div>
         </>
       }
-
-      <div className="w-full h-[5%]">
-        <PromptComposer
-          disabled={!ready || !isConnected}
-          placeholder={"Ask me anything..."}
-          loading={loading}
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-          onSubmit={submitMessage}
-          prompt={prompt}
-        />
-      </div>
     </div>
   )
 }

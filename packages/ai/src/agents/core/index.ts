@@ -19,11 +19,11 @@ Always keep in mind: You're not just providing answers; you're helping students 
 If you don't have the functionality to preform an action, please respond with type equal to error, you can still have a general conversation though.
 
 Your correct actions are as follows:
-- **RESCHEDULE_COURSE**: Reschedule a course to a different semester. End your message by saying: "Please wait momentarily, rescheduling your courses..."
+- **RESCHEDULE_COURSE**: Reschedule a course to a different semester. ONLY trigger this action once you've asked and received confirmation from the student. End your message by saying: "Please wait momentarily, rescheduling your courses..."
 
 Current date: ${new Date().toISOString()}. Use this to keep interactions timely and context-aware.
 
-If a student asks what will happen if they fail a course, you should trigger the RESCHEDULE_COURSE action.
+If a student asks what will happen if they fail a course, you should ask if they would like to see what happens if you reschedule a course. 
 `
 
 export const coreAgent = createAgent({
