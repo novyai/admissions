@@ -8,21 +8,25 @@ import { Program, programHandler } from "./defaultCourses"
 import { _getAllDependents, graphToStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
-import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
+import { BaseStudentProfile, CourseNode } from "./types"
 
 export const getCoursesForProgram = async (program: Program) => {
   const { requiredCourses, extraToQuery } = programHandler[program]
 
   return {
     program,
-    requiredCourses: await db.course.findMany({
-      where: requiredCourses,
-      ...COURSE_PAYLOAD_QUERY
-    }),
-    extraToQuery: await db.course.findMany({
-      where: extraToQuery,
-      ...COURSE_PAYLOAD_QUERY
-    })
+    requiredCourses:
+      requiredCourses &&
+      (await db.course.findMany({
+        where: requiredCourses,
+        ...COURSE_PAYLOAD_QUERY
+      })),
+    extraToQuery:
+      extraToQuery &&
+      (await db.course.findMany({
+        where: extraToQuery,
+        ...COURSE_PAYLOAD_QUERY
+      }))
   }
 }
 
@@ -30,12 +34,10 @@ export const getCoursesForProgram = async (program: Program) => {
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
  */
-export const getStudentProfileFromRequirements = async (
-  profile: BaseStudentProfile
-): Promise<StudentProfile> => {
+export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
   const graph: CourseGraph = new Graph()
 
-  const requiredCoursesData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
+  const programCourseData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
   const requiredCoursesNotInProgram = await db.course.findMany({
     where: {
@@ -50,12 +52,12 @@ export const getStudentProfileFromRequirements = async (
 
   const allRequiredCourses = [...profile.requiredCourses]
 
-  requiredCoursesData.forEach(program => {
-    program.requiredCourses.forEach(course => {
+  programCourseData.forEach(program => {
+    program.requiredCourses?.forEach(course => {
       allRequiredCourses.push(course.id)
       courseMap.set(course.id, course)
     })
-    program.extraToQuery.forEach(course => {
+    program.extraToQuery?.forEach(course => {
       courseMap.set(course.id, course)
     })
   })
@@ -64,8 +66,10 @@ export const getStudentProfileFromRequirements = async (
     courseMap.set(course.id, course)
   })
 
-  requiredCoursesData.forEach(program => {
-    program.requiredCourses.forEach(course => {
+  console.log("requiredCoursesData", allRequiredCourses.length)
+
+  programCourseData.forEach(program => {
+    program.requiredCourses?.forEach(course => {
       addCourseToGraph({
         courseId: course.id,
         graph,
@@ -73,7 +77,7 @@ export const getStudentProfileFromRequirements = async (
         requiredCourses: allRequiredCourses
       })
     })
-    program.extraToQuery.forEach(course => {
+    program.extraToQuery?.forEach(course => {
       addCourseToGraph({
         courseId: course.id,
         graph,
@@ -118,7 +122,7 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
       .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => (courseA.slack ?? 0) - (courseB.slack ?? 0))
+      .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
   )
 
   while (sortedCourses.length > 0) {

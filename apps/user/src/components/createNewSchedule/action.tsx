@@ -6,7 +6,6 @@ import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
 
 import { createBlob } from "@/lib/version-blob"
-import { getAllNodesAndEdges } from "@/components/dag/action"
 
 /**
  * Create a new schedule and its first version for the user
@@ -15,9 +14,6 @@ import { getAllNodesAndEdges } from "@/components/dag/action"
  * @returns The ID of the newly created schedule
  */
 export async function createNewSchedule(userId: string, programs: Program[]) {
-  
-
-
   const baseProfile: BaseStudentProfile = {
     programs,
     requiredCourses: [],
@@ -30,14 +26,13 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
   console.log("baseProfile", JSON.stringify(baseProfile))
 
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
-  const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
   const schedule = await db.schedule.create({
     data: {
       userID: userId,
       versions: {
         create: {
-          blob: JSON.stringify(createBlob(studentProfile, defaultNodes))
+          blob: JSON.stringify(createBlob(studentProfile))
         }
       }
     },

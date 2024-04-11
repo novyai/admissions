@@ -25,6 +25,12 @@ export type BaseStudentProfile = {
 
 export type StudentProfile = BaseStudentProfile & {
   semesters: CourseNode[][]
+  // graph: Map<string, CourseNode>
+  // allCourses: CourseNode[]
+}
+
+export type HydratedStudentProfile = BaseStudentProfile & {
+  semesters: CourseNode[][]
   graph: Map<string, CourseNode>
   // allCourses: CourseNode[]
 }

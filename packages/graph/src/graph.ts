@@ -1,4 +1,9 @@
-import { BaseStudentProfile, CourseNode, StudentProfile } from "@graph/types"
+import {
+  BaseStudentProfile,
+  CourseNode,
+  HydratedStudentProfile,
+  StudentProfile
+} from "@graph/types"
 import Graph from "graphology"
 
 import { CourseGraph } from "./course"
@@ -36,14 +41,14 @@ export function studentProfileToGraph(profile: StudentProfile): CourseGraph {
 
 export function graphToStudentProfile(
   graph: CourseGraph,
-  oldProfile: BaseStudentProfile
-): StudentProfile {
+  profile: BaseStudentProfile
+): HydratedStudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
     toCourseNode(graph, courseId, course)
   )
 
   return {
-    ...oldProfile,
+    ...profile,
     // allCourses: allCourses,
     graph: allCourses.reduce(
       (acc, course) => acc.set(course.id, course),

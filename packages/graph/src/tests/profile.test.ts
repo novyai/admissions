@@ -1,12 +1,12 @@
+import { Program } from "@graph/defaultCourses"
 import { buildSemesters, graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
-import { StudentProfile } from "@graph/types"
+import { BaseStudentProfile, StudentProfile } from "@graph/types"
 import { describe, expect, test } from "bun:test"
 
 const mathProfile: StudentProfile = {
   programs: [],
   semesters: [],
-  graph: new Map(),
   requiredCourses: [
     "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
     "cb604716-5332-4835-a798-9f6f23bd2651",
@@ -23,7 +23,6 @@ const mathProfile: StudentProfile = {
 const compositionProfile: StudentProfile = {
   programs: [],
   semesters: [],
-  graph: new Map(),
   requiredCourses: ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
   transferCredits: [],
   timeToGraduate: 4,
@@ -36,7 +35,7 @@ test("student profile to graph", async () => {
 
   const graph = studentProfileToGraph(profile)
   const studentProfile = graphToStudentProfile(graph, mathProfile)
-  expect(studentProfile).toEqual(profile)
+  expect(profile.semesters).toEqual(studentProfile.semesters)
 })
 
 test("student profile from requirements", async () => {
@@ -127,4 +126,19 @@ describe("pushing classes", () => {
       )
     }
   )
+})
+
+const csProfile: BaseStudentProfile = {
+  programs: [Program.CS],
+  requiredCourses: [],
+  transferCredits: [],
+  timeToGraduate: 4,
+  currentSemester: 1,
+  coursePerSemester: 5
+}
+
+test("test blob", async () => {
+  const cs = await getStudentProfileFromRequirements(csProfile)
+  console.log(cs.semesters.map(s => s.length))
+  expect(cs.semesters.map(s => s.length)).toEqual([5, 5, 5, 5, 5, 5, 3])
 })

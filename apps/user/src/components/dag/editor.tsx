@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUser } from "@clerk/nextjs"
-import { Conversation, Message, MessageRole, Version } from "@repo/db"
-import { getProfileFromSchedule } from "@repo/graph/action"
+import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, StudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
@@ -21,21 +20,23 @@ import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
-import { createVersion, getAllNodesAndEdges } from "./action"
+import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
+
+type VersionWithoutBlob = { id: string }
 
 export function Editor({
   versions: initialVersions,
   conversation,
   scheduleId
 }: {
-  versions: Version[]
+  versions: VersionWithoutBlob[]
   conversation: Conversation & {
     messages: Message[]
   }
   scheduleId: string
 }) {
-  const [_versions, setVersions] = useState<Version[]>(initialVersions)
-  const [selectedVersion, setSelectedVersion] = useState<Version>(initialVersions[0]!)
+  const [_versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
+  const [selectedVersion, setSelectedVersion] = useState<VersionWithoutBlob>(initialVersions[0]!)
   const [profile, setProfile] = useState<StudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
@@ -78,7 +79,7 @@ export function Editor({
 
     const newProfile: StudentProfile = { ...profile!, semesters: semesterCourses }
 
-    const version = await createVersion(newProfile, scheduleId, nodes)
+    const version = await createVersion(newProfile, scheduleId)
     setVersions(prev => [...prev, version])
     setProfile(newProfile)
     setSelectedVersion(version)
@@ -88,12 +89,13 @@ export function Editor({
   useEffect(() => {
     setStatus("pending")
     const update = async () => {
-      const profile = await getProfileFromSchedule(selectedVersion.blob?.toString() ?? "")
+      const {
+        profile,
+        defaultNodes: newDefaultNodes,
+        defaultEdges: newDefaultEdges
+      } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
 
       setProfile(profile)
-      const { defaultNodes: newDefaultNodes, defaultEdges: newDefaultEdges } =
-        await getAllNodesAndEdges(profile)
-
       setDefaultNodes(newDefaultNodes)
 
       setNodes(newDefaultNodes)

@@ -90,7 +90,7 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
     }
   ]
 
-  const courses = Array.from(profile.graph.values())
+  const courses: CourseNode[] = [] //Array.from(profile.graph.values())
 
   return (
     <>

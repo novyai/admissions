@@ -6,9 +6,9 @@ import {
   countRequiredCoursesInConditionGroup,
   countRequiredCoursesInPrerequisiteTree
 } from "./conditions"
-import { StudentProfile } from "./types"
+import { HydratedStudentProfile } from "./types"
 
-export const getCourseFromIdNameCode = (profile: StudentProfile, courseQuery: string) => {
+export const getCourseFromIdNameCode = (profile: HydratedStudentProfile, courseQuery: string) => {
   const courses = [...profile.graph.values()]
 
   const course =
@@ -45,7 +45,6 @@ type CourseAttributes = {
       slack: number
     }
 )
-
 export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
 
 export const COURSE_PAYLOAD_QUERY = {
@@ -139,70 +138,18 @@ export const addCourseToGraph = ({
       )
     } else {
       // AND CONDITION
-      for (const condition of conditionGroup.conditions) {
-        for (const prerequisite of condition.prerequisites) {
-          // if a course is completed, assume that it's prerequisites are completed
-          if (courseIsCompleted) {
-            completedCourseIds.push(prerequisite.courseId)
-          }
-
-          addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap, requiredCourses })
-
-          // edges represent prerequisites pointing at the course they are a prerequisite for
-          if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-            graph.addDirectedEdge(prerequisite.courseId, course.id)
-          }
-        }
-      }
+      pickAndCondition(
+        conditionGroup,
+        course,
+        graph,
+        courseMap,
+        requiredCourses,
+        courseIsCompleted,
+        completedCourseIds
+      )
     }
   }
-
-  // ORGINAL
-  // course.conditions.forEach(conditionGroup => {
-  //   conditionGroup.conditions.forEach(condition => {
-  //     condition.prerequisites.forEach(prerequisite => {
-  //       if (courseIsCompleted) {
-  //         completedCourseIds.push(prerequisite.courseId)
-  //       }
-
-  //       addCourseToGraph({
-  //         courseId: prerequisite.courseId,
-  //         graph,
-  //         courseMap
-  //       })
-
-  //       if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-  //         graph.addDirectedEdge(prerequisite.courseId, course.id)
-  //       }
-  //     })
-  //   })
-  // })
 }
-
-// async function getCourseWithPreqs(courseId: string) {
-//   return db.course.findUnique({
-//     where: {
-//       id: courseId
-//     },
-//     select: {
-//       id: true,
-//       courseNumber: true,
-//       courseSubject: true,
-//       name: true,
-//       departmentId: true,
-//       universityId: true,
-//       conditions: {
-//         include: {
-//           conditions: {
-//             include: {
-//               prerequisites: true
-//             }
-//           }
-//         }
-//       }
-//     }
-//   })
-// }
 
 function pickOrCondition(
   conditionGroup: CoursePayload["conditions"][number],
@@ -249,6 +196,32 @@ function pickOrCondition(
     // edges represent prerequisites pointing at the course they are a prerequisite for
     if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
       graph.addDirectedEdge(prerequisite.courseId, course.id)
+    }
+  }
+}
+
+function pickAndCondition(
+  conditionGroup: CoursePayload["conditions"][number],
+  course: CoursePayload,
+  graph: CourseGraph,
+  courseMap: Map<string, CoursePayload>,
+  requiredCourses: string[],
+  courseIsCompleted: boolean,
+  completedCourseIds: string[]
+) {
+  for (const condition of conditionGroup.conditions) {
+    for (const prerequisite of condition.prerequisites) {
+      // if a course is completed, assume that it's prerequisites are completed
+      if (courseIsCompleted) {
+        completedCourseIds.push(prerequisite.courseId)
+      }
+
+      addCourseToGraph({ courseId: prerequisite.courseId, graph, courseMap, requiredCourses })
+
+      // edges represent prerequisites pointing at the course they are a prerequisite for
+      if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
+        graph.addDirectedEdge(prerequisite.courseId, course.id)
+      }
     }
   }
 }
