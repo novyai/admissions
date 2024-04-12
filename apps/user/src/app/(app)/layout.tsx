@@ -56,7 +56,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="h-[calc(100dvh-64px)] w-full flex-1 flex flex-col overflow-hidden">
+      <main className="h-[calc(100dvh-64px)] w-full flex-1 flex flex-col overflow-auto">
         {children}
       </main>
     </>
