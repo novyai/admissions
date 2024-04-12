@@ -20,6 +20,7 @@ import { canMoveCourse, CannotMoveReason } from "@graph/schedule"
 import { HydratedStudentProfile } from "@graph/types"
 import { cn } from "@ui/lib/utils"
 
+import { EdgeSwitch } from "../dag/edge-switch"
 import ScheduleChangeToast from "../dag/schedule-change-toast"
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
 import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
@@ -72,6 +73,13 @@ function SemesterDAGInternal({
     setScheduleToastReason(cannotMoveReason)
   }
 
+  const [showEdges, setShowEdges] = useState(false)
+
+  const toggleShowEdges = () => {
+    setEdges(edges.map(e => ({ ...e, hidden: showEdges })))
+    setShowEdges(!showEdges)
+  }
+
   const { getIntersectingNodes } = useReactFlow()
 
   const handleReset = (node: CourseNodeType) => {
@@ -94,7 +102,13 @@ function SemesterDAGInternal({
 
     if (isCourseNode(node)) {
       setEdges(
-        edges.map(e => getModifiedEdge(e, coursePathEdgeIDs, e => ({ ...e, hidden: false })))
+        edges.map(e =>
+          getModifiedEdge(e, coursePathEdgeIDs, e => ({
+            ...e,
+            hidden: false,
+            style: { ...e.style, stroke: "lightskyblue" }
+          }))
+        )
       )
       setNodes(
         nodes.map(n => ({
@@ -120,17 +134,16 @@ function SemesterDAGInternal({
             // if node is overlapping same semester
             if (node.data.semesterIndex === n.data.semesterIndex) {
               console.log("overlapping same semester")
+              setScheduleToastOpen(false)
               return {
                 ...n,
-                className: cn(
-                  n.className,
-                  defaultSemesterNode.className,
-                  "bg-green-50 dark:bg-green-800"
-                )
+                className: cn(n.className, defaultSemesterNode.className, "bg-slate-50")
               }
             }
             if (!canMove.canMove) {
               openScheduleToast(canMove)
+            } else {
+              setScheduleToastOpen(false)
             }
             return {
               ...n,
@@ -157,7 +170,13 @@ function SemesterDAGInternal({
     const coursePathEdgeIDs = getEdgesIDsInCoursePath(coursePathNodeIDs, edges)
 
     setEdges(es =>
-      es.map(e => getModifiedEdge(e, coursePathEdgeIDs, e => ({ ...e, hidden: true })))
+      es.map(e =>
+        getModifiedEdge(e, coursePathEdgeIDs, e => ({
+          ...e,
+          hidden: !showEdges,
+          style: { ...e.style, stroke: "lightgray" }
+        }))
+      )
     )
 
     const intersections = getIntersectingNodes(node, false).filter(n => n.type && isSemesterNode(n))
@@ -219,6 +238,7 @@ function SemesterDAGInternal({
         cannotMoveReason={scheduleToastReason}
         onOpenChange={(open: boolean) => setScheduleToastOpen(open)}
       />
+      <EdgeSwitch checked={showEdges} toggleSwitch={() => toggleShowEdges()} />
       <ReactFlow
         fitView
         nodeTypes={nodeTypes}
@@ -229,7 +249,7 @@ function SemesterDAGInternal({
         onNodeDragStart={onNodeDragStart}
         onNodeDrag={onNodeDrag}
         onNodeDragStop={onNodeDragEnd}
-        defaultEdgeOptions={{ hidden: true, style: { stroke: "lightskyblue" } }}
+        defaultEdgeOptions={{ hidden: !showEdges, style: { stroke: "lightgray" } }}
       >
         <Background />
         <MiniMap />
