@@ -100,8 +100,9 @@ export function useAdvisor({
           body: JSON.stringify({
             prompt: prompt,
             conversationId,
-            messageStreamIndex,
+            messageStreamIndex: messageStreamIndex > 0 ? messageStreamIndex : 0,
             userId,
+            meta: {},
             streamId: `${conversationId}-${userId}`
           })
         })

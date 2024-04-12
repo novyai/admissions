@@ -21,6 +21,7 @@ export function NewConversation() {
     }
 
     const newConversation = await createConversationForUser({ userId: data.user?.id })
+
     router.push(`/chat/${newConversation.id}`)
   }
 
