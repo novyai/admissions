@@ -11,7 +11,7 @@ export function SuggestedPrompts({ prompts, handleClick }: SuggestedPromptsProps
       {prompts.map(prompt => (
         <Button
           key={prompt}
-          className="py-1 px-2 rounded-lg shadow bg-[white] border border-slate-200 text-xs text-slate-700 hover:bg-blue-50 hover:border-blue-200"
+          className="py-1 px-2 rounded-lg shadow bg-background border border-slate-200 text-xs text-slate-700 hover:bg-blue-50 hover:border-blue-200"
           onClick={() => handleClick(prompt)}
         >
           {prompt}

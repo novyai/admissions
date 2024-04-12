@@ -1,3 +1,4 @@
+import { CannotMoveReason } from "@graph/schedule"
 import {
   Toast,
   ToastDescription,
@@ -8,36 +9,49 @@ import {
 
 interface ScheduleChangeToastProps {
   open: boolean
-  content: ScheduleToastContent
+  cannotMoveReason?: CannotMoveReason
   onOpenChange: (open: boolean) => void
 }
 
-export interface ScheduleToastContent {
-  title: string
-  descr: string
+const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
+  if (cannotMoveReason === undefined) {
+    return ""
+  }
+
+  const reason = cannotMoveReason.reason.type
+
+  if (reason == "dependent") {
+    return "The course is a dependent of another course."
+  }
+  if (reason == "full") {
+    return "The semester is full."
+  }
+  if (reason == "prereq") {
+    return "The course is a prerequisite for another course."
+  }
 }
 
 export default function ScheduleChangeToast({
   open,
-  content,
+  cannotMoveReason,
   onOpenChange
 }: ScheduleChangeToastProps) {
   return (
     <>
-      <ToastProvider swipeDirection="right">
+      <ToastProvider>
         <Toast
-          className="z-10 absolute top-4 left-4 max-w-[30rem] p-2 bg-white rounded-lg shadow-lg border-2 border-red-300 text-gray-800"
+          className="block space-x-0 max-w-[30rem] p-2 rounded-lg shadow-lg border-2 border-red-300 text-gray-800 bg-background"
           open={open}
           onOpenChange={onOpenChange}
         >
           <ToastTitle className="grid-area-title font-medium text-slate-800 text-sm">
-            {content.title}
+            Invalid Schedule Change
           </ToastTitle>
           <ToastDescription asChild>
-            <p className="text-xs">{content.descr}</p>
+            <p className="text-xs">{getReadableReason(cannotMoveReason)}</p>
           </ToastDescription>
         </Toast>
-        <ToastViewport className="flex flex-col gap-2 w-fit  m-0 p-4" />
+        <ToastViewport className="absolute top-4 left-[calc(50vw-12rem)] w-[24rem] p-4 m-auto" />
       </ToastProvider>
     </>
   )

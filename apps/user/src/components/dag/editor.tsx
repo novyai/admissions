@@ -230,7 +230,7 @@ export function Editor({
               onEdgesChange={onEdgesChange}
             />
             <ChatPopover open={chatOpen} toggleOpen={toggleChatOpen} scrollToEnd={scrollToEnd}>
-              <div className="h-[70vh] w-full rounded-xl shadow-lg border border-slate-200 bg-[white] py-4 px-2">
+              <div className="h-[70vh] w-full rounded-xl shadow-lg border border-slate-200 bg-background py-4 px-2">
                 <div className="sticky">
                   <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
                     AI Advisor

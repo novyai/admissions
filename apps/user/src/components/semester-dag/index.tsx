@@ -15,11 +15,12 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css"
 
-import { Dispatch, SetStateAction, useCallback } from "react"
-import { canMoveCourse } from "@graph/schedule"
+import { Dispatch, SetStateAction, useCallback, useState } from "react"
+import { canMoveCourse, CannotMoveReason } from "@graph/schedule"
 import { HydratedStudentProfile } from "@graph/types"
 import { cn } from "@ui/lib/utils"
 
+import ScheduleChangeToast from "../dag/schedule-change-toast"
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
 import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
 import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./semester-node"
@@ -63,6 +64,14 @@ function SemesterDAGInternal({
   saveVersion,
   resetNodePlacement
 }: SemesterDAGProps) {
+  const [scheduleToastOpen, setScheduleToastOpen] = useState(false)
+  const [scheduleToastReason, setScheduleToastReason] = useState<CannotMoveReason>()
+
+  const openScheduleToast = (cannotMoveReason: CannotMoveReason) => {
+    setScheduleToastOpen(true)
+    setScheduleToastReason(cannotMoveReason)
+  }
+
   const { getIntersectingNodes } = useReactFlow()
 
   const handleReset = (node: CourseNodeType) => {
@@ -90,7 +99,7 @@ function SemesterDAGInternal({
       setNodes(
         nodes.map(n => ({
           ...n,
-          className: cn(n.className, "animate-none bg-[white]")
+          className: cn(n.className, "animate-none bg-background")
         }))
       )
     }
@@ -116,15 +125,18 @@ function SemesterDAGInternal({
                 className: cn(
                   n.className,
                   defaultSemesterNode.className,
-                  "bg-green-200 dark:bg-green-800"
+                  "bg-green-50 dark:bg-green-800"
                 )
               }
+            }
+            if (!canMove.canMove) {
+              openScheduleToast(canMove)
             }
             return {
               ...n,
               className: cn(
                 n.className,
-                canMove.canMove ? "bg-green-200 dark:bg-green-800" : "bg-red-200 dark:bg-red-800"
+                canMove.canMove ? "bg-green-50 dark:bg-green-800" : "bg-red-50 dark:bg-red-800"
               )
             }
           }
@@ -201,7 +213,12 @@ function SemesterDAGInternal({
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center">
+    <div className="relative w-full h-full flex flex-col items-center justify-center">
+      <ScheduleChangeToast
+        open={scheduleToastOpen}
+        cannotMoveReason={scheduleToastReason}
+        onOpenChange={(open: boolean) => setScheduleToastOpen(open)}
+      />
       <ReactFlow
         fitView
         nodeTypes={nodeTypes}

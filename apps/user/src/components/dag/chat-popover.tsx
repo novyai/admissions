@@ -24,7 +24,7 @@ export function ChatPopover({ children, open, toggleOpen, scrollToEnd }: ChatPop
     >
       <PopoverTrigger asChild>
         <button
-          className="absolute top-2 right-2 flex items-center gap-1 p-2 border rounded-full shadow bg-[white]"
+          className="absolute top-2 right-2 flex items-center gap-1 p-2 border rounded-full shadow bg-background"
           aria-label="Chat"
           onClick={toggleOpen}
         >
