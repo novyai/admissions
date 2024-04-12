@@ -1,284 +1,110 @@
-import Prisma, { ConditionGroup, db } from "@repo/db"
+import { db } from "@repo/db"
 import Graph from "graphology"
-import { forEachTopologicalGeneration, topologicalGenerations } from "graphology-dag"
-import { reverse } from "graphology-operators"
+import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { _getAllDependents, graphToStudentProfile } from "./graph"
+import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import { Program, programHandler } from "./defaultCourses"
+import { _getAllDependents, graphToHydratedStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
+import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
-type CourseAttributes = {
-  semester?: number
-  id: string
-  name: string
-} & (
-  | {
-      hasAttributes: false
-      fanOut: undefined
-      earliestFinish: undefined
-      latestFinish: undefined
-      slack: undefined
-    }
-  | {
-      hasAttributes: true
-      fanOut: number
-      earliestFinish: number
-      latestFinish: number
-      slack: number
-    }
-)
+export const getCoursesForProgram = async (program: Program) => {
+  const { requiredCourses, extraToQuery } = programHandler[program]
 
-export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
-
-const COURSE_PAYLOAD = {
-  select: {
-    name: true,
-    id: true,
-    conditions: {
-      select: {
-        conditions: {
-          select: {
-            prerequisites: true
-          }
-        }
-      }
-    }
+  return {
+    program,
+    requiredCourses:
+      requiredCourses &&
+      (await db.course.findMany({
+        where: requiredCourses,
+        ...COURSE_PAYLOAD_QUERY
+      })),
+    extraToQuery:
+      extraToQuery &&
+      (await db.course.findMany({
+        where: extraToQuery,
+        ...COURSE_PAYLOAD_QUERY
+      }))
   }
 }
 
-export const addCourseToGraph = ({
-  courseId,
-  graph,
-  courseMap
-}: {
-  courseId: string
-  graph: CourseGraph
-  courseMap: Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD>>
-}) => {
-  if (graph.hasNode(courseId)) {
-    return
-  }
+export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
+  const graph: CourseGraph = new Graph()
+  const programCourseData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
 
-  const completedCourseIds: string[] = []
-  const course = courseMap.get(courseId)
-
-  if (!course) {
-    throw new Error(`Course not found ${courseId}`)
-  }
-
-  graph.addNode(courseId, {
-    id: course.id,
-    name: course.name,
-    hasAttributes: false,
-    fanOut: undefined,
-    earliestFinish: undefined,
-    latestFinish: undefined,
-    slack: undefined
+  const requiredCoursesNotInProgram = await db.course.findMany({
+    where: {
+      id: {
+        in: profile.requiredCourses
+      }
+    },
+    ...COURSE_PAYLOAD_QUERY
   })
 
-  const courseIsCompleted = completedCourseIds.includes(courseId)
+  const courseMap = new Map<string, CoursePayload>()
 
-  if (courseIsCompleted) {
-    graph.setNodeAttribute(courseId, "semester", 0)
-  }
+  const allRequiredCourses = [...profile.requiredCourses]
 
-  course.conditions.forEach(conditionGroup => {
-    conditionGroup.conditions.forEach(condition => {
-      condition.prerequisites.forEach(prerequisite => {
-        if (courseIsCompleted) {
-          completedCourseIds.push(prerequisite.courseId)
-        }
+  programCourseData.forEach(program => {
+    program.requiredCourses?.forEach(course => {
+      allRequiredCourses.push(course.id)
+      courseMap.set(course.id, course)
+    })
+    program.extraToQuery?.forEach(course => {
+      courseMap.set(course.id, course)
+    })
+  })
 
-        addCourseToGraph({
-          courseId: prerequisite.courseId,
-          graph,
-          courseMap
-        })
+  requiredCoursesNotInProgram.forEach(course => {
+    courseMap.set(course.id, course)
+  })
 
-        if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-          graph.addDirectedEdge(prerequisite.courseId, course.id)
-        }
+  programCourseData.forEach(program => {
+    program.requiredCourses?.forEach(course => {
+      addCourseToGraph({
+        courseId: course.id,
+        graph,
+        courseMap,
+        requiredCourses: allRequiredCourses
+      })
+    })
+    program.extraToQuery?.forEach(course => {
+      addCourseToGraph({
+        courseId: course.id,
+        graph,
+        courseMap,
+        requiredCourses: allRequiredCourses
       })
     })
   })
+
+  requiredCoursesNotInProgram.map(c =>
+    addCourseToGraph({
+      courseId: c.id,
+      graph,
+      courseMap,
+      requiredCourses: allRequiredCourses
+    })
+  )
+
+  profile.semesters.forEach((sem, i) => {
+    sem.forEach(c => graph.setNodeAttribute(c, "semester", i))
+  })
+
+  return graph
 }
 
 /**
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
  */
-export const getStudentProfileFromRequirements = async (
-  profile: BaseStudentProfile
-): Promise<StudentProfile> => {
-  const graph: CourseGraph = new Graph()
-
-  const requiredCoursesData = await db.course.findMany({
-    where: {
-      id: {
-        in: profile.requiredCourses
-      }
-    },
-    include: {
-      conditions: {
-        include: {
-          conditions: {
-            include: {
-              prerequisites: true
-            }
-          }
-        }
-      }
-    }
-  })
-
-  const courseMap = new Map<
-    string,
-    Prisma.CourseGetPayload<{
-      include: {
-        conditions: {
-          include: {
-            conditions: {
-              include: {
-                prerequisites: true
-              }
-            }
-          }
-        }
-      }
-    }>
-  >()
-
-  requiredCoursesData.forEach(course => {
-    courseMap.set(course.id, course)
-  })
-
-  profile.requiredCourses.forEach(courseId => {
-    addCourseToGraph({
-      courseId,
-      graph,
-      courseMap
-    })
-  })
-
+export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
+  const graph = await createGraph({ ...profile, semesters: [] })
   computeNodeStats(graph, profile)
   scheduleCourses(graph, profile)
-
-  // graph.forEachNode((_courseId, course) => {
-  //   console.log(
-  //     `${course.name} -- earliestFinish: ${course.earliestFinish} latestFinish: ${course.latestFinish} fanOut: ${course.fanOut} semester: ${course.semester}`
-  //   )
-  // })
-
-  return graphToStudentProfile(graph, profile)
-}
-
-async function getCourseWithPreqs(courseId: string) {
-  return db.course.findUnique({
-    where: {
-      id: courseId
-    },
-    select: {
-      id: true,
-      courseNumber: true,
-      courseSubject: true,
-      name: true,
-      departmentId: true,
-      universityId: true,
-      conditions: {
-        include: {
-          conditions: {
-            include: {
-              prerequisites: true
-            }
-          }
-        }
-      }
-    }
-  })
-}
-
-async function countRequiredCoursesinConditionGroup(
-  conditionGroup: ConditionGroup & {
-    conditions: { prerequisites: { id: string; conditionId: string; courseId: string }[] }[]
-  },
-  profile: BaseStudentProfile
-): Promise<number> {
-  const conditionCounts: number[] = await Promise.all(
-    conditionGroup.conditions
-      .filter(condition => condition.prerequisites.length > 0)
-      .map(
-        async condition =>
-          await countRequiredCoursesInPrerequisiteTree(
-            condition.prerequisites[0]!.courseId,
-            profile
-          )
-      )
-  )
-
-  if (conditionGroup.logicalOperator === "OR") {
-    return Math.max(...conditionCounts, 0)
-  } else {
-    return conditionCounts.reduce((acc, curr) => acc + curr, 0)
-  }
-}
-
-async function countRequiredCoursesInPrerequisiteTree(
-  courseId: string,
-  profile: BaseStudentProfile
-): Promise<number> {
-  const course = await getCourseWithPreqs(courseId)
-  if (course === null) {
-    return 0
-  }
-  const conditionGroupCounts: number[] = await Promise.all(
-    course.conditions.map(conditionGroup =>
-      countRequiredCoursesinConditionGroup(conditionGroup, profile)
-    )
-  )
-  return (profile.requiredCourses.includes(courseId) ? 1 : 0) + Math.max(...conditionGroupCounts, 0)
-}
-
-export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {
-  let semester = 1
-  forEachTopologicalGeneration(graph, coursesInGeneration => {
-    coursesInGeneration.forEach(courseId => {
-      if (semester === 1) {
-        calculateFanOut(graph, courseId)
-      }
-      graph.setNodeAttribute(courseId, "earliestFinish", semester)
-    })
-    semester += 1
-  })
-
-  semester = profile.timeToGraduate
-  forEachTopologicalGeneration(reverse(graph), coursesInGeneration => {
-    coursesInGeneration.forEach(courseId => {
-      graph.setNodeAttribute(courseId, "latestFinish", semester)
-      graph.setNodeAttribute(
-        courseId,
-        "slack",
-        semester - (graph.getNodeAttribute(courseId, "earliestFinish") ?? 0)
-      )
-    })
-
-    semester -= 1
-  })
-}
-/**
- * Calculates the number of courses that are are dependent on the given course, including dependents of dependents
- * @param graph
- * @param courseId
- * @returns
- */
-function calculateFanOut(graph: CourseGraph, courseId: string): number {
-  const fanOut = graph
-    .mapOutboundNeighbors(courseId, dependingCourseId => {
-      return calculateFanOut(graph, dependingCourseId) + 1
-    })
-    .reduce((acc, val) => acc + val, 0)
-  graph.setNodeAttribute(courseId, "fanOut", fanOut)
-  return fanOut
+  return graphToHydratedStudentProfile(graph, profile)
 }
 
 /**
@@ -295,7 +121,7 @@ function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
       .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => (courseA.slack ?? 0) - (courseB.slack ?? 0))
+      .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
   )
 
   while (sortedCourses.length > 0) {

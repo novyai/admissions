@@ -1,12 +1,12 @@
 "use client"
 
 import { getAllPrereqs } from "@repo/graph/graph"
-import { CourseNode, StudentProfile } from "@repo/graph/types"
+import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { DataTable } from "@repo/ui/components/table"
 import { DataTableColumnHeader } from "@repo/ui/components/table/column-header"
 import { ColumnDef } from "@tanstack/react-table"
 
-export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
+export const ScheduleTable = ({ profile }: { profile: HydratedStudentProfile }) => {
   const columns: ColumnDef<CourseNode>[] = [
     {
       id: "name",
@@ -90,7 +90,7 @@ export const ScheduleTable = ({ profile }: { profile: StudentProfile }) => {
     }
   ]
 
-  const courses = Array.from(profile.graph.values())
+  const courses: CourseNode[] = [] //Array.from(profile.graph.values())
 
   return (
     <>

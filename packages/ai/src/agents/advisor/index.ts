@@ -1,4 +1,4 @@
-import testData from "@db/data/test.json"
+import testData from "@repo/db/data/test"
 
 type Data = typeof testData
 

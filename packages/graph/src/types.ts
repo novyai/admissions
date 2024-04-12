@@ -1,3 +1,7 @@
+import { z } from "zod"
+
+import { Program } from "./defaultCourses"
+
 export type CourseNode = {
   id: string
   name: string
@@ -15,13 +19,22 @@ export type BaseStudentProfile = {
    */
   requiredCourses: string[]
   transferCredits: string[]
+  programs: Program[]
   timeToGraduate: number // in semesters
   currentSemester: number
   coursePerSemester: number
 }
 
+export const studentProfileSchema = z.custom<StudentProfile>()
+
 export type StudentProfile = BaseStudentProfile & {
+  semesters: string[][]
+  // graph: Map<string, CourseNode>
+  // allCourses: CourseNode[]
+}
+
+export type HydratedStudentProfile = BaseStudentProfile & {
   semesters: CourseNode[][]
   graph: Map<string, CourseNode>
-  allCourses: CourseNode[]
+  // allCourses: CourseNode[]
 }

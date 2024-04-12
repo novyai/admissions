@@ -1,12 +1,10 @@
 "use server"
 
-import { Program, programHandler } from "@graph/defaultCourses"
+import { createBlob } from "@graph/blob"
+import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
-
-import { createBlob } from "@/lib/version-blob"
-import { getAllNodesAndEdges } from "@/components/dag/action"
 
 /**
  * Create a new schedule and its first version for the user
@@ -15,52 +13,28 @@ import { getAllNodesAndEdges } from "@/components/dag/action"
  * @returns The ID of the newly created schedule
  */
 export async function createNewSchedule(userId: string, programs: Program[]) {
-  const deptCourses = new Set(programs.map(program => programHandler[program]).flat())
-  const requiredCourses = await db.course.findMany({
-    where: {
-      OR: Array.from(deptCourses)
-    },
-    select: {
-      id: true
-    }
-  })
-
-  console.log("requiredCourses", JSON.stringify(requiredCourses))
-
   const baseProfile: BaseStudentProfile = {
-    requiredCourses: requiredCourses.map(course => course.id),
+    programs,
+    requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
     coursePerSemester: 6,
     currentSemester: 0
   }
 
-  console.log("baseProfile", JSON.stringify(baseProfile))
-
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
-  const { defaultNodes } = await getAllNodesAndEdges(studentProfile)
 
   const schedule = await db.schedule.create({
     data: {
       userID: userId,
       versions: {
         create: {
-          blob: JSON.stringify(createBlob(studentProfile, defaultNodes))
+          blob: createBlob(studentProfile)
         }
       }
     },
-    include: {
-      versions: {
-        select: {
-          scheduleId: true,
-          blob: true,
-          createdAt: true,
-          id: true
-        },
-        orderBy: {
-          createdAt: "asc"
-        }
-      }
+    select: {
+      id: true
     }
   })
 
