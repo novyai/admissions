@@ -29,6 +29,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@prisma/client": "5.12.1",
     "@prisma/extension-accelerate": "^1.0.0"
   },
