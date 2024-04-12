@@ -2,7 +2,7 @@ import Link from "next/link"
 import { redirect, RedirectType } from "next/navigation"
 import { auth } from "@clerk/nextjs"
 import { parseBlob } from "@graph/blob"
-import { prgoramName } from "@graph/defaultCourses"
+import { programName } from "@graph/defaultCourses"
 import { db } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import {
@@ -108,8 +108,9 @@ async function ScheduleTable({ userId }: { userId: string }) {
       </TableHeader>
       <TableBody>
         {schedules.map(schedule => {
-          const blob = parseBlob(schedule.versions[0].blob)
-          const programs = blob.programs
+          const hasVersions = schedule.versions.length > 0
+          const blob = hasVersions ? parseBlob(schedule.versions[0].blob) : undefined
+          const programs = blob?.programs
           return (
             <TableRow key={schedule.id}>
               <TableCell className="font-medium">
@@ -119,10 +120,12 @@ async function ScheduleTable({ userId }: { userId: string }) {
               </TableCell>
               <TableCell>
                 {programs ?
-                  programs.map(p => <Badge key={p}>{prgoramName[p]}</Badge>)
+                  programs.map(p => <Badge key={p}>{programName[p]}</Badge>)
                 : "No Programs"}
               </TableCell>
-              <TableCell>{timeSince(new Date(schedule.versions[0].createdAt))}</TableCell>
+              <TableCell>
+                {hasVersions ? timeSince(new Date(schedule.versions[0].createdAt)) : "Not modified"}
+              </TableCell>
               <TableCell>{schedule._count.versions}</TableCell>
               <TableCell>
                 <ScheduleTableActions />
