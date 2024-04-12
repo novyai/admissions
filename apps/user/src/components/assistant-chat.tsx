@@ -24,7 +24,7 @@ export const MessageWrapper = React.memo(function MessageWrapper({
     <div
       className={cn(`relative text-foreground/90`, className, {
         "bg-transparent dark:bg-transparent text-foreground/90": message.role === "assistant",
-        "mx-0 flex pt-4": message.role === "user"
+        "mx-0 flex pt-2": message.role === "user"
       })}
     >
       <div>
@@ -32,8 +32,8 @@ export const MessageWrapper = React.memo(function MessageWrapper({
           [ {message.role === "user" ? "YOU" : "AI ADVISOR"} ]
         </strong>
         <div
-          className={cn("mt-2 pl-2", {
-            "py-2 px-4 flex gap-2": message.role === "user"
+          className={cn("pt-1 pl-2", {
+            "py-1 px-2 flex gap-1": message.role === "user"
           })}
         >
           {children}
@@ -123,8 +123,8 @@ export const ChatMessage = React.memo(function ChatMessage({
         stiffness: 100,
         delay: lastMessageAndIsBotMessage ? 0.5 : 0
       }}
-      className={cn("p-4 relative", {
-        "bg-background/30 backdrop-blur-lg rounded-2xl p-4": message.role === "assistant"
+      className={cn("p-1 relative", {
+        "bg-background/30 backdrop-blur-lg rounded-2xl p-1": message.role === "assistant"
       })}
     >
       <MessageWrapper message={message}>
@@ -148,7 +148,7 @@ export const AssistantChat = React.memo(function AssistantChat(chatProps: {
   const { messages, ...messageProps } = chatProps
   return (
     <>
-      <ul className="space-y-4 pt-4 pb-20 px-4">
+      <ul className="space-y-1 pb-20 px-0">
         {chatProps.messages.map((message, index) => {
           const lastMessageAndIsBotMessage =
             index === messages?.length - 1 && message.role === "assistant"

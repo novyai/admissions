@@ -3,7 +3,7 @@ import { HydratedStudentProfile } from "@graph/types"
 
 import { CourseGraph } from "./course"
 
-type CannotMoveReason = {
+export type CannotMoveReason = {
   reason:
     | {
         type: "prereq" | "dependent"

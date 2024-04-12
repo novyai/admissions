@@ -7,20 +7,24 @@ import { pushCourseAndDependents } from "@graph/profile"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
+import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
+import { Separator } from "@ui/components/ui/separator"
+import { cn } from "@ui/lib/utils"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
-import { cn } from "@/lib/utils"
 import { useAdvisor } from "@/hooks/use-advisor"
+import { ChatPopover } from "@/components/dag/chat-popover"
 import { SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
+import { MdxContent } from "../mdxContent"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
+import { getChangedNodeIDs, getModifiedCourseNodes } from "../semester-dag/utils"
 import { createVersion, getAllNodesAndEdges, hydratedProfileAndNodesByVersion } from "./action"
 
 type VersionWithoutBlob = { id: string }
@@ -44,6 +48,10 @@ export function Editor({
   const [edges, setEdges] = useState<Edge[]>([])
 
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([])
+
+  const [chatOpen, setChatOpen] = useState(true)
+
+  const toggleChatOpen = () => setChatOpen(!chatOpen)
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -91,15 +99,32 @@ export function Editor({
     setStatus("pending")
     const update = async () => {
       const {
-        profile,
+        profile: newProfile,
         defaultNodes: newDefaultNodes,
         defaultEdges: newDefaultEdges
       } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
-      setProfile(profile)
+      setProfile(newProfile)
       setDefaultNodes(newDefaultNodes)
 
-      setNodes(newDefaultNodes)
       setEdges(newDefaultEdges)
+
+      if (_versions === undefined || _versions.length <= 1) {
+        setNodes(newDefaultNodes)
+        return
+      }
+
+      const lastVersionId = _versions.at(-2)!.id
+
+      const { profile: lastProfile } = await hydratedProfileAndNodesByVersion(lastVersionId)
+
+      const changedNodeIDs = getChangedNodeIDs(lastProfile, newProfile)
+
+      setNodes(
+        getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+          ...n,
+          className: cn(n.className, "bg-sky-100 animate-pulse")
+        }))
+      )
     }
 
     update().then(
@@ -141,6 +166,7 @@ export function Editor({
       const courseNode = getCourseFromIdNameCode(profile, actionParams.courseName)
       pushClass(courseNode.id)
       clearAction()
+      setChatOpen(false)
     }
   }, [action, clearAction, profile, pushClass])
 
@@ -152,6 +178,7 @@ export function Editor({
   }
 
   async function submitMessage(content: string, role?: MessageRole) {
+    setChatOpen(true)
     if (loading) {
       return
     }
@@ -184,18 +211,13 @@ export function Editor({
   }, [])
 
   return (
-    <Tabs defaultValue="schedule" className="flex flex-col w-full h-full gap-2">
-      <TabsList className="grid grid-cols-2">
-        <TabsTrigger value="schedule">Schedule</TabsTrigger>
-        <TabsTrigger value="advisor">Advisor</TabsTrigger>
-      </TabsList>
-
+    <div className="w-full">
       {!profile ?
         <div className="flex flex-grow items-center justify-center">
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <>
-          <TabsContent value="schedule" className="flex flex-grow w-full h-full rounded-xl border">
+          <div className="relative w-full h-[95%] rounded-xl border">
             <SemesterDAG
               resetNodePlacement={resetNodePlacement}
               profile={profile}
@@ -207,39 +229,62 @@ export function Editor({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
             />
-          </TabsContent>
-          <TabsContent value="advisor" className="flex flex-grow">
-            <ScrollArea className={cn("h-[calc(100dvh-140px)] w-full", {})} ref={ChatScrollerRef}>
-              <div className="max-w-7xl mx-auto px-6">
-                <AssistantChat
-                  messages={messages}
-                  disabled={!ready}
-                  submitMessage={submitMessage}
-                  loading={loading}
-                />
-                {ChatScrollerRef?.current && (
-                  <ChatScrollAnchor
-                    trackVisibility={waiting || loading}
-                    scrollerRef={ChatScrollerRef}
-                  />
-                )}
+            <ChatPopover open={chatOpen} toggleOpen={toggleChatOpen} scrollToEnd={scrollToEnd}>
+              <div className="h-[70vh] w-full rounded-xl shadow-lg border border-slate-200 bg-background py-4 px-2">
+                <div className="sticky">
+                  <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
+                    AI Advisor
+                  </h2>
+                  <Separator className="bg-slate-100 h-[0.1rem]" />
+                </div>
+
+                <ScrollArea ref={ChatScrollerRef} className="h-[calc(100%-2.75rem)] rounded-xl">
+                  <div className="mx-auto">
+                    <div className="px-1">
+                      {messages.length > 0 ?
+                        <AssistantChat
+                          messages={messages}
+                          disabled={!ready}
+                          submitMessage={submitMessage}
+                          loading={loading}
+                        />
+                      : <MdxContent
+                          className="py-2 px-2"
+                          content={
+                            "Hello! I'm the AI course advisor for USF's Computer Science program. I'm here to help you with course information, scheduling, and any other academic guidance you might need throughout your journey at USF. How can I assist you today?"
+                          }
+                        />
+                      }
+                    </div>
+
+                    {ChatScrollerRef?.current && (
+                      <ChatScrollAnchor
+                        trackVisibility={waiting || loading}
+                        scrollerRef={ChatScrollerRef}
+                      />
+                    )}
+                  </div>
+                </ScrollArea>
               </div>
-            </ScrollArea>
-          </TabsContent>
+            </ChatPopover>
+          </div>
+          <div className="relative w-full h-[5%]">
+            <SuggestedPrompts
+              handleClick={(prompt: string) => submitMessage(prompt, "user")}
+              prompts={["What can you do?", "Reschedule Data Structures"]}
+            />
+            <PromptComposer
+              disabled={!ready || !isConnected}
+              placeholder={"Ask me anything..."}
+              loading={loading}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              onSubmit={submitMessage}
+              prompt={prompt}
+            />
+          </div>
         </>
       }
-
-      <div className="w-full">
-        <PromptComposer
-          disabled={!ready || !isConnected}
-          placeholder={"Ask me anything..."}
-          loading={loading}
-          onChange={handleInput}
-          onKeyDown={handleKeyDown}
-          onSubmit={submitMessage}
-          prompt={prompt}
-        />
-      </div>
-    </Tabs>
+    </div>
   )
 }
