@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { useAdvisor } from "@/hooks/use-advisor"
+import { ChatPopover } from "@/components/dag/chat-popover"
 import { SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
@@ -47,6 +48,10 @@ export function Editor({
   const [edges, setEdges] = useState<Edge[]>([])
 
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([])
+
+  const [chatOpen, setChatOpen] = useState(true)
+
+  const toggleChatOpen = () => setChatOpen(!chatOpen)
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -161,6 +166,7 @@ export function Editor({
       const courseNode = getCourseFromIdNameCode(profile, actionParams.courseName)
       pushClass(courseNode.id)
       clearAction()
+      setChatOpen(false)
     }
   }, [action, clearAction, profile, pushClass])
 
@@ -172,6 +178,7 @@ export function Editor({
   }
 
   async function submitMessage(content: string, role?: MessageRole) {
+    setChatOpen(true)
     if (loading) {
       return
     }
@@ -210,7 +217,7 @@ export function Editor({
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <>
-          <div className="flex w-full h-[95%] rounded-xl border">
+          <div className="relative w-full h-[95%] rounded-xl border">
             <SemesterDAG
               resetNodePlacement={resetNodePlacement}
               profile={profile}
@@ -222,13 +229,16 @@ export function Editor({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
             />
-            <div className="basis-2/5 py-4 px-2">
-              <div className="h-full rounded-xl shadow-lg border border-slate-200">
-                <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
-                  AI Advisor
-                </h2>
-                <Separator className="bg-slate-100 h-[0.1rem]" />
-                <ScrollArea ref={ChatScrollerRef}>
+            <ChatPopover open={chatOpen} toggleOpen={toggleChatOpen} scrollToEnd={scrollToEnd}>
+              <div className="h-[70vh] w-full rounded-xl shadow-lg border border-slate-200 bg-[white] py-4 px-2">
+                <div className="sticky">
+                  <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
+                    AI Advisor
+                  </h2>
+                  <Separator className="bg-slate-100 h-[0.1rem]" />
+                </div>
+
+                <ScrollArea ref={ChatScrollerRef} className="h-[calc(100%-2.75rem)] rounded-xl">
                   <div className="mx-auto">
                     <div className="px-1">
                       {messages.length > 0 ?
@@ -256,7 +266,7 @@ export function Editor({
                   </div>
                 </ScrollArea>
               </div>
-            </div>
+            </ChatPopover>
           </div>
           <div className="relative w-full h-[5%]">
             <SuggestedPrompts
