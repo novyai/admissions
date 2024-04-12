@@ -1,3 +1,4 @@
+import { HydratedStudentProfile } from "@graph/types"
 import { Edge, getIncomers, getOutgoers, Node } from "reactflow"
 
 import { CourseNodeData, CourseNodeType } from "./course-node"
@@ -53,24 +54,37 @@ export const getEdgesIDsInCoursePath = (connectedNodeIDs: string[], allEdges: Ed
   return connectedEdges.map(edge => edge.id)
 }
 
-export const modifyCoursePathEdge = (
+export const getModifiedEdge = (
   edge: Edge,
-  edges: Edge[],
-  connectedNodeIDs: string[],
-  modifyEdge: (edge: Edge) => void
+  edgeIDsToModify: string[],
+  modifyEdge: (edge: Edge) => Edge
 ) => {
-  const connectedEdgeIDs = getEdgesIDsInCoursePath(connectedNodeIDs, edges)
-  if (connectedEdgeIDs.includes(edge.id)) {
-    modifyEdge(edge)
-  }
+  return edgeIDsToModify.includes(edge.id) ? modifyEdge(edge) : edge
 }
 
-export const modifyCoursePathNode = (
-  node: CourseNodeType,
-  connectedNodeIDs: string[],
-  modifyNode: (node: CourseNodeType) => void
+export const getModifiedCourseNodes = (
+  nodes: CourseNodeType[],
+  nodeIDsToModify: string[],
+  modifyNode: (node: CourseNodeType) => CourseNodeType
 ) => {
-  if (connectedNodeIDs.includes(node.id)) {
-    modifyNode(node)
+  return nodes.map(n => (nodeIDsToModify.includes(n.id) ? modifyNode(n) : n))
+}
+
+export const getChangedNodeIDs = (
+  oldProfile: HydratedStudentProfile,
+  newProfile: HydratedStudentProfile
+) => {
+  let changedNodeIDs: string[] = []
+
+  for (const [semIndex, semesterCourses] of oldProfile.semesters.entries()) {
+    if (semIndex === newProfile.semesters.length) {
+      break
+    }
+    const oldSemesterCourseIDs = semesterCourses.map(node => node.id)
+    const newSemesterCourseIDs = newProfile.semesters[semIndex].map(node => node.id)
+    const changedIDs = oldSemesterCourseIDs.filter(course => !newSemesterCourseIDs.includes(course))
+    changedNodeIDs = changedNodeIDs.concat(changedIDs)
   }
+
+  return changedNodeIDs
 }

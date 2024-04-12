@@ -10,6 +10,7 @@ import { PromptComposer } from "@ui/components/prompt-composer"
 import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Separator } from "@ui/components/ui/separator"
+import { cn } from "@ui/lib/utils"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
@@ -22,6 +23,7 @@ import { MdxContent } from "../mdxContent"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
+import { getChangedNodeIDs, getModifiedCourseNodes } from "../semester-dag/utils"
 import { createVersion, getAllNodesAndEdges, hydratedProfileAndNodesByVersion } from "./action"
 
 type VersionWithoutBlob = { id: string }
@@ -92,15 +94,32 @@ export function Editor({
     setStatus("pending")
     const update = async () => {
       const {
-        profile,
+        profile: newProfile,
         defaultNodes: newDefaultNodes,
         defaultEdges: newDefaultEdges
       } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
-      setProfile(profile)
+      setProfile(newProfile)
       setDefaultNodes(newDefaultNodes)
 
-      setNodes(newDefaultNodes)
       setEdges(newDefaultEdges)
+
+      if (_versions === undefined || _versions.length <= 1) {
+        setNodes(newDefaultNodes)
+        return
+      }
+
+      const lastVersionId = _versions.at(-2)!.id
+
+      const { profile: lastProfile } = await hydratedProfileAndNodesByVersion(lastVersionId)
+
+      const changedNodeIDs = getChangedNodeIDs(lastProfile, newProfile)
+
+      setNodes(
+        getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+          ...n,
+          className: cn(n.className, "bg-sky-100 animate-pulse")
+        }))
+      )
     }
 
     update().then(

@@ -23,7 +23,7 @@ import { cn } from "@ui/lib/utils"
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
 import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
 import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./semester-node"
-import { getNodeIDsInCoursePath, modifyCoursePathEdge, modifyCoursePathNode } from "./utils"
+import { getEdgesIDsInCoursePath, getModifiedEdge, getNodeIDsInCoursePath } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
@@ -81,13 +81,17 @@ function SemesterDAGInternal({
 
   const onNodeDragStart: NodeDragHandler = (_e, node: SemesterNodeType | CourseNodeType) => {
     const coursePathNodeIDs = getNodeIDsInCoursePath(node, nodes, edges)
+    const coursePathEdgeIDs = getEdgesIDsInCoursePath(coursePathNodeIDs, edges)
 
     if (isCourseNode(node)) {
-      setEdges(es =>
-        es.map(e => {
-          modifyCoursePathEdge(e, es, coursePathNodeIDs, e => (e.hidden = false))
-          return e
-        })
+      setEdges(
+        edges.map(e => getModifiedEdge(e, coursePathEdgeIDs, e => ({ ...e, hidden: false })))
+      )
+      setNodes(
+        nodes.map(n => ({
+          ...n,
+          className: cn(n.className, "animate-none bg-[white]")
+        }))
       )
     }
   }
@@ -116,7 +120,6 @@ function SemesterDAGInternal({
                 )
               }
             }
-            console.log("canMove", canMove)
             return {
               ...n,
               className: cn(
@@ -125,7 +128,6 @@ function SemesterDAGInternal({
               )
             }
           }
-          console.log("not overlapping")
 
           return {
             ...n,
@@ -140,21 +142,10 @@ function SemesterDAGInternal({
   const onNodeDragEnd: NodeDragHandler = (_, node) => {
     if (!isCourseNode(node)) return
     const coursePathNodeIDs = getNodeIDsInCoursePath(node, nodes, edges)
+    const coursePathEdgeIDs = getEdgesIDsInCoursePath(coursePathNodeIDs, edges)
 
     setEdges(es =>
-      es.map(e => {
-        modifyCoursePathEdge(e, es, coursePathNodeIDs, e => (e.hidden = true))
-        return e
-      })
-    )
-
-    setNodes(ns =>
-      ns.map(n => {
-        if (isCourseNode(n)) {
-          modifyCoursePathNode(n, coursePathNodeIDs, n => n)
-        }
-        return n
-      })
+      es.map(e => getModifiedEdge(e, coursePathEdgeIDs, e => ({ ...e, hidden: true })))
     )
 
     const intersections = getIntersectingNodes(node, false).filter(n => n.type && isSemesterNode(n))
