@@ -2,12 +2,17 @@ import z from "zod"
 
 import { CORE_AGENT_ACTIONS } from "@repo/constants"
 
-export const doThingParams = z.object({
-  action: z.literal(CORE_AGENT_ACTIONS.DO_THING),
-  thing: z.string().describe("The thing to do")
+export const rescheduleCourseParams = z.object({
+  action: z.literal(CORE_AGENT_ACTIONS.RESCHEDULE_COURSE),
+  courseName: z.string().describe("The course to reschedule.")
 })
 
-export const ActionPayload = z.discriminatedUnion("action", [doThingParams])
+export const doThingParams = z.object({
+  action: z.literal(CORE_AGENT_ACTIONS.DO_THING),
+  thing: z.string().describe("Do the thing")
+})
+
+export const ActionPayload = z.discriminatedUnion("action", [rescheduleCourseParams])
 
 export const coreAgentSchema = z.object({
   content: z

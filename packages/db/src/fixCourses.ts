@@ -1,6 +1,6 @@
 import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.json"
 
-import { db, LogicalOperator, RequirementType } from "@repo/db"
+import { db, type LogicalOperator, type RequirementType } from "@repo/db"
 
 export async function fixPrereqs() {
   for (const course of fixedDenormalizedCourses) {

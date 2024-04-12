@@ -1,6 +1,9 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { getCourseFromIdNameCode } from "@graph/course"
+import { graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { pushCourseAndDependents } from "@graph/profile"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
@@ -18,7 +21,7 @@ import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
-import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
+import { createVersion, getAllNodesAndEdges, hydratedProfileAndNodesByVersion } from "./action"
 
 type VersionWithoutBlob = { id: string }
 
@@ -62,24 +65,27 @@ export function Editor({
   )
   const [_status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
-  const saveVersion = async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
-    setStatus("saving")
+  const saveVersion = useCallback(
+    async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
+      setStatus("saving")
 
-    const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
+      const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
 
-    const semesters = Array.from(new Set(courseNodes.map(n => n.data.semesterIndex)))
-    const semesterCourses = semesters.map(s =>
-      courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
-    ) as unknown as CourseNode[][]
+      const semesters = Array.from(new Set(courseNodes.map(n => n.data.semesterIndex)))
+      const semesterCourses = semesters.map(s =>
+        courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
+      ) as unknown as CourseNode[][]
 
-    const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
+      const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
 
-    const version = await createVersion(newProfile, scheduleId)
-    setVersions(prev => [...prev, version])
-    setProfile(newProfile)
-    setSelectedVersion(version)
-    setStatus("clean")
-  }
+      const version = await createVersion(newProfile, scheduleId)
+      setVersions(prev => [...prev, version])
+      setProfile(newProfile)
+      setSelectedVersion(version)
+      setStatus("clean")
+    },
+    [profile, scheduleId]
+  )
 
   useEffect(() => {
     setStatus("pending")
@@ -109,21 +115,34 @@ export function Editor({
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
 
-  // const pushClass = async (courseId: string) => {
-  //   const graph = studentProfileToGraph(profile!)
+  const { messages, sendMessage, loading, isConnected, waiting, ready, action, clearAction } =
+    useAdvisor({
+      conversationId: conversation.id,
+      initialMessages: conversation?.messages ?? [],
+      userId: conversation.userId
+    })
 
-  //   const newGraph = pushCourseAndDependents(graph, courseId)
-  //   const newProfile = graphToStudentProfile(newGraph, profile!)
-  //   const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-  //   setProfile(newProfile)
-  //   await saveVersion(defaultNodes)
-  // }
+  const pushClass = useCallback(
+    async (courseId: string) => {
+      const graph = studentProfileToGraph(profile!)
 
-  const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
-    conversationId: conversation.id,
-    initialMessages: conversation?.messages ?? [],
-    userId: conversation.userId
-  })
+      const newGraph = pushCourseAndDependents(graph, courseId)
+      const newProfile = graphToHydratedStudentProfile(newGraph, profile!)
+      const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+      setProfile(newProfile)
+      await saveVersion(defaultNodes)
+    },
+    [profile, saveVersion]
+  )
+
+  useEffect(() => {
+    if (profile && action?.action === "RESCHEDULE_COURSE") {
+      const actionParams = action?.actionParams as { action: string; courseName: string }
+      const courseNode = getCourseFromIdNameCode(profile, actionParams.courseName)
+      pushClass(courseNode.id)
+      clearAction()
+    }
+  }, [action, clearAction, profile, pushClass])
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
     ChatScrollerRef?.current?.scrollTo({
