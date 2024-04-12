@@ -15,6 +15,9 @@ import ReactFlow, {
 
 import "reactflow/dist/style.css"
 
+// import DevTools from "./devtools"
+// import "./devtools/devtools.css"
+
 import { Dispatch, SetStateAction, useCallback, useState } from "react"
 import { canMoveCourse, CannotMoveReason } from "@graph/schedule"
 import { HydratedStudentProfile } from "@graph/types"
@@ -254,6 +257,7 @@ function SemesterDAGInternal({
         <Background />
         <MiniMap />
         <Controls position="top-left" />
+        {/* <DevTools /> */}
       </ReactFlow>
     </div>
   )
