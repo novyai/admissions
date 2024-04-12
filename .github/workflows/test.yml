@@ -37,7 +37,14 @@ jobs:
       - name: Install Dependencies
         run: bun i
         
-      - name: Run Checks
+        
+      - run: bun run db:generate
+        
+      - name: Run Type Check
         run: bun run type-check
-      - run: bun run lint
-      - run: bun run test
+      
+      - name: Run Linting
+        run: bun run lint
+
+      - name: Run Tests
+        run: bun run test
