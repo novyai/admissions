@@ -6,6 +6,11 @@ export const ProgramOption = {
   DS: "DS" as const
 }
 
+export const prgoramName = {
+  [ProgramOption.CS]: "Computer Science",
+  [ProgramOption.DS]: "Data Science"
+}
+
 export const Programs = ["CS", "DS"] as const
 export type Program = (typeof Programs)[number]
 
