@@ -6,7 +6,7 @@ export const ProgramOption = {
   DS: "DS" as const
 }
 
-export const prgoramName = {
+export const programName = {
   [ProgramOption.CS]: "Computer Science",
   [ProgramOption.DS]: "Data Science"
 }
