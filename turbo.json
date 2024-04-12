@@ -44,9 +44,7 @@
       "dependsOn": ["^db:generate"],
       "persistent": false
     },
-    "db:generate": {
-      "cache": false
-    },
+    "db:generate": {},
     "db:format": {
       "cache": false
     },

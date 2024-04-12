@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { AdvisorAgent, advisorAgentSchema } from "@ai/agents/advisor/schema"
-import { StudentProfile } from "@graph/types"
+import { HydratedStudentProfile } from "@graph/types"
 import { User } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import OpenAI from "openai"
@@ -26,11 +26,11 @@ export function Chat({
   studentProfile,
   student
 }: {
-  studentProfile: StudentProfile
+  studentProfile: HydratedStudentProfile
   student: User
 }) {
   const [messages, setMessages] = useState<CustomMessage[]>([])
-  const [profile, setProfile] = useState(studentProfile)
+  const [profile, setProfile] = useState<HydratedStudentProfile>(studentProfile)
   const [partial, setPartial] = useState<Partial<AdvisorAgent> | null>({})
   const [suggestedResponses, setSuggestedResponses] = useState<string[]>([])
   const lastPromptRef = useRef<string>("")

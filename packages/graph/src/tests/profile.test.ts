@@ -1,9 +1,12 @@
-import { buildSemesters, graphToStudentProfile, studentProfileToGraph } from "@graph/graph"
+import { ProgramOption } from "@graph/defaultCourses"
+import { buildSemesters, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
-import { BaseStudentProfile } from "@graph/types"
+import { BaseStudentProfile, StudentProfile } from "@graph/types"
 import { describe, expect, test } from "bun:test"
 
-const mathProfile: BaseStudentProfile = {
+const mathProfile: StudentProfile = {
+  programs: [],
+  semesters: [],
   requiredCourses: [
     "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
     "cb604716-5332-4835-a798-9f6f23bd2651",
@@ -17,7 +20,9 @@ const mathProfile: BaseStudentProfile = {
   coursePerSemester: 3
 }
 
-const compositionProfile: BaseStudentProfile = {
+const compositionProfile: StudentProfile = {
+  programs: [],
+  semesters: [],
   requiredCourses: ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
   transferCredits: [],
   timeToGraduate: 4,
@@ -25,23 +30,11 @@ const compositionProfile: BaseStudentProfile = {
   coursePerSemester: 3
 }
 
-test("student profile to graph", async () => {
-  const profile = await getStudentProfileFromRequirements(mathProfile)
-
-  const graph = studentProfileToGraph(profile)
-  const studentProfile = graphToStudentProfile(graph, mathProfile)
-  expect(studentProfile).toEqual(profile)
-})
-
-test("student profile from requirements", async () => {
+test("base student profile from requirements", async () => {
   const studentProfile = await getStudentProfileFromRequirements(mathProfile)
-  // console.log(studentProfile)
 
-  expect(studentProfile.semesters[0]).toHaveLength(1)
-  expect(studentProfile.semesters[1]).toHaveLength(2)
-  expect(studentProfile.semesters[2]).toHaveLength(1)
-  expect(studentProfile.semesters[3]).toHaveLength(1)
   expect(studentProfile.semesters).toHaveLength(4)
+  expect(studentProfile.semesters.map(s => s.length)).toEqual([1, 2, 1, 1])
 })
 
 describe("pushing classes", () => {
@@ -121,4 +114,19 @@ describe("pushing classes", () => {
       )
     }
   )
+})
+
+const csProfile: BaseStudentProfile = {
+  programs: [ProgramOption.CS],
+  requiredCourses: [],
+  transferCredits: [],
+  timeToGraduate: 4,
+  currentSemester: 1,
+  coursePerSemester: 5
+}
+
+test("test blob", async () => {
+  const cs = await getStudentProfileFromRequirements(csProfile)
+  console.log(cs.semesters.map(s => s.length))
+  expect(cs.semesters.map(s => s.length)).toEqual([5, 5, 5, 5, 5, 5, 3])
 })
