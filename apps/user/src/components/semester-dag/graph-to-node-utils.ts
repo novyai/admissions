@@ -8,7 +8,7 @@ import { defaultSemesterNode, SEMESTER_NODE_WIDTH, SemesterNodeType } from "./se
 export const isCourseNode = (n: Node): n is CourseNodeType => n.type === "courseNode"
 export const isSemesterNode = (n: Node): n is SemesterNodeType => n.type === "semesterNode"
 
-export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: CourseNode[]) {
+export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
     return {
@@ -38,7 +38,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
 
   nodes.push(...childNodes)
 
-  const edges: Edge[] = allCourses.flatMap(course => {
+  const edges: Edge[] = semesters.flat().flatMap(course => {
     return course.prerequisites.map(prereq => {
       return {
         id: `${prereq}-${course.id}`,
@@ -49,7 +49,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][], allCourses: 
       }
     })
   })
-
+  console.log(nodes)
   return { nodes, edges }
 }
 
@@ -134,7 +134,6 @@ export const getUnassignedNodesAndEdges = async (
     ({ id }) => !nodes.map(n => n.id).includes(id)
   )
 
-  console.log(coursesNotInSemesterOrTransferNode)
   const unassignedNodes: CourseNodeType[] = coursesNotInSemesterOrTransferNode.map((course, i) => {
     return getOutsideCourseNode(course, { x: -400 - 200 * i, y: 50 })
   })

@@ -1,24 +1,19 @@
 "use server"
 
-import { StudentProfile } from "@graph/types"
+import { createBlob, parseBlob } from "@graph/blob"
+import { graphToHydratedStudentProfile } from "@graph/graph"
+import { createGraph } from "@graph/profile"
+import { HydratedStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
 
-import { createBlob } from "@/lib/version-blob"
 import {
   getSemesterNodesAndEdges,
   getTransferNodesAndEdges,
   getUnassignedNodesAndEdges
 } from "@/components/semester-dag/graph-to-node-utils"
 
-import { CourseNodeType } from "../semester-dag/course-node"
-import { SemesterNodeType } from "../semester-dag/semester-node"
-
-export const createVersion = async (
-  profile: StudentProfile,
-  scheduleId: string,
-  nodes: (SemesterNodeType | CourseNodeType)[]
-) => {
-  const blob = JSON.stringify(createBlob(profile, nodes))
+export const createVersion = async (profile: HydratedStudentProfile, scheduleId: string) => {
+  const blob = createBlob(profile)
   const newVersion = await db.version.create({
     data: {
       scheduleId,
@@ -31,15 +26,11 @@ export const createVersion = async (
 
 export const getAllNodesAndEdges = async ({
   semesters,
-  allCourses,
   graph,
   transferCredits
-}: StudentProfile) => {
-  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
-    semesters,
-    allCourses
-  )
-
+}: HydratedStudentProfile) => {
+  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(semesters)
+  console.log("defaultNodes", defaultNodes, "df")
   // if there are transfer credits, we want to render them and their edges
   if (transferCredits.length > 0) {
     const transferNodesAndEdges = getTransferNodesAndEdges(transferCredits, graph)
@@ -66,4 +57,28 @@ export const getAllNodesAndEdges = async ({
   defaultEdges.push(...unassignedEdges)
 
   return { defaultNodes, defaultEdges }
+}
+
+export async function hydratedProfileAndNodesByVersion(versionId: string) {
+  const version = await db.version.findUnique({
+    where: {
+      id: versionId
+    },
+    select: {
+      blob: true
+    }
+  })
+
+  if (!version) {
+    throw new Error(`Could not find version with id ${versionId}`)
+  }
+
+  const profile = parseBlob(version.blob)
+
+  const graph = await createGraph(profile)
+
+  const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
+  const { defaultNodes, defaultEdges } = await getAllNodesAndEdges(hydratedProfile)
+
+  return { profile: hydratedProfile, defaultNodes, defaultEdges }
 }

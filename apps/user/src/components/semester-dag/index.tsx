@@ -17,7 +17,7 @@ import "reactflow/dist/style.css"
 
 import { Dispatch, SetStateAction, useCallback } from "react"
 import { canMoveCourse } from "@graph/schedule"
-import { StudentProfile } from "@graph/types"
+import { HydratedStudentProfile } from "@graph/types"
 import { cn } from "@ui/lib/utils"
 
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
@@ -33,7 +33,7 @@ const nodeTypes = {
 type SemesterDAGProps = {
   nodes: Node[]
   edges: Edge[]
-  profile: StudentProfile
+  profile: HydratedStudentProfile
   saveVersion: (nodes: Node[]) => Promise<void>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setNodes: Dispatch<SetStateAction<Node<any, string | undefined>[]>>

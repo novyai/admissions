@@ -29,9 +29,9 @@ export default async function Page({
     include: {
       versions: {
         select: {
-          scheduleId: true,
-          blob: true,
-          createdAt: true,
+          // scheduleId: true,
+          // blob: true,
+          // createdAt: true,
           id: true
         },
         orderBy: {

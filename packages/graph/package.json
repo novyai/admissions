@@ -9,7 +9,8 @@
     "build": "echo 'No build step'",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "test": "bun test --coverage --verbose",
-    "test:watch": "bun test --watch --coverage --verbose"
+    "test:watch": "bun test --watch --coverage --verbose",
+    "type-check": "tsc --noEmit"
   },
   "exports": {
     "./*": {
