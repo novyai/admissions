@@ -120,7 +120,7 @@ export function useAdvisor({
         toast("We couldn't send your message. Please try again.")
       }
     },
-    [conversationId, loading, messages, userId]
+    [conversationId, loading, messages, userId, versionId]
   )
 
   const clearAction = () => setAction(undefined)
