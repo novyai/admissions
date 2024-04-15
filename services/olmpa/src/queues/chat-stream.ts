@@ -1,12 +1,17 @@
-import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@ai/agents/core/schema"
+import { createBlob, parseBlob } from "@graph/blob"
+import { CourseGraph, getCourseFromIdNameCode } from "@graph/course"
+import { graphToHydratedStudentProfile } from "@graph/graph"
+import { createGraph, pushCourseAndDependents } from "@graph/profile"
+import { HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
 import z from "zod"
 
 import { coreAgent } from "@repo/ai/agents/core"
+import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@repo/ai/agents/core/schema"
 import { countTokens } from "@repo/ai/lib/tokens"
 import { CORE_AGENT_ACTION_DEFINITIONS, CORE_AGENT_ACTIONS, SOCKET_EVENTS } from "@repo/constants"
-import { ConversationSummary, Message, MessageRole, MessageType } from "@repo/db"
+import { ConversationSummary, db, Message, MessageRole, MessageType } from "@repo/db"
 import {
   createMessages,
   getSummariesForConversation,
@@ -40,7 +45,8 @@ const chatStreamSchema = z.object({
   userId: z.string(),
   meta: z.record(z.unknown()).default({}),
   streamId: z.string(),
-  prompt: z.string()
+  prompt: z.string(),
+  versionId: z.string().nullable()
 })
 
 async function saveMessages({
@@ -111,6 +117,43 @@ createWorker(async job => {
     )
   }
 
+  const hydrateSchedule = createJobStep<
+    {
+      versionId: string
+    },
+    {
+      graph: CourseGraph
+      profile: HydratedStudentProfile
+      scheduleId: string
+    }
+  >("schedule-step", async ({ complete }, { versionId }) => {
+    const version = await db.version.findUnique({
+      where: {
+        id: versionId
+      },
+      select: {
+        blob: true,
+        scheduleId: true
+      }
+    })
+
+    if (!version) {
+      throw new Error(`Could not find version with id ${versionId}`)
+    }
+
+    const profile = parseBlob(version.blob)
+
+    const graph = await createGraph(profile)
+
+    const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
+
+    complete({
+      graph,
+      profile: hydratedProfile,
+      scheduleId: version.scheduleId
+    })
+  })
+
   const actionHandlers = {
     [CORE_AGENT_ACTIONS.DO_THING]: async (params: z.infer<typeof doThingParams>) => {
       logger.info({
@@ -121,6 +164,41 @@ createWorker(async job => {
       })
 
       return void 0 as void
+    },
+    [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
+      params: z.infer<typeof rescheduleCourseParams>
+    ) => {
+      logger.info({
+        message: "rescheduling course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { graph, profile, scheduleId } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
+
+      const course = getCourseFromIdNameCode(profile, params.courseName)
+
+      const { graph: newGraph } = pushCourseAndDependents(graph, course.id)
+      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+
+      const { id } = await db.version.create({
+        data: {
+          blob: createBlob(newProfile),
+          scheduleId: scheduleId
+        }
+      })
+
+      publish({
+        type: SOCKET_EVENTS.NEW_VERSION,
+        data: {
+          versionId: id
+        }
+      })
     }
   }
 
@@ -367,13 +445,6 @@ createWorker(async job => {
           contentComplete = true
         }
       }
-
-      publish({
-        type: SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM,
-        data: {
-          data: final
-        }
-      })
 
       await saveAssistantResponseStep.run({ content: final?.content ?? "" })
 

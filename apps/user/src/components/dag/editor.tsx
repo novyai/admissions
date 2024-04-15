@@ -1,9 +1,6 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { getCourseFromIdNameCode } from "@graph/course"
-import { graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { pushCourseAndDependents } from "@graph/profile"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
@@ -25,7 +22,7 @@ import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
 import { SemesterNodeType } from "../semester-dag/semester-node"
 import { getChangedNodeIDs, getModifiedCourseNodes } from "../semester-dag/utils"
-import { createVersion, getAllNodesAndEdges, hydratedProfileAndNodesByVersion } from "./action"
+import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
 
 type VersionWithoutBlob = { id: string }
 
@@ -140,35 +137,26 @@ export function Editor({
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
 
-  const { messages, sendMessage, loading, isConnected, waiting, ready, action, clearAction } =
-    useAdvisor({
-      conversationId: conversation.id,
-      initialMessages: conversation?.messages ?? [],
-      userId: conversation.userId
-    })
+  const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
+    conversationId: conversation.id,
+    initialMessages: conversation?.messages ?? [],
+    userId: conversation.userId,
+    versionId: selectedVersion.id,
+    setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId })
+  })
 
-  const pushClass = useCallback(
-    async (courseId: string) => {
-      const graph = studentProfileToGraph(profile!)
+  // const pushClass = useCallback(
+  //   async (courseId: string) => {
+  //     const graph = studentProfileToGraph(profile!)
 
-      const newGraph = pushCourseAndDependents(graph, courseId)
-      const newProfile = graphToHydratedStudentProfile(newGraph, profile!)
-      const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-      setProfile(newProfile)
-      await saveVersion(defaultNodes)
-    },
-    [profile, saveVersion]
-  )
-
-  useEffect(() => {
-    if (profile && action?.action === "RESCHEDULE_COURSE") {
-      const actionParams = action?.actionParams as { action: string; courseName: string }
-      const courseNode = getCourseFromIdNameCode(profile, actionParams.courseName)
-      pushClass(courseNode.id)
-      clearAction()
-      setChatOpen(false)
-    }
-  }, [action, clearAction, profile, pushClass])
+  //     const { graph: newGraph } = pushCourseAndDependents(graph, courseId)
+  //     const newProfile = graphToHydratedStudentProfile(newGraph, profile!)
+  //     const { defaultNodes } = await getAllNodesAndEdges(newProfile)
+  //     setProfile(newProfile)
+  //     await saveVersion(defaultNodes)
+  //   },
+  //   [profile, saveVersion]
+  // )
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
     ChatScrollerRef?.current?.scrollTo({

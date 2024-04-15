@@ -11,7 +11,8 @@ export async function POST(request: Request): Promise<Response> {
       conversationId,
       streamId,
       messageStreamIndex,
-      meta = {}
+      meta = {},
+      versionId
     } = await request.json()
 
     if (!userId) {
@@ -36,14 +37,15 @@ export async function POST(request: Request): Promise<Response> {
           prompt,
           meta,
           isInitialMessage: false,
-          messageStreamIndex
+          messageStreamIndex,
+          versionId
         }
       })
     })
 
     return new Response("ok")
   } catch (error) {
-    console.error(error)
+    console.error(JSON.stringify(error))
     return new Response("Could not complete chat request.")
   }
 }

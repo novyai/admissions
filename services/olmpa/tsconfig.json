@@ -5,7 +5,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@ai/*": ["../../packages/ai/src/*"],
-      "@db/*": ["../../packages/db/src/*"]
+      "@db/*": ["../../packages/db/src/*"],
+      "@graph/*": ["../../packages/graph/src/*"]
     },
     "baseUrl": "."
   },
