@@ -21,10 +21,15 @@ import { SemesterDAG } from "@/components/semester-dag"
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { MdxContent } from "../mdxContent"
-import { CourseNodeType } from "../semester-dag/course-node"
 import { isCourseNode } from "../semester-dag/graph-to-node-utils"
-import { SemesterNodeType } from "../semester-dag/semester-node"
-import { getChangedNodeIDs, getModifiedCourseNodes } from "../semester-dag/utils"
+import { CourseNodeType } from "../semester-dag/nodeTypes/course-node"
+import { SemesterNodeType } from "../semester-dag/nodeTypes/semester-node"
+import {
+  getChangedCourseNodeIDs,
+  getGhostCourseNodesAndEdges,
+  getModifiedCourseNodes,
+  getModifiedEdges
+} from "../semester-dag/utils"
 import { createVersion, getAllNodesAndEdges, hydratedProfileAndNodesByVersion } from "./action"
 
 type VersionWithoutBlob = { id: string }
@@ -107,25 +112,42 @@ export function Editor({
       setProfile(newProfile)
       setDefaultNodes(newDefaultNodes)
 
-      setEdges(newDefaultEdges)
-
       if (_versions === undefined || _versions.length <= 1) {
         setNodes(newDefaultNodes)
+        setEdges(newDefaultEdges)
         return
       }
 
       const lastVersionId = _versions.at(-2)!.id
+      const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
+        await hydratedProfileAndNodesByVersion(lastVersionId)
 
-      const { profile: lastProfile } = await hydratedProfileAndNodesByVersion(lastVersionId)
+      const changedNodeIDs = getChangedCourseNodeIDs(lastProfile, newProfile)
+      const changedEdgeIDs = newDefaultEdges
+        .filter(e => changedNodeIDs.includes(e.source) || changedNodeIDs.includes(e.target))
+        .map(e => e.id)
 
-      const changedNodeIDs = getChangedNodeIDs(lastProfile, newProfile)
+      const { ghostCourseNodes, ghostEdges } = getGhostCourseNodesAndEdges(
+        newProfile,
+        changedNodeIDs,
+        oldDefaultNodes
+      )
 
-      setNodes(
-        getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+      setNodes([
+        ...ghostCourseNodes,
+        ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
           ...n,
           className: cn(n.className, "bg-sky-100 animate-pulse")
         }))
-      )
+      ])
+      setEdges([
+        ...ghostEdges,
+        ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
+          ...e,
+          style: { ...e.style, stroke: "lightskyblue" },
+          hidden: false
+        }))
+      ])
     }
 
     update().then(
