@@ -11,7 +11,7 @@ const elysiaLogger = ElysiaLogging(logger, {
 
 export const app = new Elysia()
   .onError(({ code, error }) => {
-    logger.error(`Error code: ${code}`, {
+    logger.error(`Error code: ${code} ${error.stack}`, {
       error
     })
 

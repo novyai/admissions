@@ -10,7 +10,12 @@ import z from "zod"
 import { coreAgent } from "@repo/ai/agents/core"
 import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@repo/ai/agents/core/schema"
 import { countTokens } from "@repo/ai/lib/tokens"
-import { CORE_AGENT_ACTION_DEFINITIONS, CORE_AGENT_ACTIONS, SOCKET_EVENTS } from "@repo/constants"
+import {
+  CORE_AGENT_ACTION_DEFINITIONS,
+  CORE_AGENT_ACTIONS,
+  SOCKET_EVENTS,
+  SocketMsg
+} from "@repo/constants"
 import { ConversationSummary, db, Message, MessageRole, MessageType } from "@repo/db"
 import {
   createMessages,
@@ -104,7 +109,7 @@ createWorker(async job => {
     userId: jobData.userId
   }
 
-  async function publish({ data, type }: { data?: object; type: string }) {
+  async function publish<T extends keyof typeof SOCKET_EVENTS>({ data, type }: SocketMsg<T>) {
     redis.publish(
       jobData.streamId,
       JSON.stringify({
@@ -126,7 +131,7 @@ createWorker(async job => {
       profile: HydratedStudentProfile
       scheduleId: string
     }
-  >("schedule-step", async ({ complete }, { versionId }) => {
+  >("hydrate-schedule-step", async ({ complete }, { versionId }) => {
     const version = await db.version.findUnique({
       where: {
         id: versionId
@@ -183,22 +188,38 @@ createWorker(async job => {
 
       const course = getCourseFromIdNameCode(profile, params.courseName)
 
-      const { graph: newGraph } = pushCourseAndDependents(graph, course.id)
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
       const { id } = await db.version.create({
         data: {
           blob: createBlob(newProfile),
           scheduleId: scheduleId
+        },
+        select: {
+          id: true
         }
       })
 
-      publish({
-        type: SOCKET_EVENTS.NEW_VERSION,
+      logger.info({
+        message: "new version created",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        versionId: jobData.versionId,
         data: {
-          versionId: id
+          id
         }
       })
+
+      await publish({
+        type: SOCKET_EVENTS.NEW_VERSION,
+        data: {
+          versionId: id,
+          changes
+        }
+      })
+
+      return { id, changes }
     }
   }
 
@@ -346,7 +367,6 @@ createWorker(async job => {
 
       try {
         const actionResults = await actionHandler(actionParams)
-
         if (!actionDef?.sideEffect) {
           const followUpCompletion = await coreAgentStep.run({
             messages: [
@@ -400,7 +420,8 @@ createWorker(async job => {
       }: { messages: OpenAI.ChatCompletionMessageParam[]; isFollowUp?: boolean } = { messages: [] }
     ) => {
       publish({
-        type: SOCKET_EVENTS.START_CONVERSATION_STREAM
+        type: SOCKET_EVENTS.START_CONVERSATION_STREAM,
+        data: undefined
       })
 
       logger.info({
@@ -424,9 +445,11 @@ createWorker(async job => {
           type: SOCKET_EVENTS.CONVERSATION_STREAM,
 
           data: {
+            streamId: jobData.streamId,
+            userId: jobData.userId,
             messageStreamIndex:
               isFollowUp ? jobData.messageStreamIndex + 1 : jobData.messageStreamIndex,
-            data: final,
+            data: final as z.infer<typeof coreAgentSchema>,
             complete: contentComplete
           }
         })
@@ -437,9 +460,7 @@ createWorker(async job => {
         ) {
           publish({
             type: SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM,
-            data: {
-              messageStreamIndex: jobData.messageStreamIndex
-            }
+            data: undefined
           })
 
           contentComplete = true

@@ -44,8 +44,8 @@ export function useAdvisor({
         setLoading(false)
         setWaiting(false)
       },
-      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId }) => {
-        console.log(versionId)
+      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
+        console.log({ versionId, changes })
         setSelectedVersion && setSelectedVersion(versionId)
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
@@ -123,8 +123,6 @@ export function useAdvisor({
     [conversationId, loading, messages, userId, versionId]
   )
 
-  const clearAction = () => setAction(undefined)
-
   useEffect(() => {
     if (loading) {
       if (loadingTimeoutRef.current) {
@@ -143,11 +141,9 @@ export function useAdvisor({
   return {
     loading: loading,
     sendMessage,
-    clearAction,
     isConnected,
     ready: !!userId,
     waiting,
-    messages: messages.filter(m => m.role === "assistant" || m.role === "user"),
-    action: action
+    messages: messages.filter(m => m.role === "assistant" || m.role === "user")
   }
 }

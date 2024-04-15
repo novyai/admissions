@@ -1,3 +1,4 @@
+import { Change, ChangeType } from "@repo/constants"
 import { db } from "@repo/db"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
@@ -177,16 +178,6 @@ export function toCourseNode(
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
     prerequisites: graph.mapInboundNeighbors(courseId, prereqId => prereqId)
   }
-}
-
-export enum ChangeType {
-  Move = "move"
-}
-
-export type Change = {
-  type: ChangeType.Move
-  courseId: string
-  semester: number
 }
 
 /**

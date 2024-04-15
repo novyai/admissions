@@ -29,10 +29,20 @@ export type ConversationStreamData = {
   type: typeof SOCKET_EVENTS.CONVERSATION_STREAM
 }
 
+export enum ChangeType {
+  Move = "move"
+}
+
+export type Change = {
+  type: ChangeType.Move
+  courseId: string
+  semester: number
+}
+
 export type NewVersionData = {
   data: {
     versionId: string
-    // changes: Change[]
+    changes: Change[]
   }
   type: typeof SOCKET_EVENTS.NEW_VERSION
 }
@@ -80,6 +90,6 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
     actionType: CORE_AGENT_ACTIONS.RESCHEDULE_COURSE,
     description: "Takes a courseName and reschedules a course.",
     narrative: "",
-    sideEffect: true
+    sideEffect: false
   }
 } as const

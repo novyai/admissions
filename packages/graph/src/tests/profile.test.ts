@@ -1,12 +1,8 @@
 import { ProgramOption } from "@graph/defaultCourses"
 import { buildSemesters, studentProfileToGraph } from "@graph/graph"
-import {
-  Change,
-  ChangeType,
-  getStudentProfileFromRequirements,
-  pushCourseAndDependents
-} from "@graph/profile"
+import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile, StudentProfile } from "@graph/types"
+import { Change, ChangeType } from "@repo/constants"
 import { describe, expect, test } from "bun:test"
 
 const mathProfile: StudentProfile = {
@@ -150,18 +146,7 @@ describe("pushing classes", () => {
 
   test.each(movingClasses)(
     "moving classes in chain %#",
-    async ({
-      profile,
-      classToPush,
-      expected
-    }: {
-      profile: StudentProfile
-      classToPush: string
-      expected: {
-        semesters: string[][]
-        changes: Change[]
-      }
-    }) => {
+    async ({ profile, classToPush, expected }) => {
       const studentProfile = await getStudentProfileFromRequirements({ ...profile })
       const graph = studentProfileToGraph(studentProfile)
       // push last class in chain

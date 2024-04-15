@@ -145,19 +145,6 @@ export function Editor({
     setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId })
   })
 
-  // const pushClass = useCallback(
-  //   async (courseId: string) => {
-  //     const graph = studentProfileToGraph(profile!)
-
-  //     const { graph: newGraph } = pushCourseAndDependents(graph, courseId)
-  //     const newProfile = graphToHydratedStudentProfile(newGraph, profile!)
-  //     const { defaultNodes } = await getAllNodesAndEdges(newProfile)
-  //     setProfile(newProfile)
-  //     await saveVersion(defaultNodes)
-  //   },
-  //   [profile, saveVersion]
-  // )
-
   function scrollToEnd({ now = false }: { now?: boolean }) {
     ChatScrollerRef?.current?.scrollTo({
       top: ChatScrollerRef?.current?.scrollHeight,
