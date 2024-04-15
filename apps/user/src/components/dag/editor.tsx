@@ -79,7 +79,8 @@ export function Editor({
 
       const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
 
-      const semesters = Array.from(new Set(courseNodes.map(n => n.data.semesterIndex)))
+      const highestSemester = Math.max(...courseNodes.map(n => n.data.semesterIndex))
+      const semesters = Array.from(Array(highestSemester + 1).keys())
       const semesterCourses = semesters.map(s =>
         courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
       ) as unknown as CourseNode[][]
