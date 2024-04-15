@@ -2,7 +2,7 @@ import { ProgramOption } from "@graph/defaultCourses"
 import { buildSemesters, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile, StudentProfile } from "@graph/types"
-import { Change, ChangeType } from "@repo/constants"
+import { ChangeType } from "@repo/constants"
 import { describe, expect, test } from "bun:test"
 
 const mathProfile: StudentProfile = {
