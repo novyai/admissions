@@ -219,6 +219,13 @@ createWorker(async job => {
         }
       })
 
+      await publish({
+        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+        data: {
+          times: [Date.now()]
+        }
+      })
+
       return { id, changes }
     }
   }

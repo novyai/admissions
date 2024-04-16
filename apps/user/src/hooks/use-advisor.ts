@@ -12,7 +12,8 @@ export function useAdvisor({
   initialMessages = [],
   userId,
   versionId,
-  setSelectedVersion
+  setSelectedVersion,
+  handleAppointmentTimes
 }: {
   initialMessages?: Message[]
   conversationId: string
@@ -20,6 +21,7 @@ export function useAdvisor({
   userId: string | null
   versionId: string | null
   setSelectedVersion: ((versionId: string) => void) | null
+  handleAppointmentTimes: ((times: Date[]) => void) | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
@@ -47,6 +49,11 @@ export function useAdvisor({
       [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
         console.log({ versionId, changes })
         setSelectedVersion && setSelectedVersion(versionId)
+      },
+      [SOCKET_EVENTS.SHOW_APPOINTMENT]: ({ times }) => {
+        if (handleAppointmentTimes) {
+          handleAppointmentTimes(times.map(milliseconds => new Date(milliseconds)))
+        }
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
         data,

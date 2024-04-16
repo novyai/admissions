@@ -27,7 +27,8 @@ export function Assistant({
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
     versionId: null,
-    setSelectedVersion: null
+    setSelectedVersion: null,
+    handleAppointmentTimes: null
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {

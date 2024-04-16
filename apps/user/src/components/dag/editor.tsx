@@ -28,6 +28,7 @@ import {
   getModifiedEdges
 } from "../semester-dag/utils"
 import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
+import { AppointmentScheduler } from "./appointment-scheduler"
 
 type VersionWithoutBlob = { id: string }
 
@@ -44,6 +45,7 @@ export function Editor({
 }) {
   const [_versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
   const [selectedVersion, setSelectedVersion] = useState<VersionWithoutBlob>(initialVersions[0]!)
+  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
   const [profile, setProfile] = useState<HydratedStudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
@@ -165,7 +167,8 @@ export function Editor({
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
     versionId: selectedVersion.id,
-    setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId })
+    setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId }),
+    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
@@ -234,6 +237,9 @@ export function Editor({
                     AI Advisor
                   </h2>
                   <Separator className="bg-slate-100 h-[0.1rem]" />
+                  {appointmentTimes.length > 0 ?
+                    <AppointmentScheduler times={appointmentTimes} />
+                  : <></>}
                 </div>
 
                 <ScrollArea ref={ChatScrollerRef} className="h-[calc(100%-2.75rem)] rounded-xl">

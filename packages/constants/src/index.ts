@@ -11,7 +11,8 @@ export const SOCKET_EVENTS = {
   CONVERSATION_STREAM: "CONVERSATION_STREAM",
   START_CONVERSATION_STREAM: "START_CONVERSATION_STREAM",
   COMPLETE_CONVERSATION_STREAM: "COMPLETE_CONVERSATION_STREAM",
-  NEW_VERSION: "NEW_VERSION"
+  NEW_VERSION: "NEW_VERSION",
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT"
 } as const
 
 export type ConversationStreamData = {
@@ -39,6 +40,13 @@ export type Change = {
   semester: number
 }
 
+export type ShowAppointmentData = {
+  data: {
+    times: number[]
+  }
+  type: typeof SOCKET_EVENTS.SHOW_APPOINTMENT
+}
+
 export type NewVersionData = {
   data: {
     versionId: string
@@ -50,12 +58,13 @@ export type NewVersionData = {
 export type GenericListener = (data?: unknown) => void
 export type ConversationStreamListener = (data: ConversationStreamData["data"]) => void
 export type NewVersionListener = (data: NewVersionData["data"]) => void
-
+export type ShowAppointmentListener = (data: ShowAppointmentData["data"]) => void
 export type SocketListeners = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]?: ConversationStreamListener
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.NEW_VERSION]?: NewVersionListener
+  [SOCKET_EVENTS.SHOW_APPOINTMENT]?: ShowAppointmentListener
 }
 
 export type EventDataTypes = {
@@ -63,6 +72,7 @@ export type EventDataTypes = {
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.NEW_VERSION]: NewVersionData["data"]
+  [SOCKET_EVENTS.SHOW_APPOINTMENT]: ShowAppointmentData["data"]
 }
 
 export interface SocketMsg<T extends keyof typeof SOCKET_EVENTS> {
