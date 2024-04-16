@@ -2,11 +2,17 @@ import { getCourseWithPrereqs } from "@/db/courses"
 import { CourseNode } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
-import { CourseNodeType, defaultCourseNode } from "./course-node"
-import { defaultSemesterNode, SEMESTER_NODE_WIDTH, SemesterNodeType } from "./semester-node"
+import { CourseNodeType, defaultCourseNode } from "./nodeTypes/course-node"
+import { GhostCourseNodeType } from "./nodeTypes/ghost-course-node"
+import {
+  defaultSemesterNode,
+  SEMESTER_NODE_WIDTH,
+  SemesterNodeType
+} from "./nodeTypes/semester-node"
 
 export const isCourseNode = (n: Node): n is CourseNodeType => n.type === "courseNode"
 export const isSemesterNode = (n: Node): n is SemesterNodeType => n.type === "semesterNode"
+export const isGhostCourseNode = (n: Node): n is GhostCourseNodeType => n.type === "ghostCourseNode"
 
 export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
   const nodes: Node[] = []

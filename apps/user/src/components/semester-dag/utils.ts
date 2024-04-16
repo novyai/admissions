@@ -1,8 +1,9 @@
-import { HydratedStudentProfile } from "@graph/types"
+import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { Edge, getIncomers, getOutgoers, Node } from "reactflow"
 
-import { CourseNodeData, CourseNodeType } from "./course-node"
 import { isCourseNode } from "./graph-to-node-utils"
+import { CourseNodeData, CourseNodeType } from "./nodeTypes/course-node"
+import { defaultGhostCourseNode, GhostCourseNodeType } from "./nodeTypes/ghost-course-node"
 
 const getAllChildrenNodes = (
   targetNode: CourseNodeType,
@@ -57,9 +58,19 @@ export const getEdgesIDsInCoursePath = (connectedNodeIDs: string[], allEdges: Ed
 export const getModifiedEdge = (
   edge: Edge,
   edgeIDsToModify: string[],
-  modifyEdge: (edge: Edge) => Edge
+  modifyEdge: (edge: Edge) => Edge,
+  modifyDefaultEdge: (edge: Edge) => Edge = (e: Edge) => e
 ) => {
-  return edgeIDsToModify.includes(edge.id) ? modifyEdge(edge) : edge
+  return edgeIDsToModify.includes(edge.id) ? modifyEdge(edge) : modifyDefaultEdge(edge)
+}
+
+export const getModifiedEdges = (
+  edges: Edge[],
+  edgeIDsToModify: string[],
+  modifyEdge: (edge: Edge) => Edge,
+  modifyDefaultEdge: (edge: Edge) => Edge = (e: Edge) => e
+) => {
+  return edges.map(e => (edgeIDsToModify.includes(e.id) ? modifyEdge(e) : modifyDefaultEdge(e)))
 }
 
 export const getModifiedCourseNodes = (
@@ -70,7 +81,7 @@ export const getModifiedCourseNodes = (
   return nodes.map(n => (nodeIDsToModify.includes(n.id) ? modifyNode(n) : n))
 }
 
-export const getChangedNodeIDs = (
+export const getChangedCourseNodeIDs = (
   oldProfile: HydratedStudentProfile,
   newProfile: HydratedStudentProfile
 ) => {
@@ -87,4 +98,66 @@ export const getChangedNodeIDs = (
   }
 
   return changedNodeIDs
+}
+
+export const getGhostCourseNodesAndEdges = (
+  newProfile: HydratedStudentProfile,
+  changedNodeIDs: string[],
+  oldDefaultNodes: CourseNodeType[]
+) => {
+  const oldChangedCourseNodes = oldDefaultNodes
+    .filter(n => changedNodeIDs.includes(n.id))
+    .filter(n => isCourseNode(n))
+
+  const newSemesters: CourseNode[][] = newProfile.semesters
+
+  console.log("OLD COURSE NODES", oldChangedCourseNodes)
+
+  const ghostCourseNodes: GhostCourseNodeType[][] = []
+  for (let i = 0; i < newSemesters.length; i++) {
+    ghostCourseNodes.push([])
+  }
+
+  const ghostEdges: Edge[] = []
+
+  for (const oldNode of oldChangedCourseNodes) {
+    const { semesterIndex, name, prerequisites } = oldNode.data
+
+    const semesterExistsInNewProfile = semesterIndex < newSemesters.length
+
+    if (!semesterExistsInNewProfile) {
+      continue
+    }
+
+    const startCourseIndex = newSemesters[semesterIndex].length
+    const courseIndex = startCourseIndex + ghostCourseNodes[semesterIndex].length
+
+    ghostCourseNodes[semesterIndex].push({
+      ...defaultGhostCourseNode,
+      id: `ghost-${oldNode.id}`,
+      position: { x: 5, y: 50 + courseIndex * 50 },
+      parentNode: `semester-${semesterIndex}`,
+      style: { zIndex: "10" },
+
+      data: {
+        ...oldNode.data,
+        name: `${name} (Old)`
+      }
+    })
+    const edges = prerequisites.map(prereq => {
+      const nodeID = changedNodeIDs.includes(oldNode.id) ? `ghost-${oldNode.id}` : oldNode.id
+      const prereqID = changedNodeIDs.includes(prereq) ? `ghost-${prereq}` : prereq
+      return {
+        id: `${prereqID}-${nodeID}`,
+        type: "default",
+        source: prereqID,
+        target: nodeID,
+        zIndex: 3,
+        hidden: false
+      }
+    })
+    ghostEdges.push(...edges)
+  }
+
+  return { ghostCourseNodes: ghostCourseNodes.flat(), ghostEdges: ghostEdges }
 }

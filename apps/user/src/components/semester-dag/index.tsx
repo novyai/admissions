@@ -25,15 +25,19 @@ import { cn } from "@ui/lib/utils"
 
 import { EdgeSwitch } from "../dag/edge-switch"
 import ScheduleChangeToast from "../dag/schedule-change-toast"
-import { CourseNode, CourseNodeType, defaultCourseNode } from "./course-node"
-import { isCourseNode, isSemesterNode } from "./graph-to-node-utils"
-import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./semester-node"
+import { isCourseNode, isGhostCourseNode, isSemesterNode } from "./graph-to-node-utils"
+import { CourseNode, CourseNodeType, defaultCourseNode } from "./nodeTypes/course-node"
+import { GhostCourseNode } from "./nodeTypes/ghost-course-node"
+import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./nodeTypes/semester-node"
 import { getEdgesIDsInCoursePath, getModifiedEdge, getNodeIDsInCoursePath } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
-  courseNode: CourseNode
+  courseNode: CourseNode,
+  ghostCourseNode: GhostCourseNode
 }
+
+type NodeType = SemesterNodeType | CourseNodeType
 
 type SemesterDAGProps = {
   nodes: Node[]
@@ -99,25 +103,36 @@ function SemesterDAGInternal({
     )
   }
 
-  const onNodeDragStart: NodeDragHandler = (_e, node: SemesterNodeType | CourseNodeType) => {
+  const onNodeDragStart: NodeDragHandler = (_e, node: NodeType) => {
     const coursePathNodeIDs = getNodeIDsInCoursePath(node, nodes, edges)
     const coursePathEdgeIDs = getEdgesIDsInCoursePath(coursePathNodeIDs, edges)
 
     if (isCourseNode(node)) {
       setEdges(
         edges.map(e =>
-          getModifiedEdge(e, coursePathEdgeIDs, e => ({
-            ...e,
-            hidden: false,
-            style: { ...e.style, stroke: "lightskyblue" }
-          }))
+          getModifiedEdge(
+            e,
+            coursePathEdgeIDs,
+            e => ({
+              ...e,
+              hidden: false,
+              style: { ...e.style, stroke: "lightskyblue" }
+            }),
+            e => ({
+              ...e,
+              hidden: !showEdges,
+              style: { ...e.style, stroke: "lightgray" }
+            })
+          )
         )
       )
       setNodes(
-        nodes.map(n => ({
-          ...n,
-          className: cn(n.className, "animate-none bg-background")
-        }))
+        nodes
+          .filter(n => !isGhostCourseNode(n))
+          .map(n => ({
+            ...n,
+            className: cn(n.className, "animate-none bg-background")
+          }))
       )
     }
   }

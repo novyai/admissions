@@ -5,8 +5,8 @@ import { CourseNode } from "@repo/graph/types"
 import OpenAI from "openai"
 import { Node } from "reactflow"
 
-import { CourseNodeType } from "@/components/semester-dag/course-node"
 import { getUnassignedNodesAndEdges } from "@/components/semester-dag/graph-to-node-utils"
+import { CourseNodeType } from "@/components/semester-dag/nodeTypes/course-node"
 
 export async function POST(request: Request): Promise<Response> {
   const {
