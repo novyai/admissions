@@ -41,9 +41,7 @@ export type Change = {
 }
 
 export type ShowAppointmentData = {
-  data: {
-    times: number[]
-  }
+  data: undefined
   type: typeof SOCKET_EVENTS.SHOW_APPOINTMENT
 }
 

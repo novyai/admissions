@@ -186,8 +186,21 @@ createWorker(async job => {
         versionId: jobData.versionId
       })
 
-      const course = getCourseFromIdNameCode(profile, params.courseName)
-
+      let course
+      try {
+        course = getCourseFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
@@ -219,14 +232,34 @@ createWorker(async job => {
         }
       })
 
-      await publish({
-        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
-        data: {
-          times: [Date.now()]
-        }
-      })
+      let systemPrompt = `
+      This action made the following changes to your schedule:
+      ${changes
+        .map(
+          change =>
+            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester}`
+        )
+        .join("\n")}
 
-      return { id, changes }
+        Please use the courses changed in your response
+    `
+
+      if (changes.length > 5) {
+        systemPrompt += `
+          Remember: This a massive change to your schedule and will have to meet with your advisor
+
+        `
+        await publish({
+          type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+          data: undefined
+        })
+      } else {
+        systemPrompt += `\n
+          This isa small change to your schedule and will not have to meet with your advisor
+          \n
+        `
+      }
+      return systemPrompt
     }
   }
 
@@ -383,7 +416,10 @@ createWorker(async job => {
                 content: completion.content
               },
               {
-                content: `here are the results of action: ${agentStep.completion.action}: \n ${JSON.stringify(actionResults)} `,
+                content: `here are the results of action: ${agentStep.completion.action}: \n 
+                
+                Please use the following information in your response
+                ${actionResults}`,
                 role: "system"
               }
             ],

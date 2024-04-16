@@ -19,7 +19,7 @@ export const getCourseFromIdNameCode = (profile: HydratedStudentProfile, courseQ
     courses.find(c => c.id == courseQuery)
 
   if (course === undefined) {
-    throw Error(`Course ${course} not found in student profile`)
+    throw new Error(`Course ${course} not found in student profile`)
   }
 
   return course

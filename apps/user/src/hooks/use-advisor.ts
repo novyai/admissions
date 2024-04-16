@@ -50,9 +50,9 @@ export function useAdvisor({
         console.log({ versionId, changes })
         setSelectedVersion && setSelectedVersion(versionId)
       },
-      [SOCKET_EVENTS.SHOW_APPOINTMENT]: ({ times }) => {
+      [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
         if (handleAppointmentTimes) {
-          handleAppointmentTimes(times.map(milliseconds => new Date(milliseconds)))
+          handleAppointmentTimes([new Date()])
         }
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
