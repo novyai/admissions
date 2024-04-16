@@ -11,7 +11,7 @@ export const SOCKET_EVENTS = {
   CONVERSATION_STREAM: "CONVERSATION_STREAM",
   START_CONVERSATION_STREAM: "START_CONVERSATION_STREAM",
   COMPLETE_CONVERSATION_STREAM: "COMPLETE_CONVERSATION_STREAM",
-  FULLY_COMPLETED_CONVERSATION_STREAM: "FULLY_COMPLETED_CONVERSATION_STREAM"
+  NEW_VERSION: "NEW_VERSION"
 } as const
 
 export type ConversationStreamData = {
@@ -29,34 +29,40 @@ export type ConversationStreamData = {
   type: typeof SOCKET_EVENTS.CONVERSATION_STREAM
 }
 
-export type FullyCompletedConversationStreamData = {
+export enum ChangeType {
+  Move = "move"
+}
+
+export type Change = {
+  type: ChangeType.Move
+  courseId: string
+  semester: number
+}
+
+export type NewVersionData = {
   data: {
-    data: {
-      action?: string
-      actionParams?: unknown
-    }
+    versionId: string
+    changes: Change[]
   }
-  type: typeof SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM
+  type: typeof SOCKET_EVENTS.NEW_VERSION
 }
 
 export type GenericListener = (data?: unknown) => void
 export type ConversationStreamListener = (data: ConversationStreamData["data"]) => void
-export type FullyCompletedConversationStreamListener = (
-  data: FullyCompletedConversationStreamData["data"]
-) => void
+export type NewVersionListener = (data: NewVersionData["data"]) => void
 
 export type SocketListeners = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]?: ConversationStreamListener
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]?: GenericListener
-  [SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM]?: FullyCompletedConversationStreamListener
+  [SOCKET_EVENTS.NEW_VERSION]?: NewVersionListener
 }
 
 export type EventDataTypes = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]: ConversationStreamData["data"]
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: undefined
-  [SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM]: FullyCompletedConversationStreamData["data"]
+  [SOCKET_EVENTS.NEW_VERSION]: NewVersionData["data"]
 }
 
 export interface SocketMsg<T extends keyof typeof SOCKET_EVENTS> {

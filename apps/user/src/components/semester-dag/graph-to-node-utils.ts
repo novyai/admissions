@@ -55,7 +55,6 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
       }
     })
   })
-  console.log(nodes)
   return { nodes, edges }
 }
 
