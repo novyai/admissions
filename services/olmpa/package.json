@@ -20,6 +20,7 @@
     "@repo/ai": "workspace:*",
     "@repo/constants": "workspace:*",
     "@repo/db": "workspace:*",
+    "@repo/graph": "workspace:*",
     "@types/jsonwebtoken": "^9.0.5",
     "bullmq": "^5.2.1",
     "date-fns": "^3.3.1",

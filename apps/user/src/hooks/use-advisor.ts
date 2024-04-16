@@ -10,12 +10,16 @@ const NO_RESPONSE_TIMEOUT = 10000
 export function useAdvisor({
   conversationId,
   initialMessages = [],
-  userId
+  userId,
+  versionId,
+  setSelectedVersion
 }: {
   initialMessages?: Message[]
   conversationId: string
   artifacts?: {}
   userId: string | null
+  versionId: string | null
+  setSelectedVersion: ((versionId: string) => void) | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
@@ -40,8 +44,9 @@ export function useAdvisor({
         setLoading(false)
         setWaiting(false)
       },
-      [SOCKET_EVENTS.FULLY_COMPLETED_CONVERSATION_STREAM]: ({ data }) => {
-        setAction({ action: data.action, actionParams: data.actionParams })
+      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
+        console.log({ versionId, changes })
+        setSelectedVersion && setSelectedVersion(versionId)
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
         data,
@@ -103,7 +108,8 @@ export function useAdvisor({
             messageStreamIndex: messageStreamIndex > 0 ? messageStreamIndex : 0,
             userId,
             meta: {},
-            streamId: `${conversationId}-${userId}`
+            streamId: `${conversationId}-${userId}`,
+            versionId
           })
         })
       } catch (e) {
@@ -114,10 +120,8 @@ export function useAdvisor({
         toast("We couldn't send your message. Please try again.")
       }
     },
-    [conversationId, loading, messages, userId]
+    [conversationId, loading, messages, userId, versionId]
   )
-
-  const clearAction = () => setAction(undefined)
 
   useEffect(() => {
     if (loading) {
@@ -137,11 +141,9 @@ export function useAdvisor({
   return {
     loading: loading,
     sendMessage,
-    clearAction,
     isConnected,
     ready: !!userId,
     waiting,
-    messages: messages.filter(m => m.role === "assistant" || m.role === "user"),
-    action: action
+    messages: messages.filter(m => m.role === "assistant" || m.role === "user")
   }
 }

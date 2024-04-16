@@ -1,3 +1,4 @@
+import { Change, ChangeType } from "@repo/constants"
 import { db } from "@repo/db"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
@@ -186,6 +187,7 @@ export function toCourseNode(
  * @param courseId The ID of the course to be pushed.
  */
 export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
+  const changes: Change[] = []
   // Step 1: Identify the Course and Its Dependents
   const dependents = _getAllDependents(courseId, graph)
 
@@ -201,11 +203,15 @@ export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
     const mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
     if (mv.canMove) {
       graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
+      changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
     } else {
       throw new Error(`Could not move ${courseId} because of ${mv.reason}`)
     }
 
-    return graph
+    return {
+      graph,
+      changes
+    }
   }
 
   // if there are courses that depend on it, we need to find the earliest semester that they can all be pushed to
@@ -217,7 +223,9 @@ export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
     // if there is a dependent issue, push them
     if (mv.reason.type === "dependent") {
       mv.reason.courseId.forEach(depId => {
-        graph = pushCourseAndDependents(graph, depId)
+        const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(graph, depId)
+        graph = newGraph
+        changes.push(...newChanges)
         console.log(
           "after moving",
           graph.getNodeAttribute(depId, "name"),
@@ -235,7 +243,11 @@ export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
   // now we can move:
   if (mv.canMove) {
     graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
+    changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
   }
 
-  return graph
+  return {
+    graph,
+    changes
+  }
 }

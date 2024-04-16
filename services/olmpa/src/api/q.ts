@@ -42,7 +42,8 @@ export const qGroup = new Elysia({ prefix: "/q" })
           userId: t.String(),
           meta: t.Record(t.String(), t.Unknown()),
           streamId: t.String(),
-          prompt: t.String()
+          prompt: t.String(),
+          versionId: t.Union([t.String(), t.Null()])
         })
       })
     }

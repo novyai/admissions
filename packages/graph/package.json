@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@repo/db": "workspace:*",
+    "@repo/constants": "workspace:*",
     "@types/dagre": "^0.7.52",
     "dagre": "^0.8.5",
     "graphology": "^0.25.4",

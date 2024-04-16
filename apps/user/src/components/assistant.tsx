@@ -25,7 +25,9 @@ export function Assistant({
   const { messages, sendMessage, loading, isConnected, waiting, ready } = useAdvisor({
     conversationId: conversation.id,
     initialMessages: conversation?.messages ?? [],
-    userId: conversation.userId
+    userId: conversation.userId,
+    versionId: null,
+    setSelectedVersion: null
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
