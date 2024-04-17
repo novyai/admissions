@@ -26,7 +26,10 @@ export const showAppointmentParams = z.object({
   action: z.literal(CORE_AGENT_ACTIONS.SHOW_APPOINTMENT)
 })
 
-export const ActionPayload = z.discriminatedUnion("action", [rescheduleCourseParams])
+export const ActionPayload = z.discriminatedUnion("action", [
+  rescheduleCourseParams,
+  showAppointmentParams
+])
 
 export const coreAgentSchema = z.object({
   content: z

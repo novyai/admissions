@@ -53,6 +53,7 @@ export function useAdvisor({
         }
       },
       [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
+        console.log("ACTION: SHOW_APPOINTMENT")
         if (handleAppointmentTimes) {
           handleAppointmentTimes([
             new Date(1713985200000),
@@ -74,9 +75,9 @@ export function useAdvisor({
         }
 
         lastMessages.current = updatedMessages
-
+        // console.log(data.action, data.actionParams)
         setMessages(updatedMessages)
-        setAction(action)
+        // setAction(data.ac)
 
         if (!loading && !complete) {
           setLoading(true)

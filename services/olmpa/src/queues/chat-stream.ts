@@ -192,17 +192,18 @@ createWorker(async job => {
         type: SOCKET_EVENTS.SHOW_APPOINTMENT,
         data: undefined
       })
+      return
     },
-    [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
-      params: z.infer<typeof bookAppointmentParams>
-    ) => {
-      logger.info({
-        message: "booking appointment",
-        conversationId: jobData.conversationId,
-        userId: jobData.userId,
-        data: params
-      })
-    },
+    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
+    //   params: z.infer<typeof bookAppointmentParams>
+    // ) => {
+    //   logger.info({
+    //     message: "booking appointment",
+    //     conversationId: jobData.conversationId,
+    //     userId: jobData.userId,
+    //     data: params
+    //   })
+    // },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -493,7 +494,7 @@ createWorker(async job => {
         actionParams: completion.actionParams
       })
 
-      if (!completion?.action || !completion?.actionParams) {
+      if (!completion?.action) {
         return complete()
       }
 
@@ -543,6 +544,14 @@ createWorker(async job => {
             conversationId: jobData.conversationId,
             userId: jobData.userId,
             completion: followUpCompletion
+          })
+        } else {
+          logger.info({
+            message: "action handler completed",
+            conversationId: jobData.conversationId,
+            userId: jobData.userId,
+            action: completion.action,
+            actionParams: completion.actionParams
           })
         }
 
