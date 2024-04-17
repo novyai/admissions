@@ -45,6 +45,8 @@ export function useAdvisor({
       [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: () => {
         setLoading(false)
         setWaiting(false)
+
+        console.log("ACTION", action)
       },
       [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
         console.log({ versionId, changes })
@@ -52,7 +54,11 @@ export function useAdvisor({
       },
       [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
         if (handleAppointmentTimes) {
-          handleAppointmentTimes([new Date()])
+          handleAppointmentTimes([
+            new Date(1713985200000),
+            new Date(1714143600000),
+            new Date(1714411800000)
+          ])
         }
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({

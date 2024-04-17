@@ -12,6 +12,11 @@ export const doThingParams = z.object({
   thing: z.string().describe("Do the thing")
 })
 
+export const bookAppointmentParams = z.object({
+  action: z.literal(CORE_AGENT_ACTIONS.BOOK_APPOINTMENT),
+  time: z.string().describe("The appointment time.")
+})
+
 export const ActionPayload = z.discriminatedUnion("action", [rescheduleCourseParams])
 
 export const coreAgentSchema = z.object({

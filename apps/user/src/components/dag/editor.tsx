@@ -237,12 +237,12 @@ export function Editor({
                     AI Advisor
                   </h2>
                   <Separator className="bg-slate-100 h-[0.1rem]" />
-                  {appointmentTimes.length > 0 ?
-                    <AppointmentScheduler times={appointmentTimes} />
-                  : <></>}
                 </div>
 
-                <ScrollArea ref={ChatScrollerRef} className="h-[calc(100%-2.75rem)] rounded-xl">
+                <ScrollArea
+                  ref={ChatScrollerRef}
+                  className="relative h-[calc(100%-2.75rem)] rounded-xl"
+                >
                   <div className="mx-auto">
                     <div className="px-1">
                       {messages.length > 0 ?
@@ -268,6 +268,15 @@ export function Editor({
                       />
                     )}
                   </div>
+                  {appointmentTimes.length > 0 ?
+                    <AppointmentScheduler
+                      times={appointmentTimes}
+                      handleBookAppointment={(readableTime: string) => {
+                        setAppointmentTimes([])
+                        submitMessage(`Book an appointment for ${readableTime.toLocaleString()}`)
+                      }}
+                    />
+                  : <></>}
                 </ScrollArea>
               </div>
             </ChatPopover>

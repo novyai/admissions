@@ -8,7 +8,12 @@ import OpenAI from "openai"
 import z from "zod"
 
 import { coreAgent } from "@repo/ai/agents/core"
-import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@repo/ai/agents/core/schema"
+import {
+  bookAppointmentParams,
+  coreAgentSchema,
+  doThingParams,
+  rescheduleCourseParams
+} from "@repo/ai/agents/core/schema"
 import { countTokens } from "@repo/ai/lib/tokens"
 import {
   CORE_AGENT_ACTION_DEFINITIONS,
@@ -170,6 +175,18 @@ createWorker(async job => {
 
       return void 0 as void
     },
+    [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
+      params: z.infer<typeof bookAppointmentParams>
+    ) => {
+      logger.info({
+        message: "booking appointment",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+
+      return "Appointment successfully booked."
+    },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -246,7 +263,7 @@ createWorker(async job => {
 
       if (changes.length > 5) {
         systemPrompt += `
-          Remember: This a massive change to your schedule and will have to meet with your advisor
+          Remember: This a massive change to your schedule and will have to meet with your advisor. You can view some available appointment slots in the chat."
 
         `
         await publish({
@@ -255,7 +272,7 @@ createWorker(async job => {
         })
       } else {
         systemPrompt += `\n
-          This isa small change to your schedule and will not have to meet with your advisor
+          This is a small change to your schedule and will not have to meet with your advisor.
           \n
         `
       }
