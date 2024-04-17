@@ -254,7 +254,7 @@ createWorker(async job => {
       ${changes
         .map(
           change =>
-            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester}`
+            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester + 1}`
         )
         .join("\n")}
 

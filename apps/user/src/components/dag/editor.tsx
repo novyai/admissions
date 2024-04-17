@@ -77,78 +77,79 @@ export function Editor({
   )
   const [_status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
-  const saveVersion = useCallback(
-    async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
-      setStatus("saving")
+  const saveVersion = async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
+    setStatus("saving")
 
-      const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
+    console.log("saving version")
 
-      const highestSemester = Math.max(...courseNodes.map(n => n.data.semesterIndex))
-      const semesters = Array.from(Array(highestSemester + 1).keys())
-      const semesterCourses = semesters.map(s =>
-        courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
-      ) as unknown as CourseNode[][]
+    const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
 
-      const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
+    const highestSemester = Math.max(...courseNodes.map(n => n.data.semesterIndex))
+    const semesters = Array.from(Array(highestSemester + 1).keys())
+    const semesterCourses = semesters.map(s =>
+      courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
+    ) as unknown as CourseNode[][]
 
-      const version = await createVersion(newProfile, scheduleId)
-      setProfile(newProfile)
-      setSelectedVersion(version)
-      setStatus("clean")
-    },
-    [profile, scheduleId]
-  )
+    const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
+
+    const version = await createVersion(newProfile, scheduleId)
+    setSelectedVersion(version)
+    setVersions(prev => [...prev, version])
+  }
+
+  const renderVersion = async (
+    version: VersionWithoutBlob,
+    lastVersion: VersionWithoutBlob | undefined
+  ) => {
+    const {
+      profile: newProfile,
+      defaultNodes: newDefaultNodes,
+      defaultEdges: newDefaultEdges
+    } = await hydratedProfileAndNodesByVersion(version.id)
+    setProfile(newProfile)
+    setDefaultNodes(newDefaultNodes)
+
+    if (lastVersion === undefined) {
+      setNodes(newDefaultNodes)
+      setEdges(newDefaultEdges)
+    } else {
+      setNodes(newDefaultNodes)
+      setEdges(newDefaultEdges)
+      const lastVersionId = lastVersion.id
+      const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
+        await hydratedProfileAndNodesByVersion(lastVersionId)
+
+      const changedNodeIDs = getChangedCourseNodeIDs(lastProfile, newProfile)
+      const changedEdgeIDs = newDefaultEdges
+        .filter(e => changedNodeIDs.includes(e.source) || changedNodeIDs.includes(e.target))
+        .map(e => e.id)
+
+      const { ghostCourseNodes, ghostEdges } = getGhostCourseNodesAndEdges(
+        newProfile,
+        changedNodeIDs,
+        oldDefaultNodes
+      )
+
+      setNodes([
+        ...ghostCourseNodes,
+        ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+          ...n,
+          className: cn(n.className, "bg-sky-100 animate-pulse")
+        }))
+      ])
+      setEdges([
+        ...ghostEdges,
+        ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
+          ...e,
+          style: { ...e.style, stroke: "lightskyblue" },
+          hidden: false
+        }))
+      ])
+    }
+  }
 
   useEffect(() => {
-    setStatus("pending")
-    const update = async () => {
-      const {
-        profile: newProfile,
-        defaultNodes: newDefaultNodes,
-        defaultEdges: newDefaultEdges
-      } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
-      setProfile(newProfile)
-      setDefaultNodes(newDefaultNodes)
-
-      if (_versions.length === 0) {
-        setNodes(newDefaultNodes)
-        setEdges(newDefaultEdges)
-      } else {
-        const lastVersionId = _versions.at(-1)!.id
-        const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
-          await hydratedProfileAndNodesByVersion(lastVersionId)
-
-        const changedNodeIDs = getChangedCourseNodeIDs(lastProfile, newProfile)
-        const changedEdgeIDs = newDefaultEdges
-          .filter(e => changedNodeIDs.includes(e.source) || changedNodeIDs.includes(e.target))
-          .map(e => e.id)
-
-        const { ghostCourseNodes, ghostEdges } = getGhostCourseNodesAndEdges(
-          newProfile,
-          changedNodeIDs,
-          oldDefaultNodes
-        )
-
-        setNodes([
-          ...ghostCourseNodes,
-          ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
-            ...n,
-            className: cn(n.className, "bg-sky-100 animate-pulse")
-          }))
-        ])
-        setEdges([
-          ...ghostEdges,
-          ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
-            ...e,
-            style: { ...e.style, stroke: "lightskyblue" },
-            hidden: false
-          }))
-        ])
-        setVersions(prev => [...prev, selectedVersion])
-      }
-    }
-
-    update().then(
+    renderVersion(selectedVersion, _versions.at(-2)).then(
       () => setStatus("clean"),
       reason => {
         console.error(reason)
@@ -181,6 +182,9 @@ export function Editor({
   }
 
   async function submitMessage(content: string, role?: MessageRole) {
+    if (appointmentTimes) {
+      setAppointmentTimes([])
+    }
     setChatOpen(true)
     if (loading) {
       return
@@ -211,7 +215,7 @@ export function Editor({
     setTimeout(() => {
       scrollToEnd({ now: true })
     }, 0)
-  }, [])
+  })
 
   return (
     <div className="w-full">
