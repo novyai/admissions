@@ -266,7 +266,7 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please use the courses changed in your response
+        Please summarize these changes in your response. If there are many changes, use bullet points to aid with clarity.
     `
 
       if (changes.length > 5) {
@@ -279,7 +279,7 @@ createWorker(async job => {
         })
       } else {
         systemPrompt += `\n
-          This is a small change to your schedule and will not have to meet with your advisor.
+          This is a fairly small change to your schedule.
           \n
         `
         await publish({
@@ -347,7 +347,7 @@ createWorker(async job => {
       })
 
       let systemPrompt = `
-      This action made the following changes to your schedule:
+      This action made the following changes to the student's schedule:
       ${changes
         .map(
           change =>
@@ -355,7 +355,7 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please use the courses changed in your response
+        Please summarize these changes in your response. If there are many changes, use bullet points to aid with clarity.
     `
 
       await publish({
