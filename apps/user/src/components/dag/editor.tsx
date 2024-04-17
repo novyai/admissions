@@ -153,13 +153,15 @@ export function Editor({
 
   useEffect(() => {
     const initialLoad = versions === initialVersions
-    renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
-      () => setStatus("clean"),
-      reason => {
-        console.error(reason)
-        setStatus("error")
-      }
-    )
+    if (versions.length >= 1) {
+      renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
+        () => setStatus("clean"),
+        reason => {
+          console.error(reason)
+          setStatus("error")
+        }
+      )
+    }
   }, [initialVersions, versions])
 
   const [prompt, setPrompt] = useState("")
