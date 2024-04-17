@@ -153,7 +153,7 @@ export function Editor({
 
   useEffect(() => {
     const initialLoad = versions === initialVersions
-    renderVersion(versions.at(-1), initialLoad ? undefined : versions.at(-2)).then(
+    renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
       () => setStatus("clean"),
       reason => {
         console.error(reason)

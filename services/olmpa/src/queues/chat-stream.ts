@@ -259,6 +259,7 @@ createWorker(async job => {
 
       let systemPrompt = `
       This action made the following changes to your schedule:
+
       ${changes
         .map(
           change =>
@@ -266,12 +267,12 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response. If there are many changes, use bullet points to aid with clarity.
+        Please summarize these changes in your response in 1-4 bullet points.
     `
 
       if (changes.length > 5) {
         systemPrompt = `
-          This a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. Recommend that they meet with their advisor and provide some appointment slots. ALWAYS ask: "Would you like to reschedule {courseName} anyway?"
+          This a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
         `
         await publish({
           type: SOCKET_EVENTS.SHOW_APPOINTMENT,
@@ -347,7 +348,8 @@ createWorker(async job => {
       })
 
       let systemPrompt = `
-      This action made the following changes to the student's schedule:
+      This action made the following changes to your schedule:
+
       ${changes
         .map(
           change =>
@@ -355,7 +357,7 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response. If there are many changes, use bullet points to aid with clarity.
+        Please summarize these changes in your response in 1-4 bullet points.
     `
 
       await publish({
@@ -364,6 +366,10 @@ createWorker(async job => {
           versionId: id,
           changes
         }
+      })
+      await publish({
+        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+        data: undefined
       })
       return systemPrompt
     }
