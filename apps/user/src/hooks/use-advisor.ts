@@ -25,7 +25,7 @@ export function useAdvisor({
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
-  const [action, setAction] = useState<{ action?: string; actionParams?: unknown }>()
+  // const [action, setAction] = useState<{ action?: string; actionParams?: unknown }>()
 
   const [loading, setLoading] = useState(false)
   const [waiting, setWaiting] = useState(false)
