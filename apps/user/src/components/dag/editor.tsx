@@ -92,7 +92,6 @@ export function Editor({
       const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
 
       const version = await createVersion(newProfile, scheduleId)
-      setVersions(prev => [...prev, version])
       setProfile(newProfile)
       setSelectedVersion(version)
       setStatus("clean")
@@ -111,42 +110,42 @@ export function Editor({
       setProfile(newProfile)
       setDefaultNodes(newDefaultNodes)
 
-      if (_versions === undefined || _versions.length <= 1) {
+      if (_versions.length === 0) {
         setNodes(newDefaultNodes)
         setEdges(newDefaultEdges)
-        return
+      } else {
+        const lastVersionId = _versions.at(-1)!.id
+        const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
+          await hydratedProfileAndNodesByVersion(lastVersionId)
+
+        const changedNodeIDs = getChangedCourseNodeIDs(lastProfile, newProfile)
+        const changedEdgeIDs = newDefaultEdges
+          .filter(e => changedNodeIDs.includes(e.source) || changedNodeIDs.includes(e.target))
+          .map(e => e.id)
+
+        const { ghostCourseNodes, ghostEdges } = getGhostCourseNodesAndEdges(
+          newProfile,
+          changedNodeIDs,
+          oldDefaultNodes
+        )
+
+        setNodes([
+          ...ghostCourseNodes,
+          ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+            ...n,
+            className: cn(n.className, "bg-sky-100 animate-pulse")
+          }))
+        ])
+        setEdges([
+          ...ghostEdges,
+          ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
+            ...e,
+            style: { ...e.style, stroke: "lightskyblue" },
+            hidden: false
+          }))
+        ])
+        setVersions(prev => [...prev, selectedVersion])
       }
-
-      const lastVersionId = _versions.at(-2)!.id
-      const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
-        await hydratedProfileAndNodesByVersion(lastVersionId)
-
-      const changedNodeIDs = getChangedCourseNodeIDs(lastProfile, newProfile)
-      const changedEdgeIDs = newDefaultEdges
-        .filter(e => changedNodeIDs.includes(e.source) || changedNodeIDs.includes(e.target))
-        .map(e => e.id)
-
-      const { ghostCourseNodes, ghostEdges } = getGhostCourseNodesAndEdges(
-        newProfile,
-        changedNodeIDs,
-        oldDefaultNodes
-      )
-
-      setNodes([
-        ...ghostCourseNodes,
-        ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
-          ...n,
-          className: cn(n.className, "bg-sky-100 animate-pulse")
-        }))
-      ])
-      setEdges([
-        ...ghostEdges,
-        ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
-          ...e,
-          style: { ...e.style, stroke: "lightskyblue" },
-          hidden: false
-        }))
-      ])
     }
 
     update().then(
@@ -167,7 +166,10 @@ export function Editor({
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
     versionId: selectedVersion.id,
-    setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId }),
+    handleSelectedVersion: (versionId: string) => {
+      const version = { id: versionId }
+      setSelectedVersion(version)
+    },
     handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
   })
 
@@ -260,14 +262,13 @@ export function Editor({
                         />
                       }
                     </div>
-
-                    {ChatScrollerRef?.current && (
-                      <ChatScrollAnchor
-                        trackVisibility={waiting || loading}
-                        scrollerRef={ChatScrollerRef}
-                      />
-                    )}
                   </div>
+                  {ChatScrollerRef?.current && (
+                    <ChatScrollAnchor
+                      trackVisibility={waiting || loading}
+                      scrollerRef={ChatScrollerRef}
+                    />
+                  )}
                   {appointmentTimes.length > 0 ?
                     <AppointmentScheduler
                       times={appointmentTimes}

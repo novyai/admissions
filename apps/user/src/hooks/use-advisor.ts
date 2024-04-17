@@ -12,7 +12,7 @@ export function useAdvisor({
   initialMessages = [],
   userId,
   versionId,
-  setSelectedVersion,
+  handleSelectedVersion,
   handleAppointmentTimes
 }: {
   initialMessages?: Message[]
@@ -20,7 +20,7 @@ export function useAdvisor({
   artifacts?: {}
   userId: string | null
   versionId: string | null
-  setSelectedVersion: ((versionId: string) => void) | null
+  handleSelectedVersion: ((versionId: string) => void) | null
   handleAppointmentTimes: ((times: Date[]) => void) | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
@@ -45,12 +45,12 @@ export function useAdvisor({
       [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: () => {
         setLoading(false)
         setWaiting(false)
-
-        console.log("ACTION", action)
       },
       [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
         console.log({ versionId, changes })
-        setSelectedVersion && setSelectedVersion(versionId)
+        if (handleSelectedVersion) {
+          handleSelectedVersion(versionId)
+        }
       },
       [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
         if (handleAppointmentTimes) {
