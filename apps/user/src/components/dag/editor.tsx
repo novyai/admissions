@@ -283,7 +283,9 @@ export function Editor({
                       times={appointmentTimes}
                       handleBookAppointment={(readableTime: string) => {
                         setAppointmentTimes([])
-                        submitMessage(`Book an appointment for ${readableTime.toLocaleString()}`)
+                        submitMessage(
+                          `Lets book an appointment for ${readableTime.toLocaleString()}`
+                        )
                       }}
                     />
                   : <></>}

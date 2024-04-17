@@ -79,6 +79,8 @@ export function useAdvisor({
         setMessages(updatedMessages)
         // setAction(data.ac)
 
+        handleAppointmentTimes && handleAppointmentTimes([])
+
         if (!loading && !complete) {
           setLoading(true)
           setWaiting(true)
