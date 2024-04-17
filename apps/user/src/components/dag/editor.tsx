@@ -43,8 +43,7 @@ export function Editor({
   }
   scheduleId: string
 }) {
-  const [_versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
-  const [selectedVersion, setSelectedVersion] = useState<VersionWithoutBlob>(initialVersions[0]!)
+  const [versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
   const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
   const [profile, setProfile] = useState<HydratedStudentProfile>()
 
@@ -92,9 +91,9 @@ export function Editor({
 
     const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
 
-    const version = await createVersion(newProfile, scheduleId)
-    setSelectedVersion(version)
-    setVersions(prev => [...prev, version])
+    const newVersion = await createVersion(newProfile, scheduleId)
+
+    setVersions(prevVersions => [...prevVersions, newVersion])
   }
 
   const renderVersion = async (
@@ -106,6 +105,10 @@ export function Editor({
       defaultNodes: newDefaultNodes,
       defaultEdges: newDefaultEdges
     } = await hydratedProfileAndNodesByVersion(version.id)
+    if (version.id === lastVersion?.id) {
+      return
+    }
+
     setProfile(newProfile)
     setDefaultNodes(newDefaultNodes)
 
@@ -149,15 +152,15 @@ export function Editor({
   }
 
   useEffect(() => {
-    renderVersion(selectedVersion, _versions.at(-2)).then(
+    const initialLoad = versions === initialVersions
+    renderVersion(versions.at(-1), initialLoad ? undefined : versions.at(-2)).then(
       () => setStatus("clean"),
       reason => {
         console.error(reason)
         setStatus("error")
       }
     )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVersion])
+  }, [initialVersions, versions])
 
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
@@ -166,10 +169,10 @@ export function Editor({
     conversationId: conversation.id,
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
-    versionId: selectedVersion.id,
+    versionId: versions ? versions.at(-1)!.id : initialVersions.at(-1)!.id,
     handleSelectedVersion: (versionId: string) => {
-      const version = { id: versionId }
-      setSelectedVersion(version)
+      const newVersion = { id: versionId }
+      setVersions(prevVersions => [...prevVersions, newVersion])
     },
     handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
   })
