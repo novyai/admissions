@@ -4,7 +4,9 @@ export const HEARTBEAT_INTERVAL = 30000
 
 export const CORE_AGENT_ACTIONS = {
   RESCHEDULE_COURSE: "RESCHEDULE_COURSE",
+  FORCE_RESCHEDULE_COURSE: "FORCE_RESCHEDULE_COURSE",
   BOOK_APPOINTMENT: "BOOK_APPOINTMENT",
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
   DO_THING: "DO_THING"
 }
 
@@ -97,8 +99,30 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
   },
   [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: {
     actionType: CORE_AGENT_ACTIONS.RESCHEDULE_COURSE,
-    description: "Takes a courseName and reschedules a course.",
+    description:
+      "Takes a courseName and attempts to reschedule a course, depending on the severity of the change.",
+    narrative:
+      "When the change is severe confirms with the student and offers to book an appointment with an advisor.",
+    sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE]: {
+    actionType: CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE,
+    description:
+      "Takes a courseName and reschedules a course, regardless of the severity of the change.",
     narrative: "",
     sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.SHOW_APPOINTMENT]: {
+    actionType: CORE_AGENT_ACTIONS.SHOW_APPOINTMENT,
+    description: "Show available advisor appointments.",
+    narrative: "",
+    sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: {
+    actionType: CORE_AGENT_ACTIONS.BOOK_APPOINTMENT,
+    description:
+      "Show available appointments with the student's advisor. Extract this action if the student asks whether they can book or reschedule an appointment with their advisor",
+    narrative: "",
+    sideEffect: true
   }
 } as const

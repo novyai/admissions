@@ -12,7 +12,9 @@ import {
   bookAppointmentParams,
   coreAgentSchema,
   doThingParams,
-  rescheduleCourseParams
+  forceRescheduleCourseParams,
+  rescheduleCourseParams,
+  showAppointmentParams
 } from "@repo/ai/agents/core/schema"
 import { countTokens } from "@repo/ai/lib/tokens"
 import {
@@ -41,6 +43,8 @@ type ActionParams = {
     z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.DO_THING ? z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.RESCHEDULE_COURSE ? z.infer<typeof rescheduleCourseParams>
+  : K extends typeof CORE_AGENT_ACTIONS.SHOW_APPOINTMENT ? z.infer<typeof showAppointmentParams>
+  : K extends typeof CORE_AGENT_ACTIONS.BOOK_APPOINTMENT ? z.infer<typeof bookAppointmentParams>
   : never
 }
 
@@ -175,6 +179,20 @@ createWorker(async job => {
 
       return void 0 as void
     },
+    [CORE_AGENT_ACTIONS.SHOW_APPOINTMENT]: async (
+      params: z.infer<typeof showAppointmentParams>
+    ) => {
+      logger.info({
+        message: "showing appointments",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      await publish({
+        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+        data: undefined
+      })
+    },
     [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
       params: z.infer<typeof bookAppointmentParams>
     ) => {
@@ -184,8 +202,6 @@ createWorker(async job => {
         userId: jobData.userId,
         data: params
       })
-
-      return "Appointment successfully booked."
     },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
@@ -241,11 +257,92 @@ createWorker(async job => {
         }
       })
 
-      await publish({
-        type: SOCKET_EVENTS.NEW_VERSION,
+      let systemPrompt = `
+      This action made the following changes to your schedule:
+      ${changes
+        .map(
+          change =>
+            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester + 1}`
+        )
+        .join("\n")}
+
+        Please use the courses changed in your response
+    `
+
+      if (changes.length > 5) {
+        systemPrompt = `
+          This a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. Recommend that they meet with their advisor and provide some appointment slots. ALWAYS ask: "Would you like to reschedule {courseName} anyway?"
+        `
+        await publish({
+          type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+          data: undefined
+        })
+      } else {
+        systemPrompt += `\n
+          This is a small change to your schedule and will not have to meet with your advisor.
+          \n
+        `
+        await publish({
+          type: SOCKET_EVENTS.NEW_VERSION,
+          data: {
+            versionId: id,
+            changes
+          }
+        })
+      }
+      return systemPrompt
+    },
+    [CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE]: async (
+      params: z.infer<typeof forceRescheduleCourseParams>
+    ) => {
+      logger.info({
+        message: "force rescheduling course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { graph, profile, scheduleId } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
+
+      let course
+      try {
+        course = getCourseFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+
+      const { id } = await db.version.create({
         data: {
-          versionId: id,
-          changes
+          blob: createBlob(newProfile),
+          scheduleId: scheduleId
+        },
+        select: {
+          id: true
+        }
+      })
+
+      logger.info({
+        message: "new version created",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        versionId: jobData.versionId,
+        data: {
+          id
         }
       })
 
@@ -261,21 +358,13 @@ createWorker(async job => {
         Please use the courses changed in your response
     `
 
-      if (changes.length > 5) {
-        systemPrompt += `
-          Remember: This a massive change to your schedule and will have to meet with your advisor. You can view some available appointment slots in the chat."
-
-        `
-        await publish({
-          type: SOCKET_EVENTS.SHOW_APPOINTMENT,
-          data: undefined
-        })
-      } else {
-        systemPrompt += `\n
-          This is a small change to your schedule and will not have to meet with your advisor.
-          \n
-        `
-      }
+      await publish({
+        type: SOCKET_EVENTS.NEW_VERSION,
+        data: {
+          versionId: id,
+          changes
+        }
+      })
       return systemPrompt
     }
   }
