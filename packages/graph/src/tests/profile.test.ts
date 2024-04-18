@@ -52,36 +52,38 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           [],
-          ["1665c198-ca4c-4864-940a-dc30eb56c254"],
-          ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
+          [
+            "1665c198-ca4c-4864-940a-dc30eb56c254",
+            "478849e5-1358-4f7e-b3d9-b0e224e4de54",
+            "7849821d-82f3-4607-9245-41ed500f4a73"
+          ],
           ["cb604716-5332-4835-a798-9f6f23bd2651"],
           ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
         ],
         changes: [
           {
             type: ChangeType.Move,
-            courseId: "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
-            semester: 4
-          },
-          {
-            type: ChangeType.Move,
-            courseId: "cb604716-5332-4835-a798-9f6f23bd2651",
-            semester: 3
-          },
+            courseId: "1665c198-ca4c-4864-940a-dc30eb56c254",
+            semester: 1
+          }
+        ]
+      }
+    },
+    {
+      profile: mathProfile,
+      classToPush: "478849e5-1358-4f7e-b3d9-b0e224e4de54",
+      expected: {
+        semesters: [
+          ["1665c198-ca4c-4864-940a-dc30eb56c254"],
+          ["7849821d-82f3-4607-9245-41ed500f4a73"],
+          ["cb604716-5332-4835-a798-9f6f23bd2651", "478849e5-1358-4f7e-b3d9-b0e224e4de54"],
+          ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
+        ],
+        changes: [
           {
             type: ChangeType.Move,
             courseId: "478849e5-1358-4f7e-b3d9-b0e224e4de54",
             semester: 2
-          },
-          {
-            type: ChangeType.Move,
-            courseId: "7849821d-82f3-4607-9245-41ed500f4a73",
-            semester: 2
-          },
-          {
-            type: ChangeType.Move,
-            courseId: "1665c198-ca4c-4864-940a-dc30eb56c254",
-            semester: 1
           }
         ]
       }
@@ -92,15 +94,9 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           [],
-          ["87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
-          ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01"]
+          ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"]
         ],
         changes: [
-          {
-            type: ChangeType.Move,
-            courseId: "0c990f7e-bbb2-4bea-9e50-6bdd1b29af01",
-            semester: 2
-          },
           {
             type: ChangeType.Move,
             courseId: "87675174-11fd-4f81-a0b9-6dfc80b1f29b",
@@ -158,13 +154,9 @@ describe("pushing classes", () => {
       // push last class in chain
       const updated = pushCourseAndDependents(graph, classToPush)
       const semesters = buildSemesters(updated.graph)
-      expect(semesters).toHaveLength(expected.semesters.length ?? 0)
 
-      expect(
-        semesters.map((semester, i) => {
-          expect(semester.map(c => c.id)).toEqual(expected.semesters[i])
-        })
-      )
+      const semesterIds = semesters.map(semester => semester.map(c => c.id).sort())
+      expect(semesterIds).toEqual(expected.semesters.map(s => s.sort()))
       expect(updated.changes.sort()).toEqual(expected.changes.sort())
     }
   )
