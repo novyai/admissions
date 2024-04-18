@@ -1,4 +1,4 @@
-import Prisma, { db, RequirementType } from "@repo/db"
+import Prisma, { RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
