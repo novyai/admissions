@@ -3,15 +3,17 @@ import cseDegree from "@repo/db/data/cse_requirments"
 
 export const ProgramOption = {
   CS: "CS" as const,
-  DS: "DS" as const
+  DS: "DS" as const,
+  GEN: "GEN" as const
 }
 
 export const programName = {
   [ProgramOption.CS]: "Computer Science",
-  [ProgramOption.DS]: "Data Science"
+  [ProgramOption.DS]: "Data Science",
+  [ProgramOption.GEN]: "General Education"
 }
 
-export const Programs = ["CS", "DS"] as const
+export const Programs = ["CS", "DS", "GEN"] as const
 export type Program = (typeof Programs)[number]
 
 const CSE: Prisma.CourseScalarWhereInput = {
@@ -47,6 +49,10 @@ export const programHandler: Record<Program, ProgramsCourses> = {
     }
   },
   [ProgramOption.DS]: {
+    requiredCourses: undefined,
+    extraToQuery: undefined
+  },
+  [ProgramOption.GEN]: {
     requiredCourses: undefined,
     extraToQuery: undefined
   }
