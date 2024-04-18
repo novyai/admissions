@@ -1,5 +1,5 @@
 import { Change, ChangeType } from "@repo/constants"
-import { db } from "@repo/db"
+import { db, RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
@@ -147,13 +147,14 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     const allPrereqsCompleted = graph
       .filterInNeighbors(
         course.id,
-        prereqId => graph.getEdgeAttribute(prereqId, course.id, "type") === "PREREQUISITE"
+        prereqId =>
+          graph.getEdgeAttribute(prereqId, course.id, "type") === RequirementType.PREREQUISITE
       )
       .map(prereqId => graph.getNodeAttribute(prereqId, "semester"))
       .every(semester => semester! < currentSemester)
 
     const corequisites = graph
-      .filterInEdges(course.id, (_, edge) => edge.type === "COREQUISITE")
+      .filterInEdges(course.id, (_, edge) => edge.type === RequirementType.COREQUISITE)
       .map(edgeId => graph.source(edgeId))
       .map(nodeId => graph.getNodeAttributes(nodeId))
 

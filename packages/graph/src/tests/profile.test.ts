@@ -36,7 +36,6 @@ test("base student profile from requirements", async () => {
 
   expect(studentProfile.semesters).toHaveLength(4)
   const semestersId = studentProfile.semesters.map(s => s.map(c => c.id).sort())
-  console.log(semestersId)
   expect(semestersId).toEqual([
     ["1665c198-ca4c-4864-940a-dc30eb56c254"],
     ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
@@ -183,7 +182,6 @@ const csProfile: BaseStudentProfile = {
 test("test blob", async () => {
   const cs = await getStudentProfileFromRequirements(csProfile)
   const semestersId = cs.semesters.map(s => s.map(c => c.id).sort())
-  console.log(semestersId)
   expect(semestersId).toEqual([
     [
       "1665c198-ca4c-4864-940a-dc30eb56c254",

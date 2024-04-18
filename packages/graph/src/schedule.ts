@@ -1,12 +1,13 @@
 import { graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
 import { HydratedStudentProfile } from "@graph/types"
+import { RequirementType } from "@repo/db"
 
 import { CourseGraph } from "./course"
 
 export type CannotMoveReason = {
   reason:
     | {
-        type: "prereq" | "dependent"
+        type: "prereq" | "dependent" | "coreq"
         courseId: string[]
       }
     | { type: "graduation" }
@@ -70,19 +71,64 @@ export function _canMoveCourse(
     return { canMove: false, reason: { type: "not-found-in-schedule" } }
   }
 
+  // Check for corequisite not scheduled in the target semester
+  const corequisitesNotScheduledWith = graph
+    .mapInNeighbors(courseId, (_coreqId, coreq) => coreq)
+    .filter(
+      coreq =>
+        graph.getEdgeAttribute(coreq.id, courseId, "type") === RequirementType.COREQUISITE &&
+        coreq.semester &&
+        coreq.semester <= toSemester
+    )
+
+  if (corequisitesNotScheduledWith.length > 0) {
+    return {
+      canMove: false,
+      reason: {
+        type: "coreq",
+        courseId: corequisitesNotScheduledWith.map(coreq => coreq.id)
+      }
+    }
+  }
+
   // Check if moving the course violates any prerequisite requirements. Only need to check the direct
   // prereqs because we assume that the current schedule is valid
-  const allPrerequestNotCompletedBefore = graph
+  const allPrerequisitesNotCompletedBefore = graph
     .mapInNeighbors(courseId, (_prereqId, prereq) => prereq)
-    .filter(prereq => prereq.semester && prereq.semester >= toSemester)
+    .filter(
+      prereq =>
+        graph.getEdgeAttribute(prereq.id, courseId, "type") === RequirementType.PREREQUISITE &&
+        prereq.semester &&
+        prereq.semester >= toSemester
+    )
 
-  if (allPrerequestNotCompletedBefore.length > 0) {
+  if (allPrerequisitesNotCompletedBefore.length > 0) {
     return {
       canMove: false,
 
       reason: {
         type: "prereq",
-        courseId: allPrerequestNotCompletedBefore.map(prereq => prereq.id)
+        courseId: allPrerequisitesNotCompletedBefore.map(prereq => prereq.id)
+      }
+    }
+  }
+
+  // Check if moving the course violates any corequisite requirements by ensuring all corequisites are scheduled in the target semester
+  const allCorequisitesNotScheduledInTarget = graph
+    .mapOutNeighbors(courseId, (_coreqId, coreq) => coreq)
+    .filter(
+      coreq =>
+        graph.getEdgeAttribute(courseId, coreq.id, "type") === RequirementType.COREQUISITE &&
+        coreq.semester &&
+        coreq.semester <= toSemester
+    )
+
+  if (allCorequisitesNotScheduledInTarget.length > 0) {
+    return {
+      canMove: false,
+      reason: {
+        type: "coreq",
+        courseId: allCorequisitesNotScheduledInTarget.map(coreq => coreq.id)
       }
     }
   }
@@ -90,7 +136,12 @@ export function _canMoveCourse(
   // Find all courses that list the moving course as a prerequisite
   const allDependentsNotCompletedAfter = graph
     .mapOutNeighbors(courseId, (_dependentId, dependent) => dependent)
-    .filter(dependent => dependent.semester && dependent.semester <= toSemester)
+    .filter(
+      dependent =>
+        graph.getEdgeAttribute(courseId, dependent.id, "type") === RequirementType.PREREQUISITE &&
+        dependent.semester &&
+        dependent.semester <= toSemester
+    )
 
   if (allDependentsNotCompletedAfter.length > 0) {
     return {
