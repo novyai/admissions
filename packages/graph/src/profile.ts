@@ -200,7 +200,18 @@ export function toCourseNode(
     fanOut: course["fanOut"],
 
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
-    prerequisites: graph.mapInboundNeighbors(courseId, prereqId => prereqId)
+    prerequisites: graph
+      .mapInboundNeighbors(courseId, prereqId => prereqId)
+      .filter(
+        prereqId =>
+          graph.getEdgeAttribute(prereqId, courseId, "type") === RequirementType.PREREQUISITE
+      ),
+    corequisites: graph
+      .mapInboundNeighbors(courseId, prereqId => prereqId)
+      .filter(
+        prereqId =>
+          graph.getEdgeAttribute(prereqId, courseId, "type") === RequirementType.COREQUISITE
+      )
   }
 }
 

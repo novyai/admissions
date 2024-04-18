@@ -116,7 +116,7 @@ function SemesterDAGInternal({
             e => ({
               ...e,
               hidden: false,
-              style: { ...e.style, stroke: "lightskyblue" }
+              style: { ...e.style, stroke: e.type == "prerequisite" ? "lightskyblue" : "darkblue" }
             }),
             e => ({
               ...e,

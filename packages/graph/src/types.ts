@@ -7,6 +7,7 @@ export type CourseNode = {
   name: string
   dependents: string[]
   prerequisites: string[]
+  corequisites: string[]
 
   earliestFinish?: number
   latestFinish?: number
