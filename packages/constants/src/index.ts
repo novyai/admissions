@@ -4,6 +4,9 @@ export const HEARTBEAT_INTERVAL = 30000
 
 export const CORE_AGENT_ACTIONS = {
   RESCHEDULE_COURSE: "RESCHEDULE_COURSE",
+  FORCE_RESCHEDULE_COURSE: "FORCE_RESCHEDULE_COURSE",
+  // BOOK_APPOINTMENT: "BOOK_APPOINTMENT",
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
   DO_THING: "DO_THING"
 }
 
@@ -11,7 +14,8 @@ export const SOCKET_EVENTS = {
   CONVERSATION_STREAM: "CONVERSATION_STREAM",
   START_CONVERSATION_STREAM: "START_CONVERSATION_STREAM",
   COMPLETE_CONVERSATION_STREAM: "COMPLETE_CONVERSATION_STREAM",
-  NEW_VERSION: "NEW_VERSION"
+  NEW_VERSION: "NEW_VERSION",
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT"
 } as const
 
 export type ConversationStreamData = {
@@ -39,6 +43,11 @@ export type Change = {
   semester: number
 }
 
+export type ShowAppointmentData = {
+  data: undefined
+  type: typeof SOCKET_EVENTS.SHOW_APPOINTMENT
+}
+
 export type NewVersionData = {
   data: {
     versionId: string
@@ -50,12 +59,13 @@ export type NewVersionData = {
 export type GenericListener = (data?: unknown) => void
 export type ConversationStreamListener = (data: ConversationStreamData["data"]) => void
 export type NewVersionListener = (data: NewVersionData["data"]) => void
-
+export type ShowAppointmentListener = (data: ShowAppointmentData["data"]) => void
 export type SocketListeners = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]?: ConversationStreamListener
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.NEW_VERSION]?: NewVersionListener
+  [SOCKET_EVENTS.SHOW_APPOINTMENT]?: ShowAppointmentListener
 }
 
 export type EventDataTypes = {
@@ -63,6 +73,7 @@ export type EventDataTypes = {
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.NEW_VERSION]: NewVersionData["data"]
+  [SOCKET_EVENTS.SHOW_APPOINTMENT]: ShowAppointmentData["data"]
 }
 
 export interface SocketMsg<T extends keyof typeof SOCKET_EVENTS> {
@@ -88,8 +99,29 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
   },
   [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: {
     actionType: CORE_AGENT_ACTIONS.RESCHEDULE_COURSE,
-    description: "Takes a courseName and reschedules a course.",
+    description:
+      "Takes a courseName and attempts to reschedule a course, depending on the severity of the change.",
+    narrative:
+      "When the change is severe confirms with the student and offers to book an appointment with an advisor.",
+    sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE]: {
+    actionType: CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE,
+    description:
+      "Takes a courseName and reschedules a course, regardless of the severity of the change.",
     narrative: "",
     sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.SHOW_APPOINTMENT]: {
+    actionType: CORE_AGENT_ACTIONS.SHOW_APPOINTMENT,
+    description: "Show available advisor appointments.",
+    narrative: "",
+    sideEffect: true
   }
+  // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: {
+  //   actionType: CORE_AGENT_ACTIONS.BOOK_APPOINTMENT,
+  //   description: "",
+  //   narrative: "",
+  //   sideEffect: false
+  // }
 } as const
