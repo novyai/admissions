@@ -159,7 +159,6 @@ function SemesterDAGInternal({
 
             // if node is overlapping same semester
             if (node.data.semesterIndex === n.data.semesterIndex) {
-              console.log("overlapping same semester")
               setScheduleToastOpen(false)
               return {
                 ...n,
@@ -205,20 +204,30 @@ function SemesterDAGInternal({
       )
     )
 
-    const intersections = getIntersectingNodes(node, false).filter(n => n.type && isSemesterNode(n))
+    const intersections = getIntersectingNodes(node, false).filter(n =>
+      isSemesterNode(n)
+    ) as SemesterNodeType[]
 
-    if (intersections.length === 0) {
-      console.error("TODO: NOT DROPPED IN A SEMESTER")
+    if (!intersections[0]) {
+      console.log("no intersections")
       handleReset(node)
       return
-    } else if (intersections.length >= 2) {
+    }
+    if (intersections.length === 0) {
+      handleReset(node)
+      return
+    }
+    if (intersections.length !== 1) {
       console.error("Cannot add to multiple semesters")
       handleReset(node)
       return
     }
 
-    if (intersections.length !== 1 || !intersections[0]) {
-      console.log("no intersections")
+    const semesterNodeData = intersections[0].data
+    if (
+      "semesterIndex" in semesterNodeData &&
+      semesterNodeData.semesterIndex === node.data.semesterIndex
+    ) {
       handleReset(node)
       return
     }

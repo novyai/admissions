@@ -4,6 +4,7 @@ import { Message, MessageRole } from "@repo/db"
 import { toast } from "sonner"
 
 import { useSocket } from "@/hooks/use-socket"
+import { VersionWithoutBlob } from "@/components/dag/editor"
 
 const NO_RESPONSE_TIMEOUT = 10000
 
@@ -11,19 +12,21 @@ export function useAdvisor({
   conversationId,
   initialMessages = [],
   userId,
-  versionId,
-  setSelectedVersion
+  versions,
+  handleSelectedVersion,
+  handleAppointmentTimes
 }: {
   initialMessages?: Message[]
   conversationId: string
   artifacts?: {}
   userId: string | null
-  versionId: string | null
-  setSelectedVersion: ((versionId: string) => void) | null
+  versions: VersionWithoutBlob[] | null
+  handleSelectedVersion: ((versionId: string) => void) | null
+  handleAppointmentTimes: ((times: Date[]) => void) | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
-  const [action, setAction] = useState<{ action?: string; actionParams?: unknown }>()
+  // const [action, setAction] = useState<{ action?: string; actionParams?: unknown }>()
 
   const [loading, setLoading] = useState(false)
   const [waiting, setWaiting] = useState(false)
@@ -44,9 +47,19 @@ export function useAdvisor({
         setLoading(false)
         setWaiting(false)
       },
-      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
-        console.log({ versionId, changes })
-        setSelectedVersion && setSelectedVersion(versionId)
+      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId }) => {
+        if (handleSelectedVersion) {
+          handleSelectedVersion(versionId)
+        }
+      },
+      [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
+        if (handleAppointmentTimes) {
+          handleAppointmentTimes([
+            new Date(1713985200000),
+            new Date(1714143600000),
+            new Date(1714411800000)
+          ])
+        }
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({
         data,
@@ -61,9 +74,9 @@ export function useAdvisor({
         }
 
         lastMessages.current = updatedMessages
-
         setMessages(updatedMessages)
-        setAction(action)
+
+        handleAppointmentTimes && handleAppointmentTimes([])
 
         if (!loading && !complete) {
           setLoading(true)
@@ -109,7 +122,7 @@ export function useAdvisor({
             userId,
             meta: {},
             streamId: `${conversationId}-${userId}`,
-            versionId
+            versionId: versions?.at(-1)?.id
           })
         })
       } catch (e) {
@@ -120,7 +133,7 @@ export function useAdvisor({
         toast("We couldn't send your message. Please try again.")
       }
     },
-    [conversationId, loading, messages, userId, versionId]
+    [conversationId, loading, messages, userId, versions]
   )
 
   useEffect(() => {
