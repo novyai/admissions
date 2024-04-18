@@ -2,7 +2,6 @@ import { HydratedStudentProfile, StudentProfile, studentProfileSchema } from "@g
 import { JsonValue } from "@prisma/client/runtime/library"
 
 export function createBlob(profile: HydratedStudentProfile): StudentProfile {
-  console.log("creating blob", profile.programs)
   return {
     ...profile,
     semesters: profile.semesters.map(s => s.map(c => c.id))

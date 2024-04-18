@@ -152,10 +152,6 @@ describe("pushing classes", () => {
       // push last class in chain
       const updated = pushCourseAndDependents(graph, classToPush)
       const semesters = buildSemesters(updated.graph)
-      console.log(
-        updated.changes,
-        semesters.map(s => s.map(c => c.id))
-      )
       expect(semesters).toHaveLength(expected.semesters.length ?? 0)
 
       expect(
@@ -179,6 +175,5 @@ const csProfile: BaseStudentProfile = {
 
 test("test blob", async () => {
   const cs = await getStudentProfileFromRequirements(csProfile)
-  console.log(cs.semesters.map(s => s.length))
   expect(cs.semesters.map(s => s.length)).toEqual([5, 5, 5, 5, 5, 5, 3])
 })

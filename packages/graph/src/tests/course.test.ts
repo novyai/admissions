@@ -1,7 +1,19 @@
 import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph } from "@graph/course"
+import { buildSemesters } from "@graph/graph"
+import { scheduleCourses } from "@graph/profile"
+import { computeNodeStats } from "@graph/stats"
 import { Prisma, RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
 import Graph from "graphology"
+
+const baseProfile = {
+  requiredCourses: [],
+  transferCredits: [],
+  programs: [],
+  timeToGraduate: 0,
+  currentSemester: 0,
+  coursePerSemester: 5
+}
 
 describe("addCourseToGraph function", () => {
   test("adds a new course node to the graph", async () => {
@@ -61,12 +73,19 @@ describe("addCourseToGraph function", () => {
     })
 
     expect(graph.order).toBe(initialNodeCount) // No new node should be added
+
+    const newProfile = { ...baseProfile }
+    computeNodeStats(graph, newProfile)
+    scheduleCourses(graph, newProfile)
+
+    const semesters = buildSemesters(graph)
+    expect(semesters.map(semester => semester.map(course => course.id))).toEqual([[courseId]])
   })
 })
 
 const prerequisiteId1 = "prerequisite-1"
 const prerequisiteId2 = "prerequisite-2"
-const conditions = [
+const prerequisiteConditions = [
   {
     id: "test-condition",
     conditionGroupId: "test-condition-group",
@@ -77,7 +96,15 @@ const conditions = [
         courseId: prerequisiteId1,
         id: "prerequisite-1",
         conditionId: "condition-1"
-      },
+      }
+    ]
+  },
+  {
+    id: "test-condition-2",
+    conditionGroupId: "test-condition-group",
+    minimumGrade: "A",
+    type: RequirementType.PREREQUISITE,
+    prerequisites: [
       {
         courseId: prerequisiteId2,
         id: "prerequisite-2",
@@ -99,7 +126,7 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
       conditions: [
         {
           logicalOperator: "OR",
-          conditions
+          conditions: prerequisiteConditions
         }
       ]
     })
@@ -124,6 +151,16 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
     // Expect the graph to have nodes for the course and its prerequisites
     expect(graph.hasNode(courseId)).toBe(true)
     expect(graph.hasNode(prerequisiteId1) || graph.hasNode(prerequisiteId2)).toBe(true)
+
+    const newProfile = { ...baseProfile }
+    computeNodeStats(graph, newProfile)
+    scheduleCourses(graph, newProfile)
+
+    const semesters = buildSemesters(graph)
+    expect(semesters.map(semester => semester.map(course => course.id))).toEqual([
+      ["prerequisite-1"],
+      ["course-with-or-condition"]
+    ])
   })
 
   test("handles AND conditions correctly", async () => {
@@ -139,7 +176,7 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
       conditions: [
         {
           logicalOperator: "AND",
-          conditions
+          conditions: prerequisiteConditions
         }
       ]
     })
@@ -164,5 +201,73 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
     // Expect the graph to have nodes for the course and both prerequisites
     expect(graph.hasNode(courseId)).toBe(true)
     expect(graph.hasNode(prerequisiteId1) && graph.hasNode(prerequisiteId2)).toBe(true)
+
+    const newProfile = { ...baseProfile }
+    computeNodeStats(graph, newProfile)
+    scheduleCourses(graph, newProfile)
+
+    const semesters = buildSemesters(graph)
+    expect(semesters.map(semester => semester.map(course => course.id))).toEqual([
+      [prerequisiteId1, prerequisiteId2],
+      [courseId]
+    ])
+  })
+})
+
+describe("addCourseToGraph function with corequisite conditions", () => {
+  test("handles corequisite conditions correctly", async () => {
+    const graph = new Graph() as CourseGraph
+    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseId = "course-with-corequisite"
+    const corequisiteId = "corequisite-1"
+
+    courseMap.set(courseId, {
+      id: courseId,
+      name: "Course with Corequisite",
+      conditions: [
+        {
+          logicalOperator: "OR",
+          conditions: [
+            {
+              id: "test-condition",
+              conditionGroupId: "test-condition-group",
+              minimumGrade: "A",
+              type: RequirementType.COREQUISITE,
+              prerequisites: [
+                {
+                  courseId: corequisiteId,
+                  id: "corequisite-1",
+                  conditionId: "condition-corequisite"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    })
+    courseMap.set(corequisiteId, {
+      id: corequisiteId,
+      name: "Corequisite 1",
+      conditions: []
+    })
+
+    addCourseToGraph({
+      courseId,
+      graph,
+      courseMap,
+      requiredCourses: []
+    })
+
+    // Expect the graph to have nodes for the course and its corequisite
+    expect(graph.hasNode(courseId)).toBe(true)
+    expect(graph.hasNode(corequisiteId)).toBe(true)
+    const newProfile = { ...baseProfile }
+    computeNodeStats(graph, newProfile)
+    scheduleCourses(graph, newProfile)
+
+    const semesters = buildSemesters(graph)
+    expect(semesters.map(semester => semester.map(course => course.id))).toEqual([
+      [courseId, corequisiteId]
+    ])
   })
 })

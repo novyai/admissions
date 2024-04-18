@@ -114,7 +114,7 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
  * @param graph
  * @param profile
  */
-function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
+export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   var currentSemester = 0
   var coursesInCurrentSemester = 0
   var firstDeferredCourseId = null
