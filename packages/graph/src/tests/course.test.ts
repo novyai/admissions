@@ -229,9 +229,6 @@ describe("addCourseToGraph function with corequisite conditions", () => {
           logicalOperator: "OR",
           conditions: [
             {
-              id: "test-condition",
-              conditionGroupId: "test-condition-group",
-              minimumGrade: "A",
               type: RequirementType.COREQUISITE,
               prerequisites: [
                 {
@@ -266,8 +263,7 @@ describe("addCourseToGraph function with corequisite conditions", () => {
     scheduleCourses(graph, newProfile)
 
     const semesters = buildSemesters(graph)
-    expect(semesters.map(semester => semester.map(course => course.id))).toEqual([
-      [courseId, corequisiteId]
-    ])
+    const semesterIds = semesters.map(semester => semester.map(course => course.id).sort())
+    expect(semesterIds).toEqual([[courseId, corequisiteId].sort()])
   })
 })
