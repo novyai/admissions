@@ -29,7 +29,12 @@ import { isCourseNode, isGhostCourseNode, isSemesterNode } from "./graph-to-node
 import { CourseNode, CourseNodeType, defaultCourseNode } from "./nodeTypes/course-node"
 import { GhostCourseNode } from "./nodeTypes/ghost-course-node"
 import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./nodeTypes/semester-node"
-import { getEdgesIDsInCoursePath, getModifiedEdge, getNodeIDsInCoursePath } from "./utils"
+import {
+  getEdgesIDsInCoursePath,
+  getModifiedEdge,
+  getNodeIDsInCoursePath,
+  isGenEdNode
+} from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
@@ -131,7 +136,10 @@ function SemesterDAGInternal({
           .filter(n => !isGhostCourseNode(n))
           .map(n => ({
             ...n,
-            className: cn(n.className, "animate-none bg-background")
+            className: cn(
+              n.className,
+              `animate-none ${isGenEdNode(n) ? "bg-purple-50" : "bg-background"}`
+            )
           }))
       )
     }

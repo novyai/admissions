@@ -24,8 +24,9 @@ import { SemesterNodeType } from "../semester-dag/nodeTypes/semester-node"
 import {
   getChangedCourseNodeIDs,
   getGhostCourseNodesAndEdges,
-  getModifiedCourseNodes,
-  getModifiedEdges
+  getModifiedEdges,
+  getModifiedNodes,
+  isGenEdNode
 } from "../semester-dag/utils"
 import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
 
@@ -106,11 +107,19 @@ export function Editor({
         defaultNodes: newDefaultNodes,
         defaultEdges: newDefaultEdges
       } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
+
+      const genEdIDs = newDefaultNodes.filter(n => isGenEdNode(n)).map(n => n.id)
+
+      const nodesWithColoredGenEdCourses = getModifiedNodes(newDefaultNodes, genEdIDs, n => ({
+        ...n,
+        className: "bg-purple-50"
+      }))
+
       setProfile(newProfile)
-      setDefaultNodes(newDefaultNodes)
+      setDefaultNodes(nodesWithColoredGenEdCourses)
 
       if (_versions === undefined || _versions.length <= 1) {
-        setNodes(newDefaultNodes)
+        setNodes(nodesWithColoredGenEdCourses)
         setEdges(newDefaultEdges)
         return
       }
@@ -132,7 +141,7 @@ export function Editor({
 
       setNodes([
         ...ghostCourseNodes,
-        ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+        ...getModifiedNodes(nodesWithColoredGenEdCourses, changedNodeIDs, n => ({
           ...n,
           className: cn(n.className, "bg-sky-100 animate-pulse")
         }))

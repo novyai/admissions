@@ -12,7 +12,7 @@ type SemesterNodeProps = NodeProps<SemesterNodeData>
 
 export type SemesterNodeType = Node<SemesterNodeData>
 
-export const SEMESTER_NODE_WIDTH = 275
+export const SEMESTER_NODE_WIDTH = 290
 export const SEMESTER_NODE_HEIGHT = 600
 
 export const defaultSemesterNode: Partial<Node> = {
