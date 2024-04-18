@@ -30,7 +30,7 @@ import {
 import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
 import { AppointmentScheduler } from "./appointment-scheduler"
 
-type VersionWithoutBlob = { id: string }
+export type VersionWithoutBlob = { id: string }
 
 export function Editor({
   versions: initialVersions,
@@ -100,14 +100,15 @@ export function Editor({
     version: VersionWithoutBlob,
     lastVersion: VersionWithoutBlob | undefined
   ) => {
+    if (version.id === lastVersion?.id) {
+      return
+    }
+
     const {
       profile: newProfile,
       defaultNodes: newDefaultNodes,
       defaultEdges: newDefaultEdges
     } = await hydratedProfileAndNodesByVersion(version.id)
-    if (version.id === lastVersion?.id) {
-      return
-    }
 
     setProfile(newProfile)
     setDefaultNodes(newDefaultNodes)
@@ -153,14 +154,23 @@ export function Editor({
 
   useEffect(() => {
     const initialLoad = versions === initialVersions
+    if (versions.length == 0) return
     if (versions.length >= 1) {
-      renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
-        () => setStatus("clean"),
-        reason => {
-          console.error(reason)
-          setStatus("error")
+      const versionsCopy = [...versions.map(v => ({ id: v.id }))]
+      if (versions.at(-1)?.id == versions.at(-2)?.id) {
+        while (versionsCopy.at(-1)?.id == versionsCopy.at(-2)?.id) {
+          versionsCopy.pop()
         }
-      )
+        setVersions(versionsCopy)
+      } else {
+        renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
+          () => setStatus("clean"),
+          reason => {
+            console.error(reason)
+            setStatus("error")
+          }
+        )
+      }
     }
   }, [initialVersions, versions])
 
@@ -171,7 +181,7 @@ export function Editor({
     conversationId: conversation.id,
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
-    versionId: versions ? versions.at(-1)!.id : initialVersions.at(-1)!.id,
+    versions: versions,
     handleSelectedVersion: (versionId: string) => {
       const newVersion = { id: versionId }
       setVersions(prevVersions => [...prevVersions, newVersion])

@@ -110,7 +110,7 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
     description:
       "Takes a courseName and reschedules a course, regardless of the severity of the change.",
     narrative: "",
-    sideEffect: true
+    sideEffect: false
   },
   [CORE_AGENT_ACTIONS.SHOW_APPOINTMENT]: {
     actionType: CORE_AGENT_ACTIONS.SHOW_APPOINTMENT,
@@ -120,9 +120,8 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
   },
   [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: {
     actionType: CORE_AGENT_ACTIONS.BOOK_APPOINTMENT,
-    description:
-      "Show available appointments with the student's advisor. Extract this action if the student asks whether they can book or reschedule an appointment with their advisor",
+    description: "",
     narrative: "",
-    sideEffect: true
+    sideEffect: false
   }
 } as const

@@ -4,6 +4,7 @@ import { Message, MessageRole } from "@repo/db"
 import { toast } from "sonner"
 
 import { useSocket } from "@/hooks/use-socket"
+import { VersionWithoutBlob } from "@/components/dag/editor"
 
 const NO_RESPONSE_TIMEOUT = 10000
 
@@ -11,7 +12,7 @@ export function useAdvisor({
   conversationId,
   initialMessages = [],
   userId,
-  versionId,
+  versions,
   handleSelectedVersion,
   handleAppointmentTimes
 }: {
@@ -19,7 +20,7 @@ export function useAdvisor({
   conversationId: string
   artifacts?: {}
   userId: string | null
-  versionId: string | null
+  versions: VersionWithoutBlob[] | null
   handleSelectedVersion: ((versionId: string) => void) | null
   handleAppointmentTimes: ((times: Date[]) => void) | null
 }) {
@@ -46,14 +47,12 @@ export function useAdvisor({
         setLoading(false)
         setWaiting(false)
       },
-      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId, changes }) => {
-        console.log({ versionId, changes })
+      [SOCKET_EVENTS.NEW_VERSION]: ({ versionId }) => {
         if (handleSelectedVersion) {
           handleSelectedVersion(versionId)
         }
       },
       [SOCKET_EVENTS.SHOW_APPOINTMENT]: () => {
-        console.log("ACTION: SHOW_APPOINTMENT")
         if (handleAppointmentTimes) {
           handleAppointmentTimes([
             new Date(1713985200000),
@@ -75,9 +74,7 @@ export function useAdvisor({
         }
 
         lastMessages.current = updatedMessages
-        // console.log(data.action, data.actionParams)
         setMessages(updatedMessages)
-        // setAction(data.ac)
 
         if (!loading && !complete) {
           setLoading(true)
@@ -123,7 +120,7 @@ export function useAdvisor({
             userId,
             meta: {},
             streamId: `${conversationId}-${userId}`,
-            versionId
+            versionId: versions?.at(-1)?.id
           })
         })
       } catch (e) {
@@ -134,7 +131,7 @@ export function useAdvisor({
         toast("We couldn't send your message. Please try again.")
       }
     },
-    [conversationId, loading, messages, userId, versionId]
+    [conversationId, loading, messages, userId, versions]
   )
 
   useEffect(() => {

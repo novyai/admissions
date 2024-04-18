@@ -194,16 +194,20 @@ createWorker(async job => {
       })
       return
     },
-    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
-    //   params: z.infer<typeof bookAppointmentParams>
-    // ) => {
-    //   logger.info({
-    //     message: "booking appointment",
-    //     conversationId: jobData.conversationId,
-    //     userId: jobData.userId,
-    //     data: params
-    //   })
-    // },
+    [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
+      params: z.infer<typeof bookAppointmentParams>
+    ) => {
+      logger.info({
+        message: "booking appointment",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far. 
+
+      Remember: you are not going to meet with the student, a human advisor is.
+      `
+    },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -238,26 +242,6 @@ createWorker(async job => {
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
-      const { id } = await db.version.create({
-        data: {
-          blob: createBlob(newProfile),
-          scheduleId: scheduleId
-        },
-        select: {
-          id: true
-        }
-      })
-
-      logger.info({
-        message: "new version created",
-        conversationId: jobData.conversationId,
-        userId: jobData.userId,
-        versionId: jobData.versionId,
-        data: {
-          id
-        }
-      })
-
       let systemPrompt = `
       This action made the following changes to your schedule:
 
@@ -284,6 +268,27 @@ createWorker(async job => {
           This is a fairly small change to your schedule.
           \n
         `
+
+        const { id } = await db.version.create({
+          data: {
+            blob: createBlob(newProfile),
+            scheduleId: scheduleId
+          },
+          select: {
+            id: true
+          }
+        })
+
+        logger.info({
+          message: "new version created",
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          versionId: jobData.versionId,
+          data: {
+            id
+          }
+        })
+
         await publish({
           type: SOCKET_EVENTS.NEW_VERSION,
           data: {
@@ -359,6 +364,8 @@ createWorker(async job => {
         .join("\n")}
 
         Please summarize these changes in your response in 1-4 bullet points.
+
+        End your message by emphasizing it's extremely important to meet with their advisor as soon as possible to dicuss the schedule changes.
     `
 
       await publish({

@@ -26,7 +26,7 @@ export function Assistant({
     conversationId: conversation.id,
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
-    versionId: null,
+    versions: null,
     handleSelectedVersion: null,
     handleAppointmentTimes: null
   })
