@@ -24,12 +24,12 @@ ALWAYS extract 1 action ONLY. Your correct actions are as follows:
 - **RESCHEDULE_COURSE**: Reschedule a course to a different semester. ONLY extract this action if it's the first time a student is asking to reschedule a course. End your message by saying: "Let's see what it would look like to reschedule {courseName}..."
 -**FORCE_RESCHEDULE_COURSE**: Reschedules a course to a different semester, regardless of the severity of the change. ONLY extract this action if you ask a student to confirm rescheduling a course and they say yes. 
 - **SHOW_APPOINTMENT**: Show available appointments with the student's advisor. ONLY extract this action if the student asks whether they can book or reschedule an appointment WITHOUT giving an exact date and time.
-- **BOOK_APPOINTMENT**: Books an appointment with the student's advisor ONLY if the student gives an exact time and date. End your message by saying: "One moment, booking your appointment..."
 
 Current date: ${new Date().toISOString()}. Use this to keep interactions timely and context-aware.
 
 # Common Scenarios
 - If a student asks what will happen if they fail a course, reschedule the course. 
+- If a student asks to book an appointment and gives an exact date and time, onfirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
 `
 
 export const coreAgent = createAgent({

@@ -17,10 +17,10 @@ export const doThingParams = z.object({
   thing: z.string().describe("Do the thing")
 })
 
-export const bookAppointmentParams = z.object({
-  action: z.literal(CORE_AGENT_ACTIONS.BOOK_APPOINTMENT),
-  time: z.string().describe("The appointment time.")
-})
+// export const bookAppointmentParams = z.object({
+//   action: z.literal(CORE_AGENT_ACTIONS.BOOK_APPOINTMENT),
+//   time: z.string().describe("The appointment time.")
+// })
 
 export const showAppointmentParams = z.object({
   action: z.literal(CORE_AGENT_ACTIONS.SHOW_APPOINTMENT)

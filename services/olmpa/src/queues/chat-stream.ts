@@ -9,7 +9,6 @@ import z from "zod"
 
 import { coreAgent } from "@repo/ai/agents/core"
 import {
-  bookAppointmentParams,
   coreAgentSchema,
   doThingParams,
   forceRescheduleCourseParams,
@@ -44,8 +43,8 @@ type ActionParams = {
   : K extends typeof CORE_AGENT_ACTIONS.DO_THING ? z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.RESCHEDULE_COURSE ? z.infer<typeof rescheduleCourseParams>
   : K extends typeof CORE_AGENT_ACTIONS.SHOW_APPOINTMENT ? z.infer<typeof showAppointmentParams>
-  : K extends typeof CORE_AGENT_ACTIONS.BOOK_APPOINTMENT ? z.infer<typeof bookAppointmentParams>
-  : never
+  : // : K extends typeof CORE_AGENT_ACTIONS.BOOK_APPOINTMENT ? z.infer<typeof bookAppointmentParams>
+    never
 }
 
 type ActionHandler<T extends keyof typeof CORE_AGENT_ACTIONS, P = unknown> = (
@@ -194,20 +193,20 @@ createWorker(async job => {
       })
       return
     },
-    [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
-      params: z.infer<typeof bookAppointmentParams>
-    ) => {
-      logger.info({
-        message: "booking appointment",
-        conversationId: jobData.conversationId,
-        userId: jobData.userId,
-        data: params
-      })
-      return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far. 
+    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
+    //   params: z.infer<typeof bookAppointmentParams>
+    // ) => {
+    //   logger.info({
+    //     message: "booking appointment",
+    //     conversationId: jobData.conversationId,
+    //     userId: jobData.userId,
+    //     data: params
+    //   })
+    //   return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
 
-      Remember: you are not going to meet with the student, a human advisor is.
-      `
-    },
+    //   Remember: you are not going to meet with the student, a human advisor is.
+    //   `
+    // },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
