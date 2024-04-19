@@ -29,7 +29,7 @@ Current date: ${new Date().toISOString()}. Use this to keep interactions timely 
 
 # Common Scenarios
 - If a student asks what will happen if they fail a course, reschedule the course. 
-- If a student asks to book an appointment and gives an exact date and time, onfirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
+- If a student asks to book an appointment and gives an exact date and time, ALWAYS assume you have the functionality to confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
 `
 
 export const coreAgent = createAgent({
