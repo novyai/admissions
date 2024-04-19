@@ -29,6 +29,9 @@ const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
   if (reason == "prereq") {
     return "The course is a prerequisite for another course."
   }
+  if (reason == "semester-already-taken") {
+    return `You've already taken this semester.`
+  }
 }
 
 export default function ScheduleChangeToast({

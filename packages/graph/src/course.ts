@@ -8,7 +8,10 @@ import {
 } from "./conditions"
 import { HydratedStudentProfile } from "./types"
 
-export const getCourseFromIdNameCode = (profile: HydratedStudentProfile, courseQuery: string) => {
+export const getCourseAndSemesterIndexFromIdNameCode = (
+  profile: HydratedStudentProfile,
+  courseQuery: string
+) => {
   const courses = [...profile.graph.values()]
 
   const course =
@@ -22,7 +25,9 @@ export const getCourseFromIdNameCode = (profile: HydratedStudentProfile, courseQ
     throw new Error(`Course ${course} not found in student profile`)
   }
 
-  return course
+  const semesterIndex = profile.semesters.findIndex(sem => sem.some(c => c.id == course.id))
+
+  return { course, semesterIndex }
 }
 
 type CourseAttributes = {

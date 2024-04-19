@@ -53,7 +53,8 @@ export function graphToHydratedStudentProfile(
       (acc, course) => acc.set(course.id, course),
       new Map<string, CourseNode>()
     ),
-    semesters: buildSemesters(graph)
+    semesters: buildSemesters(graph),
+    currSemester: 2
   }
 }
 

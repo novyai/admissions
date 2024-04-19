@@ -138,7 +138,7 @@ function SemesterDAGInternal({
             ...n,
             className: cn(
               n.className,
-              `animate-none ${isGenEdNode(n) ? "bg-purple-50" : "bg-background"}`
+              `animate-none ${isGenEdNode(n) ? "bg-zinc-100" : "bg-background"}`
             )
           }))
       )
