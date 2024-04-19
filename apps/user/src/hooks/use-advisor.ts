@@ -76,8 +76,6 @@ export function useAdvisor({
         lastMessages.current = updatedMessages
         setMessages(updatedMessages)
 
-        handleAppointmentTimes && handleAppointmentTimes([])
-
         if (!loading && !complete) {
           setLoading(true)
           setWaiting(true)

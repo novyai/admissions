@@ -111,8 +111,6 @@ export const getGhostCourseNodesAndEdges = (
 
   const newSemesters: CourseNode[][] = newProfile.semesters
 
-  console.log("OLD COURSE NODES", oldChangedCourseNodes)
-
   const ghostCourseNodes: GhostCourseNodeType[][] = []
   for (let i = 0; i < newSemesters.length; i++) {
     ghostCourseNodes.push([])

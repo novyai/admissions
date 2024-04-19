@@ -56,6 +56,10 @@ export function Editor({
 
   const toggleChatOpen = () => setChatOpen(!chatOpen)
 
+  // useEffect(() => {
+  //   console.log(appointmentTimes)
+  // }, [appointmentTimes])
+
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
     if (changeTypes.has("position")) {
@@ -294,7 +298,7 @@ export function Editor({
                       handleBookAppointment={(readableTime: string) => {
                         setAppointmentTimes([])
                         submitMessage(
-                          `Lets book an appointment for ${readableTime.toLocaleString()}`
+                          `Let's book an appointment for ${readableTime.toLocaleString()}.`
                         )
                       }}
                     />
