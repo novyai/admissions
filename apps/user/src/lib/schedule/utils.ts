@@ -3,34 +3,12 @@ interface ParsedTerm {
   semester: "Spring" | "Summer" | "Fall"
 }
 
-export function parseCode(term: number | string): ParsedTerm {
+export function parseCode(term: string): ParsedTerm {
   const split = term.toString().split(" ")
-  const year = parseInt(split[1])
-  const monthName = split[0]
+  const year = parseInt(split[0])
+  const semester = split[1]
 
-  const monthMapping: Record<string, number> = {
-    January: 0,
-    February: 1,
-    March: 2,
-    April: 3,
-    May: 4,
-    June: 5,
-    July: 6,
-    August: 7,
-    September: 8,
-    October: 9,
-    November: 10,
-    December: 11
-  }
-
-  const month = monthMapping[monthName]
-
-  let semester: ParsedTerm["semester"]
-  if (month >= 1 && month <= 5) semester = "Spring" as const
-  else if (month >= 6 && month <= 8) semester = "Summer" as const
-  else semester = "Fall" as const
-
-  return { year, semester }
+  return { year, semester: semester as ParsedTerm["semester"] }
 }
 
 // Mock function to get current year and semester
@@ -39,6 +17,7 @@ function getCurrentTerm(): ParsedTerm {
   const currentYear = currentDate.getFullYear()
 
   const month = currentDate.getMonth() + 1 // JavaScript months are 0-indexed
+  console.log("month", month)
 
   let currentSemester: ParsedTerm["semester"]
   if (month >= 1 && month <= 5) currentSemester = "Spring" as const
@@ -49,17 +28,35 @@ function getCurrentTerm(): ParsedTerm {
 }
 
 // Function to calculate difference in semesters
-export function calculateSemesterDifference(fromTerm: number | string): number {
+export function calculateSemesterDifference(fromTerm: string): number {
   const fromParsed = parseCode(fromTerm)
   const toParsed = getCurrentTerm()
-
+  console.log(fromParsed, toParsed)
   const yearDifference = toParsed.year - fromParsed.year
-  let semesterDifference = 0
 
-  // Assuming Spring = 1, Summer = 2, Fall = 3 for simplicity
-  const semesterMapping = { Spring: 1, Summer: 2, Fall: 3 }
-  semesterDifference =
-    semesterMapping[toParsed.semester] - semesterMapping[fromParsed.semester] + yearDifference * 3
+  const mapping = {
+    Fall: 1,
+    Spring: 2,
+    Summer: 0
+  }
 
-  return semesterDifference
+  const diff = yearDifference * 2 + (mapping[toParsed.semester] - mapping[fromParsed.semester])
+
+  return diff
+}
+
+export function getSemesterCode(index: number, startDate: string): ParsedTerm {
+  const parsed = parseCode(startDate)
+
+  while (index > 0) {
+    if (parsed.semester === "Fall") {
+      parsed.semester = "Spring"
+      parsed.year++
+    } else {
+      parsed.semester = "Fall"
+    }
+    index--
+  }
+
+  return parsed
 }

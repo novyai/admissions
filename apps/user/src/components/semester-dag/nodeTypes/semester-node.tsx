@@ -1,5 +1,6 @@
 import { Node, NodeProps } from "reactflow"
 
+import { getSemesterCode } from "@/lib/schedule/utils"
 import { cn } from "@/lib/utils"
 
 export type SemesterNodeData =
@@ -33,15 +34,18 @@ export const defaultSemesterNode: Partial<Node> = {
 export function SemesterNode({ data }: SemesterNodeProps) {
   const taken = "semesterIndex" in data && data.semesterIndex < data.currSemester
   const isCurrSemester = "semesterIndex" in data && data.semesterIndex == data.currSemester
+  let name
+  if ("transfer" in data) {
+    name = "Transfer Credits"
+  } else {
+    const code = getSemesterCode(data.semesterIndex, data.startDate)
+    name = `${code.semester} ${code.year} ${
+      taken ? "(Taken)"
+      : isCurrSemester ? "(Current)"
+      : ""
+    }`
+  }
 
-  const name =
-    "transfer" in data ? "Transfer Credits" : (
-      `Semester ${data.semesterIndex + 1} ${
-        taken ? "(Taken)"
-        : isCurrSemester ? "(Current)"
-        : ""
-      }`
-    )
   return (
     <div
       className={cn(
@@ -49,13 +53,7 @@ export function SemesterNode({ data }: SemesterNodeProps) {
         taken ? "bg-muted text-muted-foreground" : ""
       )}
     >
-      <p>
-        {"transfer" in data ?
-          `Transfer Credits`
-        : `Semester ${data.semesterIndex + 1} ${name}
-          }`
-        }
-      </p>
+      <p>{"transfer" in data ? `Transfer Credits` : `${name}`}</p>
     </div>
   )
 }
