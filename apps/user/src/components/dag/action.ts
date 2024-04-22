@@ -27,9 +27,13 @@ export const createVersion = async (profile: HydratedStudentProfile, scheduleId:
 export const getAllNodesAndEdges = async ({
   semesters,
   graph,
-  transferCredits
+  transferCredits,
+  currSemester
 }: HydratedStudentProfile) => {
-  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(semesters)
+  const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
+    semesters,
+    currSemester
+  )
   // if there are transfer credits, we want to render them and their edges
   if (transferCredits.length > 0) {
     const transferNodesAndEdges = getTransferNodesAndEdges(transferCredits, graph)

@@ -14,14 +14,36 @@ export const isCourseNode = (n: Node): n is CourseNodeType => n.type === "course
 export const isSemesterNode = (n: Node): n is SemesterNodeType => n.type === "semesterNode"
 export const isGhostCourseNode = (n: Node): n is GhostCourseNodeType => n.type === "ghostCourseNode"
 
-export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
+const getEdges = (course: CourseNode) => {
+  const preqs: Edge[] = course.prerequisites.map(prereq => {
+    return {
+      id: `${prereq}-${course.id}`,
+      type: "prerequisite",
+      source: prereq,
+      target: course.id,
+      zIndex: 3
+    }
+  })
+  const coreqs: Edge[] = course.corequisites.map(coreq => {
+    return {
+      id: `${coreq}-${course.id}`,
+      type: "corequisite",
+      source: course.id,
+      target: coreq,
+      zIndex: 3
+    }
+  })
+  return [...preqs, ...coreqs]
+}
+
+export function getSemesterNodesAndEdges(semesters: CourseNode[][], currSemester: number) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
     return {
       ...defaultSemesterNode,
       id: `semester-${index}`,
       position: { x: index * (SEMESTER_NODE_WIDTH + 25), y: 0 },
-      data: { semesterIndex: index }
+      data: { semesterIndex: index, currSemester: currSemester }
     }
   })
 
@@ -30,13 +52,16 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
   const childNodes: CourseNodeType[] = semesters
     .map((semester, semIndex) =>
       semester.map((course, courseIndex): CourseNodeType => {
+        const taken = semIndex < currSemester
         return {
           ...defaultCourseNode,
           type: "courseNode",
           id: course.id,
           parentNode: `semester-${semIndex}`,
           position: { x: 5, y: 50 + courseIndex * 50 },
-          data: { semesterIndex: semIndex, ...course }
+          data: { semesterIndex: semIndex, ...course, taken: taken },
+          selectable: !taken,
+          draggable: !taken
         }
       })
     )
@@ -44,17 +69,7 @@ export function getSemesterNodesAndEdges(semesters: CourseNode[][]) {
 
   nodes.push(...childNodes)
 
-  const edges: Edge[] = semesters.flat().flatMap(course => {
-    return course.prerequisites.map(prereq => {
-      return {
-        id: `${prereq}-${course.id}`,
-        type: "default",
-        source: prereq,
-        target: course.id,
-        zIndex: 3
-      }
-    })
-  })
+  const edges: Edge[] = semesters.flat().flatMap(course => getEdges(course))
   return { nodes, edges }
 }
 

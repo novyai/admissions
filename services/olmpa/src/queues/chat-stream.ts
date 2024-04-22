@@ -1,8 +1,8 @@
 import { createBlob, parseBlob } from "@graph/blob"
-import { CourseGraph, getCourseFromIdNameCode } from "@graph/course"
+import { CourseGraph, getCourseAndSemesterIndexFromIdNameCode } from "@graph/course"
 import { graphToHydratedStudentProfile } from "@graph/graph"
 import { createGraph, pushCourseAndDependents } from "@graph/profile"
-import { HydratedStudentProfile } from "@graph/types"
+import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
 import z from "zod"
@@ -223,9 +223,12 @@ createWorker(async job => {
         versionId: jobData.versionId
       })
 
-      let course
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
       try {
-        course = getCourseFromIdNameCode(profile, params.courseName)
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
       } catch (error) {
         // Handle the case where the course is not found
         logger.error({
@@ -238,6 +241,13 @@ createWorker(async job => {
         // Return a custom message or handle as needed
         return `Course ${params.courseName} not found. Please check the course name and try again.`
       }
+
+      const { course, semesterIndex } = courseSem
+
+      if (semesterIndex < profile.currSemester) {
+        return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
+      }
+
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
@@ -302,7 +312,7 @@ createWorker(async job => {
       params: z.infer<typeof forceRescheduleCourseParams>
     ) => {
       logger.info({
-        message: "force rescheduling course",
+        message: "rescheduling course",
         conversationId: jobData.conversationId,
         userId: jobData.userId,
         data: params
@@ -314,9 +324,12 @@ createWorker(async job => {
         versionId: jobData.versionId
       })
 
-      let course
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
       try {
-        course = getCourseFromIdNameCode(profile, params.courseName)
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
       } catch (error) {
         // Handle the case where the course is not found
         logger.error({
@@ -329,6 +342,13 @@ createWorker(async job => {
         // Return a custom message or handle as needed
         return `Course ${params.courseName} not found. Please check the course name and try again.`
       }
+
+      const { course, semesterIndex } = courseSem
+
+      if (semesterIndex < profile.currSemester) {
+        return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
+      }
+
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 

@@ -7,6 +7,7 @@ export type CourseNode = {
   name: string
   dependents: string[]
   prerequisites: string[]
+  corequisites: string[]
 
   earliestFinish?: number
   latestFinish?: number
@@ -37,5 +38,6 @@ export type StudentProfile = BaseStudentProfile & {
 export type HydratedStudentProfile = BaseStudentProfile & {
   semesters: CourseNode[][]
   graph: Map<string, CourseNode>
+  currSemester: 2
   // allCourses: CourseNode[]
 }

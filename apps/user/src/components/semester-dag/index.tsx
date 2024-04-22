@@ -2,8 +2,10 @@
 
 import ReactFlow, {
   Background,
+  BezierEdge,
   Controls,
   Edge,
+  Instance,
   MiniMap,
   Node,
   NodeDragHandler,
@@ -21,14 +23,25 @@ import "reactflow/dist/style.css"
 import { Dispatch, SetStateAction, useCallback, useState } from "react"
 import { canMoveCourse, CannotMoveReason } from "@graph/schedule"
 import { HydratedStudentProfile } from "@graph/types"
+import { RequirementType } from "@prisma/client"
 import { cn } from "@ui/lib/utils"
 
 import { EdgeSwitch } from "../dag/edge-switch"
 import ScheduleChangeToast from "../dag/schedule-change-toast"
 import { isCourseNode, isGhostCourseNode, isSemesterNode } from "./graph-to-node-utils"
-import { CourseNode, CourseNodeType, defaultCourseNode } from "./nodeTypes/course-node"
+import {
+  CourseNode,
+  CourseNodeData,
+  CourseNodeType,
+  defaultCourseNode
+} from "./nodeTypes/course-node"
 import { GhostCourseNode } from "./nodeTypes/ghost-course-node"
-import { defaultSemesterNode, SemesterNode, SemesterNodeType } from "./nodeTypes/semester-node"
+import {
+  defaultSemesterNode,
+  SemesterNode,
+  SemesterNodeData,
+  SemesterNodeType
+} from "./nodeTypes/semester-node"
 import {
   getEdgesIDsInCoursePath,
   getModifiedEdge,
@@ -42,7 +55,17 @@ const nodeTypes = {
   ghostCourseNode: GhostCourseNode
 }
 
+const edgeTypes = {
+  prerequisite: BezierEdge,
+  corequisite: BezierEdge
+}
+
 type NodeType = SemesterNodeType | CourseNodeType
+export type NodeData = SemesterNodeData | CourseNodeData
+export type GetNode = Instance.GetNode<SemesterNodeData | CourseNodeData>
+type EdgeData = {
+  type: RequirementType
+}
 
 type SemesterDAGProps = {
   nodes: Node[]
@@ -92,7 +115,10 @@ function SemesterDAGInternal({
     setShowEdges(!showEdges)
   }
 
-  const { getIntersectingNodes } = useReactFlow()
+  const { getIntersectingNodes, getNode } = useReactFlow<
+    SemesterNodeData | CourseNodeData,
+    EdgeData
+  >()
 
   const handleReset = (node: CourseNodeType) => {
     resetNodePlacement(node.id)
@@ -121,7 +147,7 @@ function SemesterDAGInternal({
             e => ({
               ...e,
               hidden: false,
-              style: { ...e.style, stroke: "lightskyblue" }
+              style: { ...e.style, stroke: e.type == "prerequisite" ? "lightskyblue" : "darkblue" }
             }),
             e => ({
               ...e,
@@ -138,7 +164,7 @@ function SemesterDAGInternal({
             ...n,
             className: cn(
               n.className,
-              `animate-none ${isGenEdNode(n) ? "bg-purple-50" : "bg-background"}`
+              `animate-none ${isGenEdNode(n) ? "bg-zinc-100" : "bg-background"}`
             )
           }))
       )
@@ -271,12 +297,14 @@ function SemesterDAGInternal({
       <ScheduleChangeToast
         open={scheduleToastOpen}
         cannotMoveReason={scheduleToastReason}
+        getNode={getNode}
         onOpenChange={(open: boolean) => setScheduleToastOpen(open)}
       />
       <EdgeSwitch checked={showEdges} toggleSwitch={() => toggleShowEdges()} />
       <ReactFlow
         fitView
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

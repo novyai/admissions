@@ -6,6 +6,7 @@ import { Handle, Node, NodeProps, Position } from "reactflow"
 
 export type CourseNodeData = {
   semesterIndex: number
+  taken?: boolean
 } & CourseNodeGraphType
 
 export type CourseNodeType = Node<CourseNodeData>
@@ -17,7 +18,13 @@ export const defaultCourseNode: Partial<Node> = {
 
 export function CourseNode({ data, selected, dragging }: NodeProps<CourseNodeData>) {
   return (
-    <div className={cn("border rounded-md px-2 py-1 -1", (selected || dragging) && "border-ring")}>
+    <div
+      className={cn(
+        "border rounded-lg px-2 py-1 -1",
+        (selected || dragging) && "border-ring",
+        data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : ""
+      )}
+    >
       <Handle type="target" position={Position.Left} />
       <p className="text-ellipsis text-center">{data.name}</p>
       <Handle type="source" position={Position.Right} />
