@@ -11,8 +11,59 @@ import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
+const GEN_ED_PROGRAM = {
+  program: "GEN",
+  requiredCourses: [
+    {
+      id: "GEN-SGEH",
+      name: "Gen Ed Core Humanities",
+      conditions: []
+    },
+    {
+      id: "GEN-SGEM",
+      name: "Gen Ed Core Mathematics",
+      conditions: []
+    },
+    {
+      id: "GEN-SGEN",
+      name: "Gen Ed Core Natural Sciences",
+      conditions: []
+    },
+    {
+      id: "GEN-SGES",
+      name: "Gen Ed Core Social Sciences",
+      conditions: []
+    },
+    {
+      id: "GEN-TGEC",
+      name: "Gen Ed Creative Thinking",
+      conditions: []
+    },
+    {
+      id: "GEN-TGEI",
+      name: "Gen Ed Information & Data Literacy",
+      conditions: []
+    },
+    {
+      id: "GEN-TGED",
+      name: "Gen Ed Human & Cultural Diversity",
+      conditions: []
+    },
+    {
+      id: "GEN-TGEH",
+      name: "Gen Ed High Impact Practice",
+      conditions: []
+    }
+  ],
+  extraToQuery: undefined
+}
+
 export const getCoursesForProgram = async (program: Program) => {
   const { requiredCourses, extraToQuery } = programHandler[program]
+
+  if (program == "GEN") {
+    return GEN_ED_PROGRAM
+  }
 
   return {
     program,
@@ -33,7 +84,8 @@ export const getCoursesForProgram = async (program: Program) => {
 
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
-  const programCourseData = await Promise.all(profile.programs.map(p => getCoursesForProgram(p)))
+  const programsWithGenEd = [...profile.programs, "GEN"] as Program[]
+  const programCourseData = await Promise.all(programsWithGenEd.map(p => getCoursesForProgram(p)))
 
   const requiredCoursesNotInProgram = await db.course.findMany({
     where: {

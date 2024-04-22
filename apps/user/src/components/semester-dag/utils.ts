@@ -73,12 +73,13 @@ export const getModifiedEdges = (
   return edges.map(e => (edgeIDsToModify.includes(e.id) ? modifyEdge(e) : modifyDefaultEdge(e)))
 }
 
-export const getModifiedCourseNodes = (
-  nodes: CourseNodeType[],
+export const getModifiedNodes = (
+  nodes: Node[],
   nodeIDsToModify: string[],
-  modifyNode: (node: CourseNodeType) => CourseNodeType
+  modifyNode: (node: Node) => Node,
+  modifyDefaultNode: (node: Node) => Node = (n: Node) => n
 ) => {
-  return nodes.map(n => (nodeIDsToModify.includes(n.id) ? modifyNode(n) : n))
+  return nodes.map(n => (nodeIDsToModify.includes(n.id) ? modifyNode(n) : modifyDefaultNode(n)))
 }
 
 export const getChangedCourseNodeIDs = (
@@ -110,8 +111,6 @@ export const getGhostCourseNodesAndEdges = (
     .filter(n => isCourseNode(n))
 
   const newSemesters: CourseNode[][] = newProfile.semesters
-
-  console.log("OLD COURSE NODES", oldChangedCourseNodes)
 
   const ghostCourseNodes: GhostCourseNodeType[][] = []
   for (let i = 0; i < newSemesters.length; i++) {
@@ -160,4 +159,12 @@ export const getGhostCourseNodesAndEdges = (
   }
 
   return { ghostCourseNodes: ghostCourseNodes.flat(), ghostEdges: ghostEdges }
+}
+
+export const isGenEdNode = (node: Node): boolean => {
+  const HARDCODED_GEN_ED_COURSES = ["Composition I", "Composition II"]
+
+  if (!isCourseNode(node)) return false
+
+  return node.id.includes("GEN") || HARDCODED_GEN_ED_COURSES.includes(node.data.name)
 }

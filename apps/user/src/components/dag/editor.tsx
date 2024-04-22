@@ -24,12 +24,14 @@ import { SemesterNodeType } from "../semester-dag/nodeTypes/semester-node"
 import {
   getChangedCourseNodeIDs,
   getGhostCourseNodesAndEdges,
-  getModifiedCourseNodes,
-  getModifiedEdges
+  getModifiedEdges,
+  getModifiedNodes,
+  isGenEdNode
 } from "../semester-dag/utils"
 import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
+import { AppointmentScheduler } from "./appointment-scheduler"
 
-type VersionWithoutBlob = { id: string }
+export type VersionWithoutBlob = { id: string }
 
 export function Editor({
   versions: initialVersions,
@@ -42,8 +44,8 @@ export function Editor({
   }
   scheduleId: string
 }) {
-  const [_versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
-  const [selectedVersion, setSelectedVersion] = useState<VersionWithoutBlob>(initialVersions[0]!)
+  const [versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
+  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
   const [profile, setProfile] = useState<HydratedStudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
@@ -54,6 +56,10 @@ export function Editor({
   const [chatOpen, setChatOpen] = useState(true)
 
   const toggleChatOpen = () => setChatOpen(!chatOpen)
+
+  // useEffect(() => {
+  //   console.log(appointmentTimes)
+  // }, [appointmentTimes])
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -75,47 +81,56 @@ export function Editor({
   )
   const [_status, setStatus] = useState<"dirty" | "saving" | "pending" | "clean" | "error">("clean")
 
-  const saveVersion = useCallback(
-    async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
-      setStatus("saving")
+  const saveVersion = async (nodes: (SemesterNodeType | CourseNodeType)[]) => {
+    setStatus("saving")
 
-      const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
+    console.log("saving version")
 
-      const highestSemester = Math.max(...courseNodes.map(n => n.data.semesterIndex))
-      const semesters = Array.from(Array(highestSemester + 1).keys())
-      const semesterCourses = semesters.map(s =>
-        courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
-      ) as unknown as CourseNode[][]
+    const courseNodes = nodes.filter(n => isCourseNode(n)) as CourseNodeType[]
 
-      const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
+    const highestSemester = Math.max(...courseNodes.map(n => n.data.semesterIndex))
+    const semesters = Array.from(Array(highestSemester + 1).keys())
+    const semesterCourses = semesters.map(s =>
+      courseNodes.filter(n => n.data.semesterIndex === s).map(c => c.data)
+    ) as unknown as CourseNode[][]
 
-      const version = await createVersion(newProfile, scheduleId)
-      setVersions(prev => [...prev, version])
-      setProfile(newProfile)
-      setSelectedVersion(version)
-      setStatus("clean")
-    },
-    [profile, scheduleId]
-  )
+    const newProfile: HydratedStudentProfile = { ...profile!, semesters: semesterCourses }
 
-  useEffect(() => {
-    setStatus("pending")
-    const update = async () => {
-      const {
-        profile: newProfile,
-        defaultNodes: newDefaultNodes,
-        defaultEdges: newDefaultEdges
-      } = await hydratedProfileAndNodesByVersion(selectedVersion.id)
-      setProfile(newProfile)
-      setDefaultNodes(newDefaultNodes)
+    const newVersion = await createVersion(newProfile, scheduleId)
 
-      if (_versions === undefined || _versions.length <= 1) {
-        setNodes(newDefaultNodes)
-        setEdges(newDefaultEdges)
-        return
-      }
+    setVersions(prevVersions => [...prevVersions, newVersion])
+  }
 
-      const lastVersionId = _versions.at(-2)!.id
+  const renderVersion = async (
+    version: VersionWithoutBlob,
+    lastVersion: VersionWithoutBlob | undefined
+  ) => {
+    if (version.id === lastVersion?.id) {
+      return
+    }
+
+    const {
+      profile: newProfile,
+      defaultNodes: newDefaultNodes,
+      defaultEdges: newDefaultEdges
+    } = await hydratedProfileAndNodesByVersion(version.id)
+
+    const genEdIDs = newDefaultNodes.filter(n => isGenEdNode(n)).map(n => n.id)
+    const nodesWithColoredGenEdCourses = getModifiedNodes(newDefaultNodes, genEdIDs, n => ({
+      ...n,
+      className: "bg-purple-50"
+    }))
+
+    setProfile(newProfile)
+    setDefaultNodes(nodesWithColoredGenEdCourses)
+
+    if (lastVersion === undefined) {
+      setNodes(nodesWithColoredGenEdCourses)
+      setEdges(newDefaultEdges)
+    } else {
+      setNodes(newDefaultNodes)
+      setEdges(newDefaultEdges)
+      const lastVersionId = lastVersion.id
       const { profile: lastProfile, defaultNodes: oldDefaultNodes } =
         await hydratedProfileAndNodesByVersion(lastVersionId)
 
@@ -132,7 +147,7 @@ export function Editor({
 
       setNodes([
         ...ghostCourseNodes,
-        ...getModifiedCourseNodes(newDefaultNodes, changedNodeIDs, n => ({
+        ...getModifiedNodes(nodesWithColoredGenEdCourses, changedNodeIDs, n => ({
           ...n,
           className: cn(n.className, "bg-sky-100 animate-pulse")
         }))
@@ -146,16 +161,29 @@ export function Editor({
         }))
       ])
     }
+  }
 
-    update().then(
-      () => setStatus("clean"),
-      reason => {
-        console.error(reason)
-        setStatus("error")
+  useEffect(() => {
+    const initialLoad = versions === initialVersions
+    if (versions.length == 0) return
+    if (versions.length >= 1) {
+      const versionsCopy = [...versions.map(v => ({ id: v.id }))]
+      if (versions.at(-1)?.id == versions.at(-2)?.id) {
+        while (versionsCopy.at(-1)?.id == versionsCopy.at(-2)?.id) {
+          versionsCopy.pop()
+        }
+        setVersions(versionsCopy)
+      } else {
+        renderVersion(versions.at(-1)!, initialLoad ? undefined : versions.at(-2)).then(
+          () => setStatus("clean"),
+          reason => {
+            console.error(reason)
+            setStatus("error")
+          }
+        )
       }
-    )
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedVersion])
+    }
+  }, [initialVersions, versions])
 
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
@@ -164,8 +192,12 @@ export function Editor({
     conversationId: conversation.id,
     initialMessages: conversation?.messages ?? [],
     userId: conversation.userId,
-    versionId: selectedVersion.id,
-    setSelectedVersion: (versionId: string) => setSelectedVersion({ id: versionId })
+    versions: versions,
+    handleSelectedVersion: (versionId: string) => {
+      const newVersion = { id: versionId }
+      setVersions(prevVersions => [...prevVersions, newVersion])
+    },
+    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
@@ -176,6 +208,9 @@ export function Editor({
   }
 
   async function submitMessage(content: string, role?: MessageRole) {
+    if (appointmentTimes) {
+      setAppointmentTimes([])
+    }
     setChatOpen(true)
     if (loading) {
       return
@@ -206,7 +241,7 @@ export function Editor({
     setTimeout(() => {
       scrollToEnd({ now: true })
     }, 0)
-  }, [])
+  })
 
   return (
     <div className="w-full">
@@ -236,7 +271,10 @@ export function Editor({
                   <Separator className="bg-slate-100 h-[0.1rem]" />
                 </div>
 
-                <ScrollArea ref={ChatScrollerRef} className="h-[calc(100%-2.75rem)] rounded-xl">
+                <ScrollArea
+                  ref={ChatScrollerRef}
+                  className="relative h-[calc(100%-2.75rem)] rounded-xl"
+                >
                   <div className="mx-auto">
                     <div className="px-1">
                       {messages.length > 0 ?
@@ -254,14 +292,24 @@ export function Editor({
                         />
                       }
                     </div>
-
-                    {ChatScrollerRef?.current && (
-                      <ChatScrollAnchor
-                        trackVisibility={waiting || loading}
-                        scrollerRef={ChatScrollerRef}
-                      />
-                    )}
                   </div>
+                  {ChatScrollerRef?.current && (
+                    <ChatScrollAnchor
+                      trackVisibility={waiting || loading}
+                      scrollerRef={ChatScrollerRef}
+                    />
+                  )}
+                  {appointmentTimes.length > 0 ?
+                    <AppointmentScheduler
+                      times={appointmentTimes}
+                      handleBookAppointment={(readableTime: string) => {
+                        setAppointmentTimes([])
+                        submitMessage(
+                          `Let's book an appointment for ${readableTime.toLocaleString()}.`
+                        )
+                      }}
+                    />
+                  : <></>}
                 </ScrollArea>
               </div>
             </ChatPopover>

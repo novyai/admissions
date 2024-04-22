@@ -8,7 +8,13 @@ import OpenAI from "openai"
 import z from "zod"
 
 import { coreAgent } from "@repo/ai/agents/core"
-import { coreAgentSchema, doThingParams, rescheduleCourseParams } from "@repo/ai/agents/core/schema"
+import {
+  coreAgentSchema,
+  doThingParams,
+  forceRescheduleCourseParams,
+  rescheduleCourseParams,
+  showAppointmentParams
+} from "@repo/ai/agents/core/schema"
 import { countTokens } from "@repo/ai/lib/tokens"
 import {
   CORE_AGENT_ACTION_DEFINITIONS,
@@ -36,7 +42,9 @@ type ActionParams = {
     z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.DO_THING ? z.infer<typeof doThingParams>
   : K extends typeof CORE_AGENT_ACTIONS.RESCHEDULE_COURSE ? z.infer<typeof rescheduleCourseParams>
-  : never
+  : K extends typeof CORE_AGENT_ACTIONS.SHOW_APPOINTMENT ? z.infer<typeof showAppointmentParams>
+  : // : K extends typeof CORE_AGENT_ACTIONS.BOOK_APPOINTMENT ? z.infer<typeof bookAppointmentParams>
+    never
 }
 
 type ActionHandler<T extends keyof typeof CORE_AGENT_ACTIONS, P = unknown> = (
@@ -170,6 +178,35 @@ createWorker(async job => {
 
       return void 0 as void
     },
+    [CORE_AGENT_ACTIONS.SHOW_APPOINTMENT]: async (
+      params: z.infer<typeof showAppointmentParams>
+    ) => {
+      logger.info({
+        message: "showing appointments",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      await publish({
+        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+        data: undefined
+      })
+      return
+    },
+    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
+    //   params: z.infer<typeof bookAppointmentParams>
+    // ) => {
+    //   logger.info({
+    //     message: "booking appointment",
+    //     conversationId: jobData.conversationId,
+    //     userId: jobData.userId,
+    //     data: params
+    //   })
+    //   return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
+
+    //   Remember: you are not going to meet with the student, a human advisor is.
+    //   `
+    // },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -186,8 +223,112 @@ createWorker(async job => {
         versionId: jobData.versionId
       })
 
-      const course = getCourseFromIdNameCode(profile, params.courseName)
+      let course
+      try {
+        course = getCourseFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
+      let systemPrompt = `
+      This action made the following changes to your schedule:
+
+      ${changes
+        .map(
+          change =>
+            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester + 1}`
+        )
+        .join("\n")}
+
+        Please summarize these changes in your response in 1-4 bullet points.
+    `
+
+      if (changes.length > 5) {
+        systemPrompt = `
+          This a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
+        `
+        await publish({
+          type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+          data: undefined
+        })
+      } else {
+        systemPrompt += `\n
+          This is a fairly small change to your schedule.
+          \n
+        `
+
+        const { id } = await db.version.create({
+          data: {
+            blob: createBlob(newProfile),
+            scheduleId: scheduleId
+          },
+          select: {
+            id: true
+          }
+        })
+
+        logger.info({
+          message: "new version created",
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          versionId: jobData.versionId,
+          data: {
+            id
+          }
+        })
+
+        await publish({
+          type: SOCKET_EVENTS.NEW_VERSION,
+          data: {
+            versionId: id,
+            changes
+          }
+        })
+      }
+      return systemPrompt
+    },
+    [CORE_AGENT_ACTIONS.FORCE_RESCHEDULE_COURSE]: async (
+      params: z.infer<typeof forceRescheduleCourseParams>
+    ) => {
+      logger.info({
+        message: "force rescheduling course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { graph, profile, scheduleId } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
+
+      let course
+      try {
+        course = getCourseFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
@@ -211,6 +352,21 @@ createWorker(async job => {
         }
       })
 
+      let systemPrompt = `
+      This action made the following changes to your schedule:
+
+      ${changes
+        .map(
+          change =>
+            `- ${change.type} ${newGraph.getNodeAttribute(change.courseId, "name")} to ${change.semester + 1}`
+        )
+        .join("\n")}
+
+        Please summarize these changes in your response in 1-4 bullet points.
+
+        End your message by emphasizing it's extremely important to meet with their advisor as soon as possible to dicuss the schedule changes.
+    `
+
       await publish({
         type: SOCKET_EVENTS.NEW_VERSION,
         data: {
@@ -218,8 +374,11 @@ createWorker(async job => {
           changes
         }
       })
-
-      return { id, changes }
+      await publish({
+        type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+        data: undefined
+      })
+      return systemPrompt
     }
   }
 
@@ -341,7 +500,7 @@ createWorker(async job => {
         actionParams: completion.actionParams
       })
 
-      if (!completion?.action || !completion?.actionParams) {
+      if (!completion?.action) {
         return complete()
       }
 
@@ -376,7 +535,10 @@ createWorker(async job => {
                 content: completion.content
               },
               {
-                content: `here are the results of action: ${agentStep.completion.action}: \n ${JSON.stringify(actionResults)} `,
+                content: `here are the results of action: ${agentStep.completion.action}: \n 
+                
+                Please use the following information in your response
+                ${actionResults}`,
                 role: "system"
               }
             ],
@@ -388,6 +550,14 @@ createWorker(async job => {
             conversationId: jobData.conversationId,
             userId: jobData.userId,
             completion: followUpCompletion
+          })
+        } else {
+          logger.info({
+            message: "action handler completed",
+            conversationId: jobData.conversationId,
+            userId: jobData.userId,
+            action: completion.action,
+            actionParams: completion.actionParams
           })
         }
 
