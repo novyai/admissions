@@ -120,8 +120,6 @@ function checkCorequisiteRequirements(
       coreq => graph.getEdgeAttribute(coreq.id, courseId, "type") === RequirementType.COREQUISITE
     )
 
-  console.log("mainCourse", mainCourse)
-
   if (!mainCourse)
     return {
       canMove: true
