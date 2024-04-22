@@ -12,7 +12,8 @@ const baseProfile = {
   programs: [],
   timeToGraduate: 0,
   currentSemester: 0,
-  coursePerSemester: 5
+  coursePerSemester: 5,
+  startDate: "Fall 2020"
 }
 
 describe("addCourseToGraph function", () => {

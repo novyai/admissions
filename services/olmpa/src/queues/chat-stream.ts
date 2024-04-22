@@ -244,7 +244,7 @@ createWorker(async job => {
 
       const { course, semesterIndex } = courseSem
 
-      if (semesterIndex < profile.currSemester) {
+      if (semesterIndex < profile.currentSemester) {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
@@ -345,7 +345,7 @@ createWorker(async job => {
 
       const { course, semesterIndex } = courseSem
 
-      if (semesterIndex < profile.currSemester) {
+      if (semesterIndex < profile.currentSemester) {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 

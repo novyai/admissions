@@ -7,6 +7,8 @@ import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
 
+import { calculateSemesterDifference } from "@/lib/schedule/utils"
+
 /**
  * Create a new schedule and its first version for the user
  * @param userId The user's ID
@@ -14,16 +16,18 @@ import { db } from "@repo/db"
  * @returns The ID of the newly created schedule
  */
 export async function createNewSchedule(userId: string, programs: Program[], startDate: string) {
+  const currentSemester = calculateSemesterDifference(startDate)
   const baseProfile: BaseStudentProfile = {
     programs,
     requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
     coursePerSemester: 6,
-    currentSemester: 0,
+    currentSemester,
     startDate
   }
 
+  console.log(programs)
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
   const schedule = await db.schedule.create({
@@ -47,9 +51,13 @@ export async function getProgramsForAllUniversities(): Promise<UniversityProgram
   return await db.university.findMany({
     select: {
       Program: {
-        select: {
-          name: true,
-          id: true
+        include: {
+          department: {
+            select: {
+              id: true,
+              code: true
+            }
+          }
         }
       },
       id: true,

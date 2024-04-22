@@ -46,19 +46,22 @@ export function CreateNewScheduleForm({
   universityPrograms: UniversityPrograms[]
 }) {
   const universities = universityPrograms.map(university => ({
-    value: university.id,
+    value: university.name,
     label: university.name
   }))
 
   const programs = universityPrograms
     .map(university =>
       university.Program.map(program => ({
-        value: program.id,
+        value: program.department.code,
         label: program.name,
-        universityId: university.id
+        id: university.id,
+        universityId: university.name
       }))
     )
     .flat()
+
+  console.log(programs)
 
   const years = ["2021", "2022", "2023", "2024", "2025"]
   const semesters = ["Fall", "Spring"]
@@ -90,7 +93,7 @@ export function CreateNewScheduleForm({
       })
       return
     }
-
+    console.log(result.data.majors)
     if (result.data.university !== "University of South Florida") {
       setError("university", {
         message: "We only support University of South Florida at the moment"
@@ -107,8 +110,8 @@ export function CreateNewScheduleForm({
     router.push(`/schedule/${scheduleId}`)
   }
 
-  const programsForUniversity = (universityId: string) => {
-    return programs.filter(program => program.universityId === universityId)
+  const programsForUniversity = (university: string) => {
+    return programs.filter(program => program.universityId === university)
   }
 
   return (

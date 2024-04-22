@@ -6,6 +6,7 @@ export type SemesterNodeData =
   | {
       semesterIndex: number
       currSemester: number
+      startDate: string
     }
   | {
       transfer: true
@@ -32,6 +33,15 @@ export const defaultSemesterNode: Partial<Node> = {
 export function SemesterNode({ data }: SemesterNodeProps) {
   const taken = "semesterIndex" in data && data.semesterIndex < data.currSemester
   const isCurrSemester = "semesterIndex" in data && data.semesterIndex == data.currSemester
+
+  const name =
+    "transfer" in data ? "Transfer Credits" : (
+      `Semester ${data.semesterIndex + 1} ${
+        taken ? "(Taken)"
+        : isCurrSemester ? "(Current)"
+        : ""
+      }`
+    )
   return (
     <div
       className={cn(
@@ -42,10 +52,7 @@ export function SemesterNode({ data }: SemesterNodeProps) {
       <p>
         {"transfer" in data ?
           `Transfer Credits`
-        : `Semester ${data.semesterIndex + 1} ${
-            taken ? "(Taken)"
-            : isCurrSemester ? "(Current)"
-            : ""
+        : `Semester ${data.semesterIndex + 1} ${name}
           }`
         }
       </p>

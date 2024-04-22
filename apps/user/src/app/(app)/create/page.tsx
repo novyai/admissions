@@ -20,12 +20,12 @@ export default async function CreateSchedulePage() {
         <CardHeader>
           <CardTitle>
             <p className="flex gap-1">
-              Welcome to
+              <span>Welcome to</span>
               <span className="uppercase tracking-widest overflow-hidden">
                 AI
-                <span className="font-light">dvisor</span>
+                <span className="font-light">dvisor.</span>
               </span>
-              An AI powered course planner
+              <span>Your AI powered course planner</span>
             </p>
           </CardTitle>
         </CardHeader>
