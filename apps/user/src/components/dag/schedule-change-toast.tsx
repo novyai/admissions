@@ -37,6 +37,9 @@ const getReadableReason = (getNode: GetNode, cannotMoveReason?: CannotMoveReason
   if (type == "full") {
     return "The semester is full."
   }
+  if (type == "semester-already-taken") {
+    return `You've already taken this semester.`
+  }
 }
 
 export default function ScheduleChangeToast({

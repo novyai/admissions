@@ -17,6 +17,7 @@ export type CannotMoveReason = {
         semesterIndex: number
       }
     | { type: "not-found-in-schedule" }
+    | { type: "semester-already-taken"; semesterIndex: number }
 
   canMove: false
 }
@@ -35,7 +36,14 @@ export function canMoveCourse(
   toSemester: number,
   profile: HydratedStudentProfile,
   ignoreGraduation: boolean = false
-): CanMoveReturn {
+): CannotMoveReason | { canMove: true } {
+  if (toSemester < profile.currSemester) {
+    return {
+      canMove: false,
+      reason: { type: "semester-already-taken", semesterIndex: toSemester }
+    }
+  }
+
   if (!ignoreGraduation && toSemester >= profile.timeToGraduate) {
     return {
       canMove: false,
@@ -132,6 +140,7 @@ function checkCorequisiteRequirements(
       canMove: false,
       reason:
         (
+          canMoveMainCourse.reason.type === "semester-already-taken" ||
           canMoveMainCourse.reason.type === "not-found-in-schedule" ||
           canMoveMainCourse.reason.type === "full" ||
           canMoveMainCourse.reason.type === "graduation"

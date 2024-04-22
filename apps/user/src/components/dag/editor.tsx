@@ -118,7 +118,7 @@ export function Editor({
     const genEdIDs = newDefaultNodes.filter(n => isGenEdNode(n)).map(n => n.id)
     const nodesWithColoredGenEdCourses = getModifiedNodes(newDefaultNodes, genEdIDs, n => ({
       ...n,
-      className: "bg-purple-50"
+      className: "bg-zinc-100"
     }))
 
     setProfile(newProfile)
