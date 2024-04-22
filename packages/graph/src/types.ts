@@ -23,6 +23,7 @@ export type BaseStudentProfile = {
   timeToGraduate: number // in semesters
   currentSemester: number
   coursePerSemester: number
+  startDate: string
 }
 
 export const studentProfileSchema = z.custom<StudentProfile>()

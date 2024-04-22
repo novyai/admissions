@@ -10,7 +10,8 @@ const profile: BaseStudentProfile = {
   transferCredits: [],
   timeToGraduate: 4,
   currentSemester: 1,
-  coursePerSemester: 5
+  coursePerSemester: 5,
+  startDate: "Fall 2020"
 }
 
 test("blob", async () => {

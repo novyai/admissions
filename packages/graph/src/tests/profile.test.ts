@@ -18,7 +18,8 @@ const mathProfile: StudentProfile = {
   transferCredits: [],
   timeToGraduate: 4,
   currentSemester: 1,
-  coursePerSemester: 3
+  coursePerSemester: 3,
+  startDate: "Fall 2020"
 }
 
 const compositionProfile: StudentProfile = {
@@ -28,7 +29,8 @@ const compositionProfile: StudentProfile = {
   transferCredits: [],
   timeToGraduate: 4,
   currentSemester: 1,
-  coursePerSemester: 3
+  coursePerSemester: 3,
+  startDate: "Fall 2020"
 }
 
 test("base student profile from requirements", async () => {
@@ -174,7 +176,8 @@ const csProfile: BaseStudentProfile = {
   transferCredits: [],
   timeToGraduate: 4,
   currentSemester: 1,
-  coursePerSemester: 5
+  coursePerSemester: 5,
+  startDate: "Fall 2020"
 }
 
 test("test blob", async () => {

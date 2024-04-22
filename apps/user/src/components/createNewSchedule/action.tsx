@@ -13,14 +13,15 @@ import { db } from "@repo/db"
  * @param programs The user's programs to pull in courses from
  * @returns The ID of the newly created schedule
  */
-export async function createNewSchedule(userId: string, programs: Program[]) {
+export async function createNewSchedule(userId: string, programs: Program[], startDate: string) {
   const baseProfile: BaseStudentProfile = {
     programs,
     requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
     coursePerSemester: 6,
-    currentSemester: 0
+    currentSemester: 0,
+    startDate
   }
 
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)

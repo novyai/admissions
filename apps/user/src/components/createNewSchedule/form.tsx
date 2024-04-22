@@ -60,17 +60,22 @@ export function CreateNewScheduleForm({
     )
     .flat()
 
+  const years = ["2021", "2022", "2023", "2024", "2025"]
+  const semesters = ["Fall", "Spring"]
+
   const enumValues = universities.map(university => university.value)
   const formSchema = z.object({
     university: z.enum(enumValues as [string, ...string[]]),
-    majors: z.array(z.custom<Option>()).min(1) // Assuming Option is a compatible type with any
+    majors: z.array(z.custom<Option>()).min(1),
+    start: z.string()
   })
 
   const { formState, getValues, trigger, setError, ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       majors: [],
-      university: ""
+      university: "",
+      start: ""
     }
   })
 
@@ -80,12 +85,23 @@ export function CreateNewScheduleForm({
     const result = formSchema.safeParse(values)
 
     if (!result.success) {
+      setError("root", {
+        message: "Error Parsing"
+      })
+      return
+    }
+
+    if (result.data.university !== "University of South Florida") {
+      setError("university", {
+        message: "We only support University of South Florida at the moment"
+      })
       return
     }
 
     const scheduleId = await createNewSchedule(
       userId,
-      result.data.majors.map(option => option.value as Program)
+      result.data.majors.map(option => option.value as Program),
+      result.data.start
     )
 
     router.push(`/schedule/${scheduleId}`)
@@ -150,6 +166,32 @@ export function CreateNewScheduleForm({
                 trigger={trigger}
                 placeholder="Select your majors"
               />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="start"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Starting Semester</FormLabel>
+              <Select defaultValue={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a starting semester" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {years.map(year =>
+                    semesters.map(s => (
+                      <SelectItem key={`${year}-${s}`} value={`${year} ${s}`}>
+                        {year} {s}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

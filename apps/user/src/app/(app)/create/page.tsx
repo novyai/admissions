@@ -18,10 +18,19 @@ export default async function CreateSchedulePage() {
     <div className="flex items-center justify-center h-screen">
       <Card className="w-[500px]">
         <CardHeader>
-          <CardTitle>Welcome your course planner</CardTitle>
+          <CardTitle>
+            <p className="flex gap-1">
+              Welcome to
+              <span className="uppercase tracking-widest overflow-hidden">
+                AI
+                <span className="font-light">dvisor</span>
+              </span>
+              An AI powered course planner
+            </p>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p>We need some information to get you started</p>
+          <p>Let&apos;s get you started!</p>
 
           <CreateNewScheduleForm userId={userId} universityPrograms={universityPrograms} />
         </CardContent>
