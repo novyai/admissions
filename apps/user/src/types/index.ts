@@ -42,3 +42,9 @@ export type HydratedCourseWithPrereqs = Course & {
     }[]
   }[]
 }
+
+export type UniversityPrograms = {
+  id: string
+  name: string
+  Program: { id: string; name: string }[]
+}

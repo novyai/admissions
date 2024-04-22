@@ -1,5 +1,6 @@
 "use server"
 
+import { UniversityPrograms } from "@/types"
 import { createBlob } from "@graph/blob"
 import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
@@ -39,4 +40,19 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
   })
 
   return schedule.id
+}
+
+export async function getProgramsForAllUniversities(): Promise<UniversityPrograms[]> {
+  return await db.university.findMany({
+    select: {
+      Program: {
+        select: {
+          name: true,
+          id: true
+        }
+      },
+      id: true,
+      name: true
+    }
+  })
 }

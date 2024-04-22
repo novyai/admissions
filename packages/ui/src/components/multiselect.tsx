@@ -5,28 +5,20 @@ import { Badge } from "@ui/components/ui/badge"
 import { Command, CommandGroup, CommandItem } from "@ui/components/ui/command"
 import { Command as CommandPrimitive } from "cmdk"
 import { X } from "lucide-react"
-import { ControllerRenderProps, UseFormTrigger } from "react-hook-form"
+import { ControllerRenderProps, FieldValues, UseFormTrigger } from "react-hook-form"
 
 export type Option = Record<"value" | "label", string>
 
-interface MultiSelectProps
-  extends Omit<
-    ControllerRenderProps<{
-      options: Option[]
-    }>,
-    "ref" | "onBlur"
-  > {
+type MultiSelectProps<T extends FieldValues> = Omit<ControllerRenderProps<T>, "ref" | "onBlur"> & {
   options: Option[]
   value: Option[]
   className?: string
   placeholder: string
   closeOnSelect?: boolean
-  trigger: UseFormTrigger<{
-    options: Option[]
-  }>
+  trigger: UseFormTrigger<T>
 }
 
-export function MultiSelect({
+export function MultiSelect<T extends FieldValues>({
   options,
   value: selected,
   onChange,
@@ -34,14 +26,14 @@ export function MultiSelect({
   placeholder,
   trigger,
   name
-}: MultiSelectProps) {
+}: MultiSelectProps<T>) {
   const inputRef = React.useRef<HTMLInputElement>(null)
   const [open, setOpen] = React.useState(false)
   const [inputValue, setInputValue] = React.useState("")
 
   const handleUnselect = React.useCallback(
     (option: Option) => {
-      const newSelected = [...selected.filter(s => s.value !== option.value)]
+      const newSelected = [...selected.filter((s: Option) => s.value !== option.value)]
       onChange(newSelected)
       trigger(name)
     },
@@ -74,22 +66,22 @@ export function MultiSelect({
     <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
       <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex gap-1 flex-wrap">
-          {selected.map(framework => {
+          {selected.map((selectedValue: Option) => {
             return (
-              <Badge key={framework.value} variant="secondary">
-                {framework.label}
+              <Badge key={selectedValue.value} variant="secondary">
+                {selectedValue.label}
                 <button
                   className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                   onKeyDown={e => {
                     if (e.key === "Enter") {
-                      handleUnselect(framework)
+                      handleUnselect(selectedValue)
                     }
                   }}
                   onMouseDown={e => {
                     e.preventDefault()
                     e.stopPropagation()
                   }}
-                  onClick={() => handleUnselect(framework)}
+                  onClick={() => handleUnselect(selectedValue)}
                 >
                   <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
                 </button>

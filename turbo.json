@@ -45,6 +45,7 @@
       "persistent": false
     },
     "db:generate": {},
+    "db:migrate:dev": {},
     "db:format": {
       "cache": false
     },
