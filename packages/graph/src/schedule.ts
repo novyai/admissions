@@ -68,7 +68,7 @@ export function canMoveCourse(
  * @param graph The course graph.
  * @returns An array of prerequisite course IDs not completed before the target semester.
  */
-function checkPrerequisites(courseId: string, toSemester: number, graph: CourseGraph): string[] {
+function checkDependents(courseId: string, toSemester: number, graph: CourseGraph): string[] {
   return graph
     .mapInNeighbors(courseId, (_prereqId, prereq) => prereq)
     .filter(
@@ -87,7 +87,7 @@ function checkPrerequisites(courseId: string, toSemester: number, graph: CourseG
  * @param graph The course graph.
  * @returns An array of dependent course IDs not completed after the target semester.
  */
-function checkDependents(courseId: string, toSemester: number, graph: CourseGraph): string[] {
+function checPrereqs(courseId: string, toSemester: number, graph: CourseGraph): string[] {
   return graph
     .mapOutNeighbors(courseId, (_dependentId, dependent) => dependent)
     .filter(
@@ -170,33 +170,32 @@ export function _canMoveCourse(
     return { canMove: false, reason: { type: "not-found-in-schedule" } }
   }
 
-  const failedCourses = checkPrerequisites(courseId, toSemester, graph)
-  if (failedCourses.length > 0)
-    return {
-      canMove: false,
-      reason: {
-        corequisite: false,
-        type: "prerequisite",
-        courseId: failedCourses
-      }
-    }
-
   const req = checkCorequisiteRequirements(courseId, toSemester, graph)
   if (!req.canMove) {
     return req
   }
 
   // Find all courses that list the moving course as a prerequisite
-  const failedDependents = checkDependents(courseId, toSemester, graph)
-  if (failedDependents.length > 0)
+  const failedPre = checPrereqs(courseId, toSemester, graph)
+  if (failedPre.length > 0)
+    return {
+      canMove: false,
+      reason: {
+        corequisite: false,
+        type: "prerequisite",
+        courseId: failedPre
+      }
+    }
+
+  const failedDep = checkDependents(courseId, toSemester, graph)
+  if (failedDep.length > 0)
     return {
       canMove: false,
       reason: {
         corequisite: false,
         type: "dependent",
-        courseId: failedDependents
+        courseId: failedDep
       }
     }
-
   return { canMove: true }
 }

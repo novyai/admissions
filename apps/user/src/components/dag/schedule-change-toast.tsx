@@ -1,4 +1,5 @@
 import { CannotMoveReason } from "@graph/schedule"
+import { CourseNode } from "@graph/types"
 import {
   Toast,
   ToastDescription,
@@ -6,14 +7,20 @@ import {
   ToastTitle,
   ToastViewport
 } from "@ui/components/ui/toast"
+import { Node } from "reactflow"
 
-interface ScheduleChangeToastProps {
+import { GetNode } from "../semester-dag"
+import { isCourseNode } from "../semester-dag/graph-to-node-utils"
+import { CourseNodeData } from "../semester-dag/nodeTypes/course-node"
+
+type ScheduleChangeToastProps = {
   open: boolean
   cannotMoveReason?: CannotMoveReason
   onOpenChange: (open: boolean) => void
+  getNode: GetNode
 }
 
-const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
+const getReadableReason = (getNode: GetNode, cannotMoveReason?: CannotMoveReason) => {
   if (cannotMoveReason === undefined) {
     return ""
   }
@@ -21,7 +28,12 @@ const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
   const { type } = cannotMoveReason.reason
 
   if (type == "dependent" || type == "prerequisite") {
-    return `The course is a ${type} of another course.`
+    const n = getNode(cannotMoveReason.reason.courseId[0])
+    if (n && isCourseNode(n as Node)) {
+      const d = n.data as CourseNodeData
+      return `The course is a ${type} of ${d.name}`
+    }
+    return `The course is a ${type} of another course`
   }
   if (type == "full") {
     return "The semester is full."
@@ -31,7 +43,8 @@ const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
 export default function ScheduleChangeToast({
   open,
   cannotMoveReason,
-  onOpenChange
+  onOpenChange,
+  getNode
 }: ScheduleChangeToastProps) {
   return (
     <>
@@ -45,7 +58,7 @@ export default function ScheduleChangeToast({
             Invalid Schedule Change
           </ToastTitle>
           <ToastDescription asChild>
-            <p className="text-xs">{getReadableReason(cannotMoveReason)}</p>
+            <p className="text-xs">{getReadableReason(getNode, cannotMoveReason)}</p>
           </ToastDescription>
         </Toast>
         <ToastViewport className="absolute top-4 left-[calc(50vw-12rem)] w-[24rem] p-4 m-auto" />
