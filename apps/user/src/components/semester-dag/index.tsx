@@ -2,6 +2,7 @@
 
 import ReactFlow, {
   Background,
+  BezierEdge,
   Controls,
   Edge,
   MiniMap,
@@ -35,6 +36,11 @@ const nodeTypes = {
   semesterNode: SemesterNode,
   courseNode: CourseNode,
   ghostCourseNode: GhostCourseNode
+}
+
+const edgeTypes = {
+  prerequisite: BezierEdge,
+  corequisite: BezierEdge
 }
 
 type NodeType = SemesterNodeType | CourseNodeType
@@ -260,6 +266,7 @@ function SemesterDAGInternal({
       <ReactFlow
         fitView
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}

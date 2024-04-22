@@ -18,16 +18,13 @@ const getReadableReason = (cannotMoveReason?: CannotMoveReason) => {
     return ""
   }
 
-  const reason = cannotMoveReason.reason.type
+  const { type } = cannotMoveReason.reason
 
-  if (reason == "dependent") {
-    return "The course is a dependent of another course."
+  if (type == "dependent" || type == "prerequisite") {
+    return `The course is a ${type} of another course.`
   }
-  if (reason == "full") {
+  if (type == "full") {
     return "The semester is full."
-  }
-  if (reason == "prereq") {
-    return "The course is a prerequisite for another course."
   }
 }
 

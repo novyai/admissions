@@ -195,7 +195,7 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
       courseId,
       graph,
       courseMap,
-      requiredCourses: []
+      requiredCourses: [courseId]
     })
 
     // Expect the graph to have nodes for the course and both prerequisites
@@ -252,7 +252,7 @@ describe("addCourseToGraph function with corequisite conditions", () => {
       courseId,
       graph,
       courseMap,
-      requiredCourses: []
+      requiredCourses: [courseId]
     })
 
     // Expect the graph to have nodes for the course and its corequisite
