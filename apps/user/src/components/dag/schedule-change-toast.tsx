@@ -1,5 +1,4 @@
 import { CannotMoveReason } from "@graph/schedule"
-import { CourseNode } from "@graph/types"
 import {
   Toast,
   ToastDescription,
