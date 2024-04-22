@@ -1,4 +1,4 @@
-import Prisma from "@repo/db"
+import Prisma, { RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
@@ -50,7 +50,12 @@ type CourseAttributes = {
       slack: number
     }
 )
-export type CourseGraph = Graph<CourseAttributes, Attributes, Attributes>
+
+type EdgeAttributes = {
+  type: RequirementType
+}
+
+export type CourseGraph = Graph<CourseAttributes, EdgeAttributes, Attributes>
 
 export const COURSE_PAYLOAD_QUERY = {
   select: {
@@ -60,14 +65,15 @@ export const COURSE_PAYLOAD_QUERY = {
       select: {
         logicalOperator: true,
         conditions: {
-          include: {
+          select: {
+            type: true,
             prerequisites: true
           }
         }
       }
     }
   }
-}
+} satisfies Prisma.CourseDefaultArgs
 
 export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
 
@@ -181,11 +187,11 @@ function pickOrCondition(
     return
   }
 
-  const prerequisites = conditionsWithCounts.reduce((acc, cur) =>
+  const pickedOrCondition = conditionsWithCounts.reduce((acc, cur) =>
     cur.count > acc.count ? cur : acc
-  ).condition.prerequisites
+  )
 
-  for (const prerequisite of prerequisites) {
+  for (const prerequisite of pickedOrCondition.condition.prerequisites) {
     // if a course is completed, assume that it's prerequisites are completed
     if (courseIsCompleted) {
       completedCourseIds.push(prerequisite.courseId)
@@ -200,7 +206,9 @@ function pickOrCondition(
 
     // edges represent prerequisites pointing at the course they are a prerequisite for
     if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-      graph.addDirectedEdge(prerequisite.courseId, course.id)
+      graph.addDirectedEdge(prerequisite.courseId, course.id, {
+        type: pickedOrCondition.condition.type
+      })
     }
   }
 }
@@ -225,7 +233,9 @@ function pickAndCondition(
 
       // edges represent prerequisites pointing at the course they are a prerequisite for
       if (!graph.hasDirectedEdge(prerequisite.courseId, course.id)) {
-        graph.addDirectedEdge(prerequisite.courseId, course.id)
+        graph.addDirectedEdge(prerequisite.courseId, course.id, {
+          type: condition.type
+        })
       }
     }
   }

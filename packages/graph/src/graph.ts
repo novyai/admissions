@@ -3,6 +3,7 @@ import {
   HydratedStudentProfile,
   BaseStudentProfile as StudentProfile
 } from "@graph/types"
+import { RequirementType } from "@repo/db"
 import Graph from "graphology"
 
 import { CourseGraph } from "./course"
@@ -29,7 +30,14 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
 
   for (const courseNode of profile.semesters.flat()) {
     for (const prereq of courseNode.prerequisites) {
-      graph.addDirectedEdge(prereq, courseNode.id)
+      graph.addDirectedEdge(prereq, courseNode.id, {
+        type: RequirementType.PREREQUISITE
+      })
+    }
+    for (const coreq of courseNode.corequisites) {
+      graph.addDirectedEdge(courseNode.id, coreq, {
+        type: RequirementType.COREQUISITE
+      })
     }
   }
 
