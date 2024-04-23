@@ -193,8 +193,26 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
  */
 export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   let currentSemester: number = 0
-  let coursesInCurrentSemester: string[] = []
+  let numCoursesInCurrentSemesterByProgram: { [program in Program]?: number } = {}
+  let numCoursesInCurrentSemester: number = 0
   let firstDeferredCourseId: string | null = null
+
+  const addToNumCoursesInCurrentSemesterByProgram = (program: Program | undefined) => {
+    if (program === undefined) return
+    const numCourses = numCoursesInCurrentSemesterByProgram[program]
+    if (numCourses === undefined) {
+      numCoursesInCurrentSemesterByProgram[program] = 0
+    }
+    numCoursesInCurrentSemesterByProgram[program]! += 1
+  }
+
+  const tooManyProgramCourses = (program: Program | undefined): boolean => {
+    if (program === undefined) return false
+    const numCourses = numCoursesInCurrentSemesterByProgram[program]
+    if (numCourses === undefined) return false
+
+    return numCourses >= Math.floor(profile.coursePerSemester / 2)
+  }
 
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
@@ -212,12 +230,13 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
     // check if the semester is full already and increment if it is
     if (
-      coursesInCurrentSemester.length >= profile.coursePerSemester ||
+      numCoursesInCurrentSemester >= profile.coursePerSemester ||
       course["id"] === firstDeferredCourseId
     ) {
       // console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
-      coursesInCurrentSemester = []
+      numCoursesInCurrentSemester = 0
+      numCoursesInCurrentSemesterByProgram = {}
       firstDeferredCourseId = null
     }
 
@@ -237,17 +256,20 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
     if (
       allPrereqsCompleted &&
-      corequisites.length + coursesInCurrentSemester.length + 1 <= profile.coursePerSemester
+      !tooManyProgramCourses(course.program) &&
+      corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
-      // if all of the prereqs were completed in previous semesters, we can add this course to the current one
+      // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course["id"], "semester", currentSemester)
-      coursesInCurrentSemester.push(course["id"])
+      numCoursesInCurrentSemester += 1
+      addToNumCoursesInCurrentSemesterByProgram(course.program)
 
       // add all corequisites to the schedule
       for (const corequisite of corequisites) {
         graph.setNodeAttribute(corequisite.id, "semester", currentSemester)
-        coursesInCurrentSemester.push(corequisite.id)
+        addToNumCoursesInCurrentSemesterByProgram(corequisite.program)
+        numCoursesInCurrentSemester += 1
       }
     } else {
       // otherwise we need to defer this course
