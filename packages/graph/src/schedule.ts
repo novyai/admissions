@@ -35,7 +35,7 @@ export function canMoveCourse(
   courseId: string,
   toSemester: number,
   profile: HydratedStudentProfile,
-  ignoreGraduation: boolean = false
+  ignoreGraduation: boolean = true
 ): CannotMoveReason | { canMove: true } {
   if (toSemester < profile.currentSemester) {
     return {

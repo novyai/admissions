@@ -1,4 +1,4 @@
-import Prisma, { RequirementType } from "@repo/db"
+import Prisma, { $Enums, RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
@@ -6,6 +6,7 @@ import {
   countRequiredCoursesInConditionGroup,
   countRequiredCoursesInPrerequisiteTree
 } from "./conditions"
+import { Program } from "./defaultCourses"
 import { HydratedStudentProfile } from "./types"
 
 export const getCourseAndSemesterIndexFromIdNameCode = (
@@ -34,6 +35,7 @@ type CourseAttributes = {
   semester?: number
   id: string
   name: string
+  program?: Program
 } & (
   | {
       hasAttributes: false
@@ -75,7 +77,24 @@ export const COURSE_PAYLOAD_QUERY = {
   }
 } satisfies Prisma.CourseDefaultArgs
 
-export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
+// export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
+
+export type CoursePayload = {
+  id: string
+  name: string
+  program?: Program
+  conditions: Array<{
+    conditions: Array<{
+      prerequisites: Array<{
+        id: string
+        conditionId: string
+        courseId: string
+      }>
+      type: $Enums.RequirementType
+    }>
+    logicalOperator: $Enums.LogicalOperator | null
+  }>
+}
 
 export const addCourseToGraph = ({
   courseId,
@@ -85,7 +104,7 @@ export const addCourseToGraph = ({
 }: {
   courseId: string
   graph: CourseGraph
-  courseMap: Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>
+  courseMap: Map<string, CoursePayload>
   requiredCourses: string[]
 }) => {
   if (graph.hasNode(courseId)) {
@@ -102,6 +121,7 @@ export const addCourseToGraph = ({
   graph.addNode(courseId, {
     id: course.id,
     name: course.name,
+    program: course.program,
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,
