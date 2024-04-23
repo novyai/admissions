@@ -18,7 +18,7 @@ export async function createNewSchedule(userId: string, programs: Program[]) {
     requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
-    coursePerSemester: 6,
+    coursePerSemester: 5,
     currentSemester: 0
   }
 

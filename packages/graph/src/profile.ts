@@ -19,16 +19,16 @@ const GEN_ED_PROGRAM = {
       name: "Gen Ed Core Humanities",
       conditions: []
     },
-    {
-      id: "GEN-SGEM",
-      name: "Gen Ed Core Mathematics",
-      conditions: []
-    },
-    {
-      id: "GEN-SGEN",
-      name: "Gen Ed Core Natural Sciences",
-      conditions: []
-    },
+    // {
+    //   id: "GEN-SGEM",
+    //   name: "Gen Ed Core Mathematics",
+    //   conditions: []
+    // },
+    // {
+    //   id: "GEN-SGEN",
+    //   name: "Gen Ed Core Natural Sciences",
+    //   conditions: []
+    // },
     {
       id: "GEN-SGES",
       name: "Gen Ed Core Social Sciences",
@@ -39,11 +39,11 @@ const GEN_ED_PROGRAM = {
       name: "Gen Ed Creative Thinking",
       conditions: []
     },
-    {
-      id: "GEN-TGEI",
-      name: "Gen Ed Information & Data Literacy",
-      conditions: []
-    },
+    // {
+    //   id: "GEN-TGEI",
+    //   name: "Gen Ed Information & Data Literacy",
+    //   conditions: []
+    // },
     {
       id: "GEN-TGED",
       name: "Gen Ed Human & Cultural Diversity",
@@ -206,14 +206,6 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     numCoursesInCurrentSemesterByProgram[program]! += 1
   }
 
-  const tooManyProgramCourses = (program: Program | undefined): boolean => {
-    if (program === undefined) return false
-    const numCourses = numCoursesInCurrentSemesterByProgram[program]
-    if (numCourses === undefined) return false
-
-    return numCourses >= Math.floor(profile.coursePerSemester / 2)
-  }
-
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
       // don't directly schedule corequisites -- we'll add them when we schedule their parent
@@ -224,6 +216,25 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
       .map(courseId => graph.getNodeAttributes(courseId))
       .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
   )
+
+  sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
+
+  const tooManyProgramCourses = (program: Program | undefined): boolean => {
+    if (program === undefined) return false
+    const numCourses = numCoursesInCurrentSemesterByProgram[program]
+    if (numCourses === undefined) return false
+    const onlyOneProgramLeft = sortedCourses.every(
+      course =>
+        course.program === undefined || course.program === program || course.program === "GEN"
+    )
+
+    if (onlyOneProgramLeft) return false
+
+    if (program == "GEN") {
+      return numCourses >= 1
+    }
+    return numCourses >= Math.floor(profile.coursePerSemester / 2)
+  }
 
   while (sortedCourses.length > 0) {
     const course = sortedCourses.shift()!
