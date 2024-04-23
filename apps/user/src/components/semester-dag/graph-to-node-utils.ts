@@ -36,14 +36,18 @@ const getEdges = (course: CourseNode) => {
   return [...preqs, ...coreqs]
 }
 
-export function getSemesterNodesAndEdges(semesters: CourseNode[][], currSemester: number) {
+export function getSemesterNodesAndEdges(
+  semesters: CourseNode[][],
+  currSemester: number,
+  startDate: string
+) {
   const nodes: Node[] = []
-  const parentNodes: SemesterNodeType[] = semesters.map((_semester, index) => {
+  const parentNodes: SemesterNodeType[] = semesters.map((_semester, index): SemesterNodeType => {
     return {
       ...defaultSemesterNode,
       id: `semester-${index}`,
       position: { x: index * (SEMESTER_NODE_WIDTH + 25), y: 0 },
-      data: { semesterIndex: index, currSemester: currSemester }
+      data: { semesterIndex: index, currSemester: currSemester, startDate: startDate }
     }
   })
 
