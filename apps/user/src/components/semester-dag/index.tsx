@@ -262,7 +262,7 @@ function SemesterDAGInternal({
 
     const semester = "semesterIndex" in droppedIn.data ? droppedIn.data.semesterIndex : undefined
 
-    if (!semester) {
+    if (semester === undefined) {
       console.log("Cannot add to transfer node")
       handleReset(node)
       return
