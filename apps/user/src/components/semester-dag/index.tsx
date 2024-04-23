@@ -3,10 +3,8 @@
 import ReactFlow, {
   Background,
   BezierEdge,
-  Controls,
   Edge,
   Instance,
-  MiniMap,
   Node,
   NodeDragHandler,
   OnEdgesChange,
@@ -293,7 +291,7 @@ function SemesterDAGInternal({
   }
 
   return (
-    <div className="relative w-full h-full flex flex-col items-center justify-center">
+    <div className="relative w-full h-[60vh] flex flex-col items-center justify-center">
       <ScheduleChangeToast
         open={scheduleToastOpen}
         cannotMoveReason={scheduleToastReason}
@@ -315,8 +313,6 @@ function SemesterDAGInternal({
         defaultEdgeOptions={{ hidden: !showEdges, style: { stroke: "lightgray" } }}
       >
         <Background />
-        <MiniMap />
-        <Controls position="top-left" />
         {/* <DevTools /> */}
       </ReactFlow>
     </div>
