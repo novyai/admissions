@@ -193,17 +193,18 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
  */
 export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
   let currentSemester: number = 0
-  let numCoursesInCurrentSemesterByProgram: { [program in Program]?: number } = {}
+  let numCoursesInCurrentSemesterByProgram: { [program in Program | "undefined"]?: number } = {}
   let numCoursesInCurrentSemester: number = 0
   let firstDeferredCourseId: string | null = null
 
   const addToNumCoursesInCurrentSemesterByProgram = (program: Program | undefined) => {
-    if (program === undefined) return
-    const numCourses = numCoursesInCurrentSemesterByProgram[program]
+    const normalizedProgram = program === undefined ? "undefined" : program
+
+    const numCourses = numCoursesInCurrentSemesterByProgram[normalizedProgram]
     if (numCourses === undefined) {
-      numCoursesInCurrentSemesterByProgram[program] = 0
+      numCoursesInCurrentSemesterByProgram[normalizedProgram] = 0
     }
-    numCoursesInCurrentSemesterByProgram[program]! += 1
+    numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
   }
 
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
@@ -219,21 +220,45 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
 
+  const getProgramRatios = (): { [program in Program | "undefined"]?: number } => {
+    const ratios: { [program in Program | "undefined"]?: number } = {}
+
+    for (const course of sortedCourses) {
+      const normalizedProgram = course.program === undefined ? "undefined" : course.program
+      if (!(normalizedProgram in ratios)) {
+        ratios[normalizedProgram] = 0
+      }
+      ratios[normalizedProgram]! += 1
+    }
+
+    for (const [program, numCourses] of Object.entries(ratios)) {
+      ratios[program as Program] = numCourses / sortedCourses.length
+    }
+    return ratios
+  }
+
+  const programRatios = getProgramRatios()
+
+  console.log(programRatios)
+
   const tooManyProgramCourses = (program: Program | undefined): boolean => {
-    if (program === undefined) return false
-    const numCourses = numCoursesInCurrentSemesterByProgram[program]
+    const normProgram = program === undefined ? "undefined" : program
+
+    const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
     if (numCourses === undefined) return false
-    const onlyOneProgramLeft = sortedCourses.every(
-      course =>
-        course.program === undefined || course.program === program || course.program === "GEN"
-    )
+    const onlyOneProgramLeft = sortedCourses.every(course => {
+      if (normProgram === "undefined") {
+        return course.program === undefined
+      } else {
+        return course.program === program
+      }
+    })
 
     if (onlyOneProgramLeft) return false
 
-    if (program == "GEN") {
-      return numCourses >= 1
-    }
-    return numCourses >= Math.floor(profile.coursePerSemester / 2)
+    const threshold = program === undefined ? programRatios["undefined"]! : programRatios[program]!
+
+    return numCourses >= Math.ceil(profile.coursePerSemester * threshold)
   }
 
   while (sortedCourses.length > 0) {
