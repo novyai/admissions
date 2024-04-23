@@ -12,7 +12,7 @@ import { computeNodeStats } from "./stats"
 import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
 
 const GEN_ED_PROGRAM = {
-  program: "GEN",
+  program: "GEN" as Program,
   requiredCourses: [
     {
       id: "GEN-SGEH",
@@ -58,27 +58,52 @@ const GEN_ED_PROGRAM = {
   extraToQuery: undefined
 }
 
-export const getCoursesForProgram = async (program: Program) => {
-  const { requiredCourses, extraToQuery } = programHandler[program]
+export const getCoursesForProgram = async (
+  program: Program
+): Promise<{
+  program: Program
+  requiredCourses: CoursePayload[] | undefined
+  extraToQuery: CoursePayload[] | undefined
+}> => {
+  const { requiredCourses: requiredCoursesWhereInput, extraToQuery: extraToQueryWhereInput } =
+    programHandler[program]
 
   if (program == "GEN") {
-    return GEN_ED_PROGRAM
+    return {
+      ...GEN_ED_PROGRAM,
+      requiredCourses: GEN_ED_PROGRAM.requiredCourses.map(course => ({
+        ...course,
+        program: program
+      }))
+    }
   }
+
+  const requiredCourses =
+    requiredCoursesWhereInput !== undefined ?
+      await db.course.findMany({
+        where: requiredCoursesWhereInput,
+        ...COURSE_PAYLOAD_QUERY
+      })
+    : undefined
+
+  const extraToQueryCourses =
+    extraToQueryWhereInput !== undefined ?
+      await db.course.findMany({
+        where: extraToQueryWhereInput,
+        ...COURSE_PAYLOAD_QUERY
+      })
+    : undefined
 
   return {
     program,
-    requiredCourses:
-      requiredCourses &&
-      (await db.course.findMany({
-        where: requiredCourses,
-        ...COURSE_PAYLOAD_QUERY
-      })),
-    extraToQuery:
-      extraToQuery &&
-      (await db.course.findMany({
-        where: extraToQuery,
-        ...COURSE_PAYLOAD_QUERY
-      }))
+    requiredCourses: requiredCourses?.map(course => ({
+      ...course,
+      program: program
+    })),
+    extraToQuery: extraToQueryCourses?.map(course => ({
+      ...course,
+      program: program
+    }))
   }
 }
 
@@ -167,9 +192,9 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
  * @param profile
  */
 export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
-  var currentSemester = 0
-  var coursesInCurrentSemester = 0
-  var firstDeferredCourseId = null
+  let currentSemester: number = 0
+  let coursesInCurrentSemester: string[] = []
+  let firstDeferredCourseId: string | null = null
 
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
     courseGeneration
@@ -187,12 +212,12 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
     // check if the semester is full already and increment if it is
     if (
-      coursesInCurrentSemester >= profile.coursePerSemester ||
+      coursesInCurrentSemester.length >= profile.coursePerSemester ||
       course["id"] === firstDeferredCourseId
     ) {
       // console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
-      coursesInCurrentSemester = 0
+      coursesInCurrentSemester = []
       firstDeferredCourseId = null
     }
 
@@ -212,17 +237,17 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
     if (
       allPrereqsCompleted &&
-      corequisites.length + coursesInCurrentSemester + 1 <= profile.coursePerSemester
+      corequisites.length + coursesInCurrentSemester.length + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course["id"], "semester", currentSemester)
-      coursesInCurrentSemester += 1
+      coursesInCurrentSemester.push(course["id"])
 
       // add all corequisites to the schedule
       for (const corequisite of corequisites) {
         graph.setNodeAttribute(corequisite.id, "semester", currentSemester)
-        coursesInCurrentSemester += 1
+        coursesInCurrentSemester.push(corequisite.id)
       }
     } else {
       // otherwise we need to defer this course
@@ -246,6 +271,7 @@ export function toCourseNode(
   return {
     id: courseId,
     name: course["name"],
+    program: course["program"],
 
     earliestFinish: course["earliestFinish"],
     latestFinish: course["latestFinish"],

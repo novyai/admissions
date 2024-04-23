@@ -18,7 +18,7 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
     graph.addNode(courseNode.id, {
       id: courseNode.id,
       name: courseNode.name,
-
+      program: courseNode.program,
       hasAttributes: false,
       fanOut: undefined,
       earliestFinish: undefined,
