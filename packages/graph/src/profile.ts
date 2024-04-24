@@ -73,7 +73,7 @@ export const getCoursesForProgram = async (
       ...GEN_ED_PROGRAM,
       requiredCourses: GEN_ED_PROGRAM.requiredCourses.map(course => ({
         ...course,
-        program: program
+        programs: [program]
       }))
     }
   }
@@ -98,11 +98,11 @@ export const getCoursesForProgram = async (
     program,
     requiredCourses: requiredCourses?.map(course => ({
       ...course,
-      program: program
+      programs: [program]
     })),
     extraToQuery: extraToQueryCourses?.map(course => ({
       ...course,
-      program: program
+      programs: [program]
     }))
   }
 }
@@ -123,20 +123,32 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
 
   const courseMap = new Map<string, CoursePayload>()
 
+  function addToCourseMap(course: CoursePayload, program: Program | undefined) {
+    if (courseMap.get(course.id)) {
+      const prevPrograms = courseMap.get(course.id)!.programs ?? []
+      courseMap.set(course.id, {
+        ...course,
+        programs: program ? [...prevPrograms, program] : prevPrograms
+      })
+    } else {
+      courseMap.set(course.id, course)
+    }
+  }
+
   const allRequiredCourses = [...profile.requiredCourses]
 
   programCourseData.forEach(program => {
     program.requiredCourses?.forEach(course => {
       allRequiredCourses.push(course.id)
-      courseMap.set(course.id, course)
+      addToCourseMap(course, program.program)
     })
     program.extraToQuery?.forEach(course => {
-      courseMap.set(course.id, course)
+      addToCourseMap(course, program.program)
     })
   })
 
   requiredCoursesNotInProgram.forEach(course => {
-    courseMap.set(course.id, course)
+    addToCourseMap({ ...course, programs: [] }, undefined)
   })
 
   programCourseData.forEach(program => {
@@ -224,11 +236,13 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     const ratios: { [program in Program | "undefined"]?: number } = {}
 
     for (const course of sortedCourses) {
-      const normalizedProgram = course.program === undefined ? "undefined" : course.program
-      if (!(normalizedProgram in ratios)) {
-        ratios[normalizedProgram] = 0
+      const programs = course.programs === undefined ? [] : course.programs
+      for (const program of programs) {
+        if (!(program in ratios)) {
+          ratios[program] = 1
+        }
+        ratios[program]! += 1
       }
-      ratios[normalizedProgram]! += 1
     }
 
     for (const [program, numCourses] of Object.entries(ratios)) {
@@ -247,10 +261,13 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
     if (numCourses === undefined) return false
     const onlyOneProgramLeft = sortedCourses.every(course => {
+      if (!course.programs || !program) {
+        return false
+      }
       if (normProgram === "undefined") {
-        return course.program === undefined
+        return course.programs === undefined
       } else {
-        return course.program === program
+        return course.programs.includes(program)
       }
     })
 
@@ -292,19 +309,19 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
     if (
       allPrereqsCompleted &&
-      !tooManyProgramCourses(course.program) &&
+      course.programs?.some(program => !tooManyProgramCourses(program)) &&
       corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       graph.setNodeAttribute(course["id"], "semester", currentSemester)
       numCoursesInCurrentSemester += 1
-      addToNumCoursesInCurrentSemesterByProgram(course.program)
+      course.programs.forEach(p => addToNumCoursesInCurrentSemesterByProgram(p))
 
       // add all corequisites to the schedule
       for (const corequisite of corequisites) {
         graph.setNodeAttribute(corequisite.id, "semester", currentSemester)
-        addToNumCoursesInCurrentSemesterByProgram(corequisite.program)
+        course.programs.forEach(p => addToNumCoursesInCurrentSemesterByProgram(p))
         numCoursesInCurrentSemester += 1
       }
     } else {
@@ -329,7 +346,7 @@ export function toCourseNode(
   return {
     id: courseId,
     name: course["name"],
-    program: course["program"],
+    programs: course["programs"],
 
     earliestFinish: course["earliestFinish"],
     latestFinish: course["latestFinish"],

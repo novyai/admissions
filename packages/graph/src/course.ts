@@ -35,7 +35,7 @@ type CourseAttributes = {
   semester?: number
   id: string
   name: string
-  program?: Program
+  programs: Program[] | undefined
 } & (
   | {
       hasAttributes: false
@@ -82,7 +82,7 @@ export const COURSE_PAYLOAD_QUERY = {
 export type CoursePayload = {
   id: string
   name: string
-  program?: Program
+  programs: Program[] | undefined
   conditions: Array<{
     conditions: Array<{
       prerequisites: Array<{
@@ -121,7 +121,7 @@ export const addCourseToGraph = ({
   graph.addNode(courseId, {
     id: course.id,
     name: course.name,
-    program: course.program,
+    programs: course.programs,
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,

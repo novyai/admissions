@@ -5,7 +5,7 @@ import { Program } from "./defaultCourses"
 export type CourseNode = {
   id: string
   name: string
-  program: Program | undefined
+  programs: Program[] | undefined
   dependents: string[]
   prerequisites: string[]
   corequisites: string[]
