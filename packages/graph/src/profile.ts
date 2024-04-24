@@ -3,7 +3,13 @@ import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import {
+  addCourseToGraph,
+  COURSE_PAYLOAD_QUERY,
+  CourseAttributes,
+  CourseGraph,
+  CoursePayload
+} from "./course"
 import { Program, programHandler } from "./defaultCourses"
 import {
   _getAllDependents,
@@ -222,7 +228,8 @@ function schedulePositiveConstraints(
 export function scheduleCourses(
   graph: CourseGraph,
   profile: BaseStudentProfile,
-  constraints: ScheduleConstraints = { positive: [], negative: [] }
+  constraints: ScheduleConstraints = { positive: [], negative: [] },
+  distributeCoursesEvenly: boolean = true
 ) {
   computeNodeStats(graph, profile)
   const positiveConstrainedCourseIDs = constraints.positive.flatMap(c => c.courseIDs)
@@ -276,7 +283,6 @@ export function scheduleCourses(
     .filter(course => !positiveConstrainedCourseIDs.includes(course.id))
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
-
   const getProgramRatios = (): { [program in Program | "undefined"]?: number } => {
     const ratios: { [program in Program | "undefined"]?: number } = {}
 
@@ -296,7 +302,12 @@ export function scheduleCourses(
 
   const programRatios = getProgramRatios()
 
-  const tooManyProgramCourses = (program: Program | undefined): boolean => {
+  const tooManyProgramCourses = (
+    program: Program | undefined,
+    distributeProgramCoursesEvenly: boolean
+  ): boolean => {
+    if (!distributeProgramCoursesEvenly) return false
+
     const normProgram = program === undefined ? "undefined" : program
 
     const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
@@ -316,9 +327,11 @@ export function scheduleCourses(
     return numCourses >= Math.ceil(profile.coursePerSemester * threshold)
   }
 
-  while (sortedCourses.length > 0) {
-    const course = sortedCourses.shift()!
-
+  const scheduleCourse = (
+    course: CourseAttributes,
+    distributeProgramCoursesEvenly: boolean,
+    limitToTimeTogGraduate: boolean
+  ) => {
     // check if the semester is full already and increment if it is
     if (
       numCoursesInCurrentSemester >= profile.coursePerSemester ||
@@ -329,10 +342,14 @@ export function scheduleCourses(
       while (fixedSemesters.includes(currentSemester)) {
         currentSemester += 1
       }
-
       numCoursesInCurrentSemester = getCoursesInSemester(graph, currentSemester).length
       initializeNumCoursesInCurrentSemesterByProgram(currentSemester)
       firstDeferredCourseId = null
+    }
+
+    if (currentSemester >= profile.timeToGraduate && limitToTimeTogGraduate) {
+      sortedCourses.unshift(course)
+      return
     }
 
     const allPrereqsCompleted = graph
@@ -349,12 +366,12 @@ export function scheduleCourses(
     if (
       !isCourseNegativelyConstrained(course.id, currentSemester) &&
       allPrereqsCompleted &&
-      !tooManyProgramCourses(course.program) &&
+      !tooManyProgramCourses(course.program, distributeProgramCoursesEvenly) &&
       corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
-      graph.setNodeAttribute(course["id"], "semester", currentSemester)
+      graph.setNodeAttribute(course.id, "semester", currentSemester)
       numCoursesInCurrentSemester += 1
       addToNumCoursesInCurrentSemesterByProgram(course.program)
 
@@ -372,6 +389,25 @@ export function scheduleCourses(
       }
       sortedCourses.push(course)
     }
+  }
+
+  while (sortedCourses.length > 0 && currentSemester < profile.timeToGraduate) {
+    const course = sortedCourses.shift()!
+    scheduleCourse(course, distributeCoursesEvenly, true)
+  }
+
+  // Go back and see if we can add remaining courses to older semesters
+  currentSemester = 0
+  while (fixedSemesters.includes(currentSemester)) {
+    currentSemester += 1
+  }
+  numCoursesInCurrentSemester = getCoursesInSemester(graph, currentSemester).length
+  initializeNumCoursesInCurrentSemesterByProgram(currentSemester)
+  firstDeferredCourseId = null
+  sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
+  while (sortedCourses.length > 0) {
+    const course = sortedCourses.shift()!
+    scheduleCourse(course, false, false)
   }
   return graph
 }
@@ -439,6 +475,11 @@ export function pushCourseAndDependents(
         courseIDs: coursesInSemester
       }
     })
+    positiveConstraints.push({
+      semester: fromSemester + 1,
+      canAddCourses: true,
+      courseIDs: [courseId]
+    })
     const negativeConstraints: NegativeScheduleConstraint[] = [
       {
         courseID: courseId,
@@ -455,9 +496,11 @@ export function pushCourseAndDependents(
       negative: negativeConstraints
     })
 
+    const changes = getChangesBetweenGraphs(oldGraph, newGraph)
+
     return {
       graph,
-      changes: getChangesBetweenGraphs(oldGraph, newGraph)
+      changes
     }
   } catch (error) {
     console.log("ERROR IN pushCourseAndDependents", JSON.stringify(error))

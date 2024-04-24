@@ -1,7 +1,7 @@
 import { ProgramOption } from "@graph/defaultCourses"
 import { buildSemesters, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
-import { BaseStudentProfile, StudentProfile } from "@graph/types"
+import { BaseStudentProfile, HydratedStudentProfile, StudentProfile } from "@graph/types"
 import { ChangeType } from "@repo/constants"
 import { describe, expect, test } from "bun:test"
 
@@ -33,15 +33,35 @@ const compositionProfile: StudentProfile = {
   startDate: "Fall 2020"
 }
 
+const removeGenEdProgram = (profile: HydratedStudentProfile) => {
+  profile.programs = profile.programs.filter(program => program === "GEN")
+
+  const genEdCourseIDs: string[] = []
+  for (const [courseID, course] of profile.graph.entries()) {
+    if (course.program === "GEN") {
+      genEdCourseIDs.push(courseID)
+      profile.graph.delete(courseID)
+    }
+  }
+  profile.semesters = profile.semesters.map(courses =>
+    courses.filter(course => course.program !== "GEN")
+  )
+  profile.requiredCourses = profile.requiredCourses.filter(
+    courseID => !genEdCourseIDs.includes(courseID)
+  )
+}
+
 test("base student profile from requirements", async () => {
   const studentProfile = await getStudentProfileFromRequirements(mathProfile)
+  removeGenEdProgram(studentProfile)
 
   expect(studentProfile.semesters).toHaveLength(4)
   const semestersId = studentProfile.semesters.map(s => s.map(c => c.id).sort())
+
   expect(semestersId).toEqual([
     ["1665c198-ca4c-4864-940a-dc30eb56c254"],
-    ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
-    ["cb604716-5332-4835-a798-9f6f23bd2651"],
+    ["478849e5-1358-4f7e-b3d9-b0e224e4de54"],
+    ["7849821d-82f3-4607-9245-41ed500f4a73", "cb604716-5332-4835-a798-9f6f23bd2651"],
     ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
   ])
 })
@@ -54,12 +74,8 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           [],
-          [
-            "1665c198-ca4c-4864-940a-dc30eb56c254",
-            "478849e5-1358-4f7e-b3d9-b0e224e4de54",
-            "7849821d-82f3-4607-9245-41ed500f4a73"
-          ],
-          ["cb604716-5332-4835-a798-9f6f23bd2651"],
+          ["1665c198-ca4c-4864-940a-dc30eb56c254", "478849e5-1358-4f7e-b3d9-b0e224e4de54"],
+          ["7849821d-82f3-4607-9245-41ed500f4a73", "cb604716-5332-4835-a798-9f6f23bd2651"],
           ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
         ],
         changes: [
@@ -77,15 +93,26 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           ["1665c198-ca4c-4864-940a-dc30eb56c254"],
-          ["7849821d-82f3-4607-9245-41ed500f4a73"],
-          ["cb604716-5332-4835-a798-9f6f23bd2651", "478849e5-1358-4f7e-b3d9-b0e224e4de54"],
+          [],
+          ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
+          ["cb604716-5332-4835-a798-9f6f23bd2651"],
           ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
         ],
         changes: [
           {
-            type: ChangeType.Move,
             courseId: "478849e5-1358-4f7e-b3d9-b0e224e4de54",
-            semester: 2
+            semester: 2,
+            type: ChangeType.Move
+          },
+          {
+            courseId: "cb604716-5332-4835-a798-9f6f23bd2651",
+            semester: 3,
+            type: ChangeType.Move
+          },
+          {
+            courseId: "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
+            semester: 4,
+            type: ChangeType.Move
           }
         ]
       }
@@ -96,7 +123,8 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           [],
-          ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"]
+          ["87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
+          ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01"]
         ],
         changes: [
           {
@@ -114,8 +142,8 @@ describe("pushing classes", () => {
       expected: {
         semesters: [
           ["1665c198-ca4c-4864-940a-dc30eb56c254"],
-          ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
-          ["cb604716-5332-4835-a798-9f6f23bd2651"],
+          ["478849e5-1358-4f7e-b3d9-b0e224e4de54"],
+          ["7849821d-82f3-4607-9245-41ed500f4a73", "cb604716-5332-4835-a798-9f6f23bd2651"],
           [],
           ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
         ],
@@ -135,13 +163,14 @@ describe("pushing classes", () => {
         semesters: [
           ["87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
           [],
+          [],
           ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01"]
         ],
         changes: [
           {
             type: ChangeType.Move,
             courseId: "0c990f7e-bbb2-4bea-9e50-6bdd1b29af01",
-            semester: 2
+            semester: 3
           }
         ]
       }
@@ -152,12 +181,15 @@ describe("pushing classes", () => {
     "moving classes in chain %#",
     async ({ profile, classToPush, expected }) => {
       const studentProfile = await getStudentProfileFromRequirements({ ...profile })
+      removeGenEdProgram(studentProfile)
       const graph = studentProfileToGraph(studentProfile)
       // push last class in chain
       const updated = pushCourseAndDependents(graph, profile, classToPush)
       const semesters = buildSemesters(updated.graph)
 
       const semesterIds = semesters.map(semester => semester.map(c => c.id).sort())
+      console.log("CLASS TO PUSH", classToPush)
+      console.log("SEMESTER ID", semesterIds)
       expect(semesterIds).toEqual(expected.semesters.map(s => s.sort()))
       expect(updated.changes.sort()).toEqual(expected.changes.sort())
     }
@@ -176,6 +208,7 @@ const csProfile: BaseStudentProfile = {
 
 test("test blob", async () => {
   const cs = await getStudentProfileFromRequirements(csProfile)
+  removeGenEdProgram(cs)
   const semestersId = cs.semesters.map(s => s.map(c => c.id).sort())
   expect(semestersId).toEqual([
     [
@@ -194,23 +227,22 @@ test("test blob", async () => {
       "255afda2-4965-49d5-aec7-5d824295b44a",
       "4b86edaa-168d-4289-aed4-0c43e1df75e4",
       "6ce2a45d-749d-4695-8d7b-29961e38f1c6",
-      "d5579777-e77b-4ccf-adad-b5ab077ad923",
+      "d5579777-e77b-4ccf-adad-b5ab077ad923"
+    ],
+    [
+      "959a8d60-17b9-4935-a8b1-a19c22542d72",
+      "99f7b5df-6526-4753-b198-3e305c4ece27",
+      "cb604716-5332-4835-a798-9f6f23bd2651",
       "e4079bdf-1c24-4d89-8aaf-5e18ff5229b8"
     ],
     [
       "1646a047-fde8-4a74-926e-edda5637fd8a",
-      "959a8d60-17b9-4935-a8b1-a19c22542d72",
-      "99f7b5df-6526-4753-b198-3e305c4ece27",
-      "b1538e5f-3fdf-4e8e-822f-683e9214f4e2",
-      "cb604716-5332-4835-a798-9f6f23bd2651"
-    ],
-    [
-      "1937e508-681d-4ea9-87fd-29e51156d21d",
       "7dc1d852-e63a-4a6a-b1db-ed439f443613",
       "8006ca5b-0b8b-468e-b93f-03638d1af728",
-      "840c70bd-ba85-44ef-93bd-23168cbb86a5",
+      "b1538e5f-3fdf-4e8e-822f-683e9214f4e2",
       "bbd24f53-921a-404d-818d-2e2e54373dba"
     ],
+    ["1937e508-681d-4ea9-87fd-29e51156d21d", "840c70bd-ba85-44ef-93bd-23168cbb86a5"],
     [
       "228aaf66-88c4-47f7-b8d7-b6513bfee507",
       "35d262c2-e64f-4585-9330-7502d7c27500",

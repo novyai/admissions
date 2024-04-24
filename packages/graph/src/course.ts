@@ -31,7 +31,7 @@ export const getCourseAndSemesterIndexFromIdNameCode = (
   return { course, semesterIndex }
 }
 
-type CourseAttributes = {
+export type CourseAttributes = {
   semester?: number
   id: string
   name: string
