@@ -4,7 +4,13 @@ import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import {
+  addCourseToGraph,
+  COURSE_PAYLOAD_QUERY,
+  CourseAttributes,
+  CourseGraph,
+  CoursePayload
+} from "./course"
 import { Program, programHandler } from "./defaultCourses"
 import { _getAllDependents, graphToHydratedStudentProfile } from "./graph"
 import { _canMoveCourse } from "./schedule"
@@ -73,7 +79,7 @@ export const getCoursesForProgram = async (
       ...GEN_ED_PROGRAM,
       requiredCourses: GEN_ED_PROGRAM.requiredCourses.map(course => ({
         ...course,
-        programs: [program]
+        programs: ["GEN"]
       }))
     }
   }
@@ -209,14 +215,22 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
   let numCoursesInCurrentSemester: number = 0
   let firstDeferredCourseId: string | null = null
 
-  const addToNumCoursesInCurrentSemesterByProgram = (program: Program | undefined) => {
-    const normalizedProgram = program === undefined ? "undefined" : program
+  const addCourseToSemester = (course: CourseAttributes) => {
+    graph.setNodeAttribute(course["id"], "semester", currentSemester)
+    numCoursesInCurrentSemester += 1
 
-    const numCourses = numCoursesInCurrentSemesterByProgram[normalizedProgram]
-    if (numCourses === undefined) {
-      numCoursesInCurrentSemesterByProgram[normalizedProgram] = 0
+    if (!course.programs) {
+      return
     }
-    numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
+    course.programs.forEach(p => {
+      const normalizedProgram = p === undefined ? "undefined" : p
+
+      const numCourses = numCoursesInCurrentSemesterByProgram[normalizedProgram]
+      if (numCourses === undefined) {
+        numCoursesInCurrentSemesterByProgram[normalizedProgram] = 0
+      }
+      numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
+    })
   }
 
   const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
@@ -232,30 +246,36 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
 
-  const getProgramRatios = (): { [program in Program | "undefined"]?: number } => {
-    const ratios: { [program in Program | "undefined"]?: number } = {}
+  const getProgramRatios = (): { [program in Program | "undefined"]: number } => {
+    const ratios: { [program in Program | "undefined"]?: number } = {
+      undefined: 0
+    }
 
     for (const course of sortedCourses) {
-      const programs = course.programs === undefined ? [] : course.programs
-      for (const program of programs) {
-        if (!(program in ratios)) {
-          ratios[program] = 1
+      const programs = course.programs === undefined ? "undefined" : course.programs
+      console.log({ programs })
+      if (programs === "undefined" || programs.length === 0) {
+        ratios["undefined"]! += 1
+      } else {
+        for (const program of programs) {
+          if (!(program in ratios)) {
+            ratios[program] = 0
+          }
+          ratios[program]! += 1
         }
-        ratios[program]! += 1
       }
     }
 
     for (const [program, numCourses] of Object.entries(ratios)) {
-      ratios[program as Program] = numCourses / sortedCourses.length
+      ratios[program as Program] = (numCourses ?? 0) / sortedCourses.length
     }
-    return ratios
+
+    return ratios as { [program in Program | "undefined"]: number }
   }
 
   const programRatios = getProgramRatios()
 
-  console.log(programRatios)
-
-  const tooManyProgramCourses = (program: Program | undefined): boolean => {
+  const tooManyProgramCourses = (program: Program | undefined) => {
     const normProgram = program === undefined ? "undefined" : program
 
     const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
@@ -307,22 +327,20 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
       .map(edgeId => graph.source(edgeId))
       .map(nodeId => graph.getNodeAttributes(nodeId))
 
+    const tooManyCourses =
+      course.programs ? !course.programs.some(program => tooManyProgramCourses(program)) : false
     if (
       allPrereqsCompleted &&
-      course.programs?.some(program => !tooManyProgramCourses(program)) &&
+      tooManyCourses &&
       corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
-      graph.setNodeAttribute(course["id"], "semester", currentSemester)
-      numCoursesInCurrentSemester += 1
-      course.programs.forEach(p => addToNumCoursesInCurrentSemesterByProgram(p))
+      addCourseToSemester(course)
 
       // add all corequisites to the schedule
       for (const corequisite of corequisites) {
-        graph.setNodeAttribute(corequisite.id, "semester", currentSemester)
-        course.programs.forEach(p => addToNumCoursesInCurrentSemesterByProgram(p))
-        numCoursesInCurrentSemester += 1
+        addCourseToSemester(corequisite)
       }
     } else {
       // otherwise we need to defer this course

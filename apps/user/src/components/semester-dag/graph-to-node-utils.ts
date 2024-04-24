@@ -63,7 +63,7 @@ export function getSemesterNodesAndEdges(
           id: course.id,
           parentNode: `semester-${semIndex}`,
           position: { x: 5, y: 50 + courseIndex * 50 },
-          data: { semesterIndex: semIndex, ...course, taken: taken },
+          data: { semesterIndex: semIndex, ...course, taken: taken, pulsing: false },
           selectable: !taken,
           draggable: !taken
         }
@@ -102,7 +102,7 @@ export const getTransferNodesAndEdges = (
       id: n.id,
       parentNode: "transfer",
       position: { x: 0, y: 50 + i * 50 },
-      data: { semesterIndex: -1, ...n }
+      data: { semesterIndex: -1, ...n, pulsing: false }
     }
   })
 
@@ -145,7 +145,7 @@ export const getOutsideCourseNode = (course: CourseNode, position: XYPosition): 
     ...defaultCourseNode,
     id: course.id,
     position,
-    data: { semesterIndex: -1, ...course }
+    data: { semesterIndex: -1, ...course, pulsing: false }
   }
 }
 
