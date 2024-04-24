@@ -17,18 +17,15 @@ import { calculateSemesterDifference } from "@/lib/schedule/utils"
  */
 export async function createNewSchedule(userId: string, programs: Program[], startDate: string) {
   const currentSemester = calculateSemesterDifference(startDate)
-  console.log("currentSemester", currentSemester)
   const baseProfile: BaseStudentProfile = {
     programs,
     requiredCourses: [],
     transferCredits: [],
     timeToGraduate: 8,
-    coursePerSemester: 8,
+    coursePerSemester: 5,
     currentSemester: currentSemester,
     startDate: startDate
   }
-
-  console.log(programs)
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
   const schedule = await db.schedule.create({

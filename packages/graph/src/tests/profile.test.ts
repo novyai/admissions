@@ -154,7 +154,7 @@ describe("pushing classes", () => {
       const studentProfile = await getStudentProfileFromRequirements({ ...profile })
       const graph = studentProfileToGraph(studentProfile)
       // push last class in chain
-      const updated = pushCourseAndDependents(graph, classToPush)
+      const updated = pushCourseAndDependents(graph, profile, classToPush)
       const semesters = buildSemesters(updated.graph)
 
       const semesterIds = semesters.map(semester => semester.map(c => c.id).sort())

@@ -292,6 +292,7 @@ export function Editor({
                           `Let's book an appointment for ${readableTime.toLocaleString()}.`
                         )
                       }}
+                      closeAppointments={() => setAppointmentTimes([])}
                     />
                   : <></>}
                 </ScrollArea>

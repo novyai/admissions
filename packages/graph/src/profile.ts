@@ -6,10 +6,15 @@ import { Attributes } from "graphology-types"
 
 import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
 import { Program, programHandler } from "./defaultCourses"
-import { _getAllDependents, graphToHydratedStudentProfile } from "./graph"
+import {
+  _getAllDependents,
+  getCorequisites,
+  getCoursesInSemester,
+  graphToHydratedStudentProfile
+} from "./graph"
 import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
-import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
+import { BaseStudentProfile, CourseNode, ScheduleConstraint, StudentProfile } from "./types"
 
 const GEN_ED_PROGRAM = {
   program: "GEN" as Program,
@@ -185,13 +190,40 @@ export const getStudentProfileFromRequirements = async (profile: BaseStudentProf
   return graphToHydratedStudentProfile(graph, profile)
 }
 
-/**
- * Schedules all of the courses in Graph based on the settings in profile by adding a semester attribute
- * to each node
- * @param graph
- * @param profile
- */
-export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
+function scheduleConstraints(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  constraints: ScheduleConstraint[]
+) {
+  for (const constraint of constraints) {
+    if (constraint.semester > profile.timeToGraduate) {
+      throw Error(
+        `Invalid constraint: semester constraint (${constraint.semester}) on course ${constraint.courseID} is greater than the time to graduate (${profile.timeToGraduate})`
+      )
+    }
+    const numNodesInSemester = getCoursesInSemester(graph, constraint.semester).length
+    if (numNodesInSemester >= profile.coursePerSemester) {
+      throw Error(
+        `Invalid constraint (${JSON.stringify(constraint)}): there are already ${numNodesInSemester} courses in ${constraint.semester}, which exceeds the profile's coursePerSemester (${profile.coursePerSemester})`
+      )
+    }
+    graph.setNodeAttribute(constraint.courseID, "semester", constraint.semester)
+
+    const corequisites = getCorequisites(graph, constraint.courseID)
+    for (const corequisite of corequisites) {
+      graph.setNodeAttribute(corequisite.id, "semester", constraint.semester)
+    }
+  }
+}
+
+export function scheduleCourses(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  constraints: ScheduleConstraint[] = []
+) {
+  const constrainedCourseIDs = constraints.map(c => c.courseID)
+  scheduleConstraints(graph, profile, constraints)
+
   let currentSemester: number = 0
   let numCoursesInCurrentSemesterByProgram: { [program in Program | "undefined"]?: number } = {}
   let numCoursesInCurrentSemester: number = 0
@@ -207,16 +239,18 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
   }
 
-  const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
-    courseGeneration
-      // don't directly schedule corequisites -- we'll add them when we schedule their parent
-      .filter(courseId => {
-        const edges = graph.mapOutEdges(courseId, (_, edge) => edge.type)
-        return edges.length === 0 || !edges.every(type => type === "COREQUISITE")
-      })
-      .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
-  )
+  const sortedCourses = topologicalGenerations(graph)
+    .flatMap(courseGeneration =>
+      courseGeneration
+        // don't directly schedule corequisites -- we'll add them when we schedule their parent
+        .filter(courseId => {
+          const edges = graph.mapOutEdges(courseId, (_, edge) => edge.type)
+          return edges.length === 0 || !edges.every(type => type === "COREQUISITE")
+        })
+        .map(courseId => graph.getNodeAttributes(courseId))
+        .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
+    )
+    .filter(course => !constrainedCourseIDs.includes(course.id))
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
 
@@ -238,8 +272,6 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
   }
 
   const programRatios = getProgramRatios()
-
-  console.log(programRatios)
 
   const tooManyProgramCourses = (program: Program | undefined): boolean => {
     const normProgram = program === undefined ? "undefined" : program
@@ -285,10 +317,7 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
       .map(prereqId => graph.getNodeAttribute(prereqId, "semester"))
       .every(semester => semester! < currentSemester)
 
-    const corequisites = graph
-      .filterInEdges(course.id, (_, edge) => edge.type === RequirementType.COREQUISITE)
-      .map(edgeId => graph.source(edgeId))
-      .map(nodeId => graph.getNodeAttributes(nodeId))
+    const corequisites = getCorequisites(graph, course.id)
 
     if (
       allPrereqsCompleted &&
@@ -357,68 +386,106 @@ export function toCourseNode(
  * @param profile The student profile containing scheduling constraints.
  * @param courseId The ID of the course to be pushed.
  */
-export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
-  const changes: Change[] = []
-  // Step 1: Identify the Course and Its Dependents
-  const dependents = _getAllDependents(courseId, graph)
-
-  // Step 2: Next semester
-  const currSemesterIndex = graph.getNodeAttribute(courseId, "semester")
-  if (currSemesterIndex === undefined) {
-    throw new Error(`Could not move ${courseId} because it has no semester`)
-  }
-  const nextSemesterIndex = currSemesterIndex + 1
-
-  // if no courses depend on it, just push it a semester that makes sense
-  if (dependents.length === 0) {
-    const mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-    if (mv.canMove) {
-      graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
-      changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
-    } else {
-      throw new Error(`Could not move ${courseId} because of ${mv.reason}`)
+export function pushCourseAndDependents(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  courseId: string,
+  numIterations: number = 0
+) {
+  try {
+    if (numIterations > 10) {
+      throw Error("too many iterations")
     }
+    const changes: Change[] = []
+    // Step 1: Identify the Course and Its Dependents
+
+    // Step 2: Next semester
+    let fromSemester = graph.getNodeAttribute(courseId, "semester")
+    if (fromSemester === undefined) {
+      throw new Error(`Could not move ${courseId} because it has no semester`)
+    }
+    console.log("fromSemester", fromSemester)
+    let nextSemester = fromSemester + 1
+
+    let mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+
+    // if the course can be moved, just push it one semester
+    if (mv.canMove) {
+      graph.setNodeAttribute(courseId, "semester", nextSemester)
+      changes.push({ type: ChangeType.Move, courseId, semester: nextSemester })
+
+      return {
+        graph,
+        changes
+      }
+    }
+
+    // if there are courses that depend on it, we need to find the earliest semester that they can all be pushed to
+
+    // Step 3: Update the Course and Dependents
+
+    while (!mv.canMove) {
+      // if there is a dependent issue, push them
+      if (mv.reason.type === "dependent" || mv.reason.type === "prerequisite") {
+        mv.reason.courseId.forEach(depOrPreID => {
+          const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(
+            graph,
+            profile,
+            depOrPreID
+          )
+          graph = newGraph
+          changes.push(...newChanges)
+          console.log(
+            "after moving",
+            graph.getNodeAttribute(depOrPreID, "name"),
+            "to",
+            graph.getNodeAttribute(depOrPreID, "semester")
+          )
+        })
+        mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+        continue
+      } else if (mv.reason.type === "full") {
+        computeNodeStats(graph, profile)
+        const nodeAttrs = [...graph.nodeEntries()].map(nodeEntry => nodeEntry.attributes)
+
+        const nextSemesterNodeAttrs = nodeAttrs.filter(node => node.semester === nextSemester)
+
+        const courseWithMostSlack = nextSemesterNodeAttrs.reduce(
+          (maxNode, currNode) => (maxNode.slack! >= currNode.slack! ? maxNode : currNode),
+          nextSemesterNodeAttrs[0]
+        )
+
+        const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(
+          graph,
+          profile,
+          courseWithMostSlack.id,
+          numIterations + 1
+        )
+        graph = newGraph
+        changes.push(...newChanges)
+        mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+        continue
+      }
+
+      throw new Error(
+        `Could not move ${graph.getNodeAttribute(courseId, "name")} because of ${JSON.stringify(mv.reason)}`
+      )
+    }
+
+    // now we can move:
+    if (mv.canMove) {
+      graph.setNodeAttribute(courseId, "semester", nextSemester)
+      changes.push({ type: ChangeType.Move, courseId, semester: nextSemester })
+    }
+
+    console.log("CHANGES", changes)
 
     return {
       graph,
       changes
     }
-  }
-
-  // if there are courses that depend on it, we need to find the earliest semester that they can all be pushed to
-
-  // Step 3: Update the Course and Dependents
-
-  let mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-  while (!mv.canMove) {
-    // if there is a dependent issue, push them
-    if (mv.reason.type === "dependent") {
-      mv.reason.courseId.forEach(depId => {
-        const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(graph, depId)
-        graph = newGraph
-        changes.push(...newChanges)
-        console.log(
-          "after moving",
-          graph.getNodeAttribute(depId, "name"),
-          "to",
-          graph.getNodeAttribute(depId, "semester")
-        )
-      })
-      mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-      continue
-    }
-
-    throw new Error(`Could not move ${courseId} because of ${JSON.stringify(mv.reason)}`)
-  }
-
-  // now we can move:
-  if (mv.canMove) {
-    graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
-    changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
-  }
-
-  return {
-    graph,
-    changes
+  } catch (error) {
+    console.log("ERROR IN pushCourseAndDependents", JSON.stringify(error))
+    throw error
   }
 }

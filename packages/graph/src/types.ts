@@ -41,3 +41,5 @@ export type HydratedStudentProfile = BaseStudentProfile & {
   graph: Map<string, CourseNode>
   // allCourses: CourseNode[]
 }
+
+export type ScheduleConstraint = { courseID: string; semester: number }

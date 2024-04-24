@@ -248,7 +248,7 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, profile, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
       let systemPrompt = `
@@ -349,7 +349,7 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, profile, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
       const { id } = await db.version.create({
