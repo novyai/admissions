@@ -2,7 +2,7 @@
 
 import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
-import { easeInOut, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import { Handle, Node, NodeProps, Position } from "reactflow"
 
 export type CourseNodeData = {

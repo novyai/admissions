@@ -7,7 +7,6 @@ import { PromptComposer } from "@ui/components/prompt-composer"
 import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Separator } from "@ui/components/ui/separator"
-import { cn } from "@ui/lib/utils"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
