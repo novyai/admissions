@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { auth } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import { createConversationFromClerkUser } from "@db/queries/conversation"
 import { db } from "@repo/db"
 
@@ -15,7 +15,7 @@ export default async function Page({
   const { userId, protect } = auth()
 
   protect({
-    redirectUrl: "/"
+    unauthenticatedUrl: "/"
   })
 
   if (!userId) {
