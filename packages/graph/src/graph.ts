@@ -4,6 +4,7 @@ import {
   HydratedStudentProfile,
   BaseStudentProfile as StudentProfile
 } from "@graph/types"
+import { Change, ChangeType } from "@repo/constants"
 import { RequirementType } from "@repo/db"
 import Graph from "graphology"
 
@@ -14,6 +15,25 @@ import { computeNodeStats } from "./stats"
 export const getCoursesInSemester = (graph: CourseGraph, semester: number) => {
   const courses = [...graph.nodeEntries()].map(entry => entry.attributes)
   return courses.filter(c => c.semester === semester)
+}
+
+export const getChangesBetweenGraphs = (oldGraph: CourseGraph, newGraph: CourseGraph): Change[] => {
+  const changes: Change[] = []
+
+  for (const newNodeEntry of newGraph.nodeEntries()) {
+    const newSemester = newNodeEntry.attributes.semester
+    const oldSemester = oldGraph.getNodeAttribute(newNodeEntry.node, "semester")
+
+    if (newSemester !== undefined && newSemester !== oldSemester) {
+      changes.push({
+        type: ChangeType.Move,
+        courseId: newNodeEntry.node,
+        semester: newSemester
+      })
+    }
+  }
+
+  return changes
 }
 
 export const getCorequisites = (graph: CourseGraph, courseID: string) =>

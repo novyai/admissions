@@ -42,4 +42,18 @@ export type HydratedStudentProfile = BaseStudentProfile & {
   // allCourses: CourseNode[]
 }
 
-export type ScheduleConstraint = { courseID: string; semester: number }
+export type PositiveScheduleConstraint = {
+  semester: number
+  courseIDs: string[]
+  canAddCourses: boolean
+}
+
+export type NegativeScheduleConstraint = {
+  courseID: string
+  semester: number
+}
+
+export type ScheduleConstraints = {
+  positive: PositiveScheduleConstraint[]
+  negative: NegativeScheduleConstraint[]
+}
