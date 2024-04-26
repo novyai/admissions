@@ -94,24 +94,17 @@ describe("pushing classes", () => {
         semesters: [
           ["1665c198-ca4c-4864-940a-dc30eb56c254"],
           [],
-          ["478849e5-1358-4f7e-b3d9-b0e224e4de54", "7849821d-82f3-4607-9245-41ed500f4a73"],
-          ["cb604716-5332-4835-a798-9f6f23bd2651"],
+          [
+            "478849e5-1358-4f7e-b3d9-b0e224e4de54",
+            "7849821d-82f3-4607-9245-41ed500f4a73",
+            "cb604716-5332-4835-a798-9f6f23bd2651"
+          ],
           ["7d02c58e-f2b8-494e-ad9c-9ddc973de80f"]
         ],
         changes: [
           {
             courseId: "478849e5-1358-4f7e-b3d9-b0e224e4de54",
             semester: 2,
-            type: ChangeType.Move
-          },
-          {
-            courseId: "cb604716-5332-4835-a798-9f6f23bd2651",
-            semester: 3,
-            type: ChangeType.Move
-          },
-          {
-            courseId: "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
-            semester: 4,
             type: ChangeType.Move
           }
         ]
@@ -188,8 +181,6 @@ describe("pushing classes", () => {
       const semesters = buildSemesters(updated.graph)
 
       const semesterIds = semesters.map(semester => semester.map(c => c.id).sort())
-      console.log("CLASS TO PUSH", classToPush)
-      console.log("SEMESTER ID", semesterIds)
       expect(semesterIds).toEqual(expected.semesters.map(s => s.sort()))
       expect(updated.changes.sort()).toEqual(expected.changes.sort())
     }
