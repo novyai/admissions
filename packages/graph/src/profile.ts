@@ -464,8 +464,8 @@ export function pushCourseAndDependents(
       throw new Error(`Could not move ${courseId} because it has no semester`)
     }
 
-    const takenSemesters = [...Array(profile.currentSemester + 1).keys()]
-    const positiveConstraints: PositiveScheduleConstraint[] = takenSemesters.flatMap(semester => {
+    const prevSemesters = [...Array(fromSemester + 1).keys()]
+    const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
       const coursesInSemester = getCoursesInSemester(graph, semester)
         .map(course => course.id)
         .filter(id => id !== courseId)
