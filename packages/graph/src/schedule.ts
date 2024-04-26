@@ -178,6 +178,9 @@ export function _canMoveCourse(
     nodeEntry => nodeEntry.attributes.semester === toSemester
   ).length
 
+  console.log("toSemester", toSemester)
+  console.log("toSemesterNumCourses", toSemesterNumCourses)
+
   if (
     toSemester <= maxSemester &&
     toSemesterNumCourses >= profile.coursePerSemester

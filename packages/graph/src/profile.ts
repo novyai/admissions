@@ -1,3 +1,4 @@
+import { Change, ChangeType } from "@repo/constants"
 import { db, RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
@@ -455,14 +456,23 @@ export function pushCourseAndDependents(
   graph: CourseGraph,
   profile: BaseStudentProfile,
   courseId: string
-) {
+): { graph: CourseGraph; changes: Change[] } {
   try {
-    const oldGraph = graph.copy()
-
     const fromSemester = graph.getNodeAttribute(courseId, "semester")
     if (fromSemester === undefined) {
       throw new Error(`Could not move ${courseId} because it has no semester`)
     }
+
+    const canMove = _canMoveCourse(courseId, fromSemester + 1, profile, graph)
+    if (canMove) {
+      graph.setNodeAttribute(courseId, "semester", fromSemester + 1)
+      return {
+        graph: graph,
+        changes: [{ type: ChangeType.Move, courseId: courseId, semester: fromSemester + 1 }]
+      }
+    }
+
+    const oldGraph = graph.copy()
 
     const prevSemesters = [...Array(fromSemester + 1).keys()]
     const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
@@ -474,11 +484,6 @@ export function pushCourseAndDependents(
         canAddCourses: false,
         courseIDs: coursesInSemester
       }
-    })
-    positiveConstraints.push({
-      semester: fromSemester + 1,
-      canAddCourses: true,
-      courseIDs: [courseId]
     })
     const negativeConstraints: NegativeScheduleConstraint[] = [
       {
