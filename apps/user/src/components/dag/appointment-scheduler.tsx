@@ -1,5 +1,4 @@
 import { Button } from "@ui/components/ui/button"
-import { Separator } from "@ui/components/ui/separator"
 
 interface AppointmentSchedulerProps {
   times: Date[]
@@ -17,35 +16,23 @@ const getReadableTime = (time: Date): string => {
   })
 }
 
-export function AppointmentScheduler({
-  times,
-  handleBookAppointment,
-  closeAppointments
-}: AppointmentSchedulerProps) {
+export function AppointmentScheduler({ times, handleBookAppointment }: AppointmentSchedulerProps) {
   return (
-    <div className="absolute bottom-1 left-[2%] z-10 w-[96%] border bg-muted rounded-xl shadow">
-      <div className="flex justify-between px-2  text-xs">
-        <p className="py-2 text-muted-foreground font-semibold tracking-wide uppercase">
-          Book Advisor Appointment
-        </p>
-        <Button variant="link" onClick={() => closeAppointments()}>
-          Close
-        </Button>
-      </div>
-
-      <Separator className="" />
-      <ul className="flex flex-col gap-2 px-3 py-3 ">
+    <div className="absolute -top-[4.5rem] left-2">
+      <p className="p-1 text-sm text-muted-foreground font-semibold uppercase">
+        Book an appointment
+      </p>
+      <div className="flex gap-2">
         {times.map(time => (
-          <li key={JSON.stringify(time)}>
-            <Button
-              className="text-sm"
-              onClick={() => handleBookAppointment(getReadableTime(time))}
-            >
-              {getReadableTime(time)}
-            </Button>
-          </li>
+          <Button
+            key={time.getMilliseconds()}
+            className="py-1 px-2 rounded-lg shadow text-xs"
+            onClick={() => handleBookAppointment(getReadableTime(time))}
+          >
+            {getReadableTime(time)}
+          </Button>
         ))}
-      </ul>
+      </div>
     </div>
   )
 }

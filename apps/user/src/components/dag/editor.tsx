@@ -283,26 +283,27 @@ export function Editor({
                       scrollerRef={ChatScrollerRef}
                     />
                   )}
-                  {appointmentTimes.length > 0 ?
-                    <AppointmentScheduler
-                      times={appointmentTimes}
-                      handleBookAppointment={(readableTime: string) => {
-                        setAppointmentTimes([])
-                        submitMessage(
-                          `Let's book an appointment for ${readableTime.toLocaleString()}.`
-                        )
-                      }}
-                      closeAppointments={() => setAppointmentTimes([])}
-                    />
-                  : <></>}
                 </ScrollArea>
               </div>
             </div>
             <div className="relative w-full h-[5%]">
-              <SuggestedPrompts
-                handleClick={(prompt: string) => submitMessage(prompt, "user")}
-                prompts={["What can you do?", "Reschedule Data Structures"]}
-              />
+              {messages.length === 0 ?
+                <SuggestedPrompts
+                  handleClick={(prompt: string) => submitMessage(prompt, "user")}
+                  prompts={["What can you do?", "Reschedule Data Structures"]}
+                />
+              : <></>}
+              {appointmentTimes.length > 0 ?
+                <AppointmentScheduler
+                  times={appointmentTimes}
+                  handleBookAppointment={(readableTime: string) => {
+                    setAppointmentTimes([])
+                    submitMessage(`Let's book an appointment for ${readableTime.toLocaleString()}.`)
+                  }}
+                  closeAppointments={() => setAppointmentTimes([])}
+                />
+              : <></>}
+
               <PromptComposer
                 disabled={!ready || !isConnected}
                 placeholder={"Ask me anything..."}
