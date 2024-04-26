@@ -52,7 +52,7 @@ export default function ScheduleChangeToast({
     <>
       <ToastProvider>
         <Toast
-          className="block space-x-0 max-w-[30rem] p-2 rounded-lg shadow-lg border-2 border-red-300 text-gray-800 bg-background"
+          className="z-10 block space-x-0 max-w-[30rem] p-2 rounded-lg shadow-lg border-2 border-red-300 text-gray-800 bg-background"
           open={open}
           onOpenChange={onOpenChange}
         >

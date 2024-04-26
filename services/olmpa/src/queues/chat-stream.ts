@@ -248,8 +248,14 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, profile, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+
+      const currentTimeToGraduate = profile.semesters.length
+      const newTimeToGraduate = changes.reduce(
+        (timeToGrad, change) => Math.max(timeToGrad, change.semester + 1),
+        1
+      )
 
       let systemPrompt = `
       This action made the following changes to your schedule:
@@ -261,13 +267,21 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response in 1-4 bullet points.
+        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${currentTimeToGraduate}, please make sure to mention these changes in your summary.
     `
 
-      if (changes.length > 5) {
+      if (newTimeToGraduate > currentTimeToGraduate) {
         systemPrompt = `
-          This a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
+        Tell the student that the schedule change is serious because it delays their expected graduation time of ${profile.timeToGraduate} semesters to ${newTimeToGraduate} semesters and requires rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
         `
+        await publish({
+          type: SOCKET_EVENTS.SHOW_APPOINTMENT,
+          data: undefined
+        })
+      } else if (changes.length > 5) {
+        systemPrompt = `
+        Tell the student that this is a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
+      `
         await publish({
           type: SOCKET_EVENTS.SHOW_APPOINTMENT,
           data: undefined
@@ -349,7 +363,7 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = pushCourseAndDependents(graph, course.id)
+      const { graph: newGraph, changes } = pushCourseAndDependents(graph, profile, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
       const { id } = await db.version.create({
@@ -372,6 +386,8 @@ createWorker(async job => {
         }
       })
 
+      const currentTimeToGraduate = profile.semesters.length
+
       let systemPrompt = `
       This action made the following changes to your schedule:
 
@@ -382,7 +398,7 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response in 1-4 bullet points.
+        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${currentTimeToGraduate}, please make sure to mention these changes in your summary.
 
         End your message by emphasizing it's extremely important to meet with their advisor as soon as possible to dicuss the schedule changes.
     `

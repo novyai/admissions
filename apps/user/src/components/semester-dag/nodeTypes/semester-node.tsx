@@ -40,7 +40,7 @@ export function SemesterNode({ data }: SemesterNodeProps) {
   } else {
     const code = getSemesterCode(data.semesterIndex, data.startDate)
     name = `${code.semester} ${code.year} ${
-      taken ? "(Taken)"
+      taken ? "(Completed)"
       : isCurrSemester ? "(Current)"
       : ""
     }`

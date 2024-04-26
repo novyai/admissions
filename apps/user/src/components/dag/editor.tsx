@@ -12,7 +12,6 @@ import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { useAdvisor } from "@/hooks/use-advisor"
-import { ChatPopover } from "@/components/dag/chat-popover"
 import { SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
@@ -52,14 +51,6 @@ export function Editor({
   const [edges, setEdges] = useState<Edge[]>([])
 
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([])
-
-  const [chatOpen, setChatOpen] = useState(true)
-
-  const toggleChatOpen = () => setChatOpen(!chatOpen)
-
-  // useEffect(() => {
-  //   console.log(appointmentTimes)
-  // }, [appointmentTimes])
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -211,10 +202,6 @@ export function Editor({
     if (appointmentTimes) {
       setAppointmentTimes([])
     }
-    setChatOpen(true)
-    if (loading) {
-      return
-    }
 
     setPrompt("")
     scrollToEnd({ now: true })
@@ -244,13 +231,13 @@ export function Editor({
   })
 
   return (
-    <div className="w-full">
+    <div className="w-full h-full">
       {!profile ?
-        <div className="flex flex-grow items-center justify-center">
+        <div className="h-full flex flex-grow items-center justify-center">
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <>
-          <div className="relative w-full h-[95%] rounded-xl border">
+          <div className="flex flex-col relative h-full w-full rounded-xl border">
             <SemesterDAG
               resetNodePlacement={resetNodePlacement}
               profile={profile}
@@ -262,8 +249,8 @@ export function Editor({
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
             />
-            <ChatPopover open={chatOpen} toggleOpen={toggleChatOpen} scrollToEnd={scrollToEnd}>
-              <div className="h-[70vh] w-full rounded-xl shadow-lg border border-slate-200 bg-background py-4 px-2">
+            <div className="grow max-h-[35%] h-[35%] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
+              <div className="h-full">
                 <div className="sticky">
                   <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
                     AI Advisor
@@ -271,10 +258,7 @@ export function Editor({
                   <Separator className="bg-slate-100 h-[0.1rem]" />
                 </div>
 
-                <ScrollArea
-                  ref={ChatScrollerRef}
-                  className="relative h-[calc(100%-2.75rem)] rounded-xl"
-                >
+                <ScrollArea ref={ChatScrollerRef} className="h-[80%]">
                   <div className="mx-auto">
                     <div className="px-1">
                       {messages.length > 0 ?
@@ -299,35 +283,37 @@ export function Editor({
                       scrollerRef={ChatScrollerRef}
                     />
                   )}
-                  {appointmentTimes.length > 0 ?
-                    <AppointmentScheduler
-                      times={appointmentTimes}
-                      handleBookAppointment={(readableTime: string) => {
-                        setAppointmentTimes([])
-                        submitMessage(
-                          `Let's book an appointment for ${readableTime.toLocaleString()}.`
-                        )
-                      }}
-                    />
-                  : <></>}
                 </ScrollArea>
               </div>
-            </ChatPopover>
-          </div>
-          <div className="relative w-full h-[5%]">
-            <SuggestedPrompts
-              handleClick={(prompt: string) => submitMessage(prompt, "user")}
-              prompts={["What can you do?", "Reschedule Data Structures"]}
-            />
-            <PromptComposer
-              disabled={!ready || !isConnected}
-              placeholder={"Ask me anything..."}
-              loading={loading}
-              onChange={handleInput}
-              onKeyDown={handleKeyDown}
-              onSubmit={submitMessage}
-              prompt={prompt}
-            />
+            </div>
+            <div className="relative w-full h-[5%]">
+              {messages.length === 0 ?
+                <SuggestedPrompts
+                  handleClick={(prompt: string) => submitMessage(prompt, "user")}
+                  prompts={["What can you do?", "Reschedule Data Structures"]}
+                />
+              : <></>}
+              {appointmentTimes.length > 0 ?
+                <AppointmentScheduler
+                  times={appointmentTimes}
+                  handleBookAppointment={(readableTime: string) => {
+                    setAppointmentTimes([])
+                    submitMessage(`Let's book an appointment for ${readableTime.toLocaleString()}.`)
+                  }}
+                  closeAppointments={() => setAppointmentTimes([])}
+                />
+              : <></>}
+
+              <PromptComposer
+                disabled={!ready || !isConnected}
+                placeholder={"Ask me anything..."}
+                loading={loading}
+                onChange={handleInput}
+                onKeyDown={handleKeyDown}
+                onSubmit={submitMessage}
+                prompt={prompt}
+              />
+            </div>
           </div>
         </>
       }

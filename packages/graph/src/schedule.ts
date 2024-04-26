@@ -1,5 +1,5 @@
 import { graphToHydratedStudentProfile, studentProfileToGraph } from "@graph/graph"
-import { HydratedStudentProfile } from "@graph/types"
+import { BaseStudentProfile, HydratedStudentProfile } from "@graph/types"
 import { RequirementType } from "@repo/db"
 
 import { CourseGraph } from "./course"
@@ -10,6 +10,7 @@ export type CannotMoveReason = {
         type: "prerequisite" | "dependent"
         corequisite: boolean
         courseId: string[]
+        courseName: string[]
       }
     | { type: "graduation" }
     | {
@@ -37,36 +38,8 @@ export function canMoveCourse(
   profile: HydratedStudentProfile,
   ignoreGraduation: boolean = true
 ): CannotMoveReason | { canMove: true } {
-  if (toSemester < profile.currentSemester) {
-    return {
-      canMove: false,
-      reason: { type: "semester-already-taken", semesterIndex: toSemester }
-    }
-  }
-
-  if (!ignoreGraduation && toSemester >= profile.timeToGraduate) {
-    return {
-      canMove: false,
-      reason: { type: "graduation" }
-    }
-  }
-
-  if (
-    toSemester in profile.semesters &&
-    profile.semesters[toSemester - 1] &&
-    profile.semesters[toSemester]!.length >= profile.coursePerSemester
-  ) {
-    return {
-      canMove: false,
-      reason: {
-        type: "full",
-        semesterIndex: toSemester
-      }
-    }
-  }
-
-  const graph: CourseGraph = studentProfileToGraph(profile)
-  return _canMoveCourse(courseId, toSemester, graph)
+  const graph = studentProfileToGraph(profile)
+  return _canMoveCourse(courseId, toSemester, profile, graph, ignoreGraduation)
 }
 
 /**
@@ -117,7 +90,8 @@ function checPrereqs(courseId: string, toSemester: number, graph: CourseGraph): 
 function checkCorequisiteRequirements(
   courseId: string,
   toSemester: number,
-  graph: CourseGraph
+  graph: CourseGraph,
+  profile: BaseStudentProfile
 ): CanMoveReturn {
   // if its a corequistite of another course check those courses prereqs
 
@@ -134,7 +108,7 @@ function checkCorequisiteRequirements(
     }
 
   // check if we could move the main course to the target semester
-  const canMoveMainCourse = _canMoveCourse(mainCourse.id, toSemester, graph)
+  const canMoveMainCourse = _canMoveCourse(mainCourse.id, toSemester, profile, graph)
   if (!canMoveMainCourse.canMove) {
     return {
       canMove: false,
@@ -158,7 +132,7 @@ function checkCorequisiteRequirements(
 
 export function moveCourse(courseId: string, toSemester: number, profile: HydratedStudentProfile) {
   const graph: CourseGraph = studentProfileToGraph(profile)
-  const canMove = _canMoveCourse(courseId, toSemester, graph)
+  const canMove = _canMoveCourse(courseId, toSemester, profile, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)
     return graphToHydratedStudentProfile(graph, profile)
@@ -169,17 +143,61 @@ export function moveCourse(courseId: string, toSemester: number, profile: Hydrat
 export function _canMoveCourse(
   courseId: string,
   toSemester: number,
-  graph: CourseGraph
+  profile: BaseStudentProfile,
+  graph: CourseGraph,
+  ignoreGraduation: boolean = true
 ): CanMoveReturn {
-  // Does the course exist in the profile?
-  const fromSemester = graph.getNodeAttributes(courseId).semester
+  if (toSemester < profile.currentSemester) {
+    return {
+      canMove: false,
+      reason: { type: "semester-already-taken", semesterIndex: toSemester }
+    }
+  }
+
+  if (!ignoreGraduation && toSemester >= profile.timeToGraduate) {
+    return {
+      canMove: false,
+      reason: { type: "graduation" }
+    }
+  }
+
+  const fromSemester = graph.getNodeAttribute(courseId, "semester")
 
   // Ensure the course exists in the fromSemester
   if (fromSemester === undefined) {
     return { canMove: false, reason: { type: "not-found-in-schedule" } }
   }
 
-  const req = checkCorequisiteRequirements(courseId, toSemester, graph)
+  const nodes = [...graph.nodeEntries()]
+  const maxSemester = nodes.reduce(
+    (maxSemester, currNode) => Math.max(maxSemester, currNode.attributes.semester ?? 0),
+    0
+  )
+
+  const toSemesterNumCourses = nodes.filter(
+    nodeEntry => nodeEntry.attributes.semester === toSemester
+  ).length
+
+  console.log("toSemester", toSemester)
+  console.log("toSemesterNumCourses", toSemesterNumCourses)
+
+  if (
+    toSemester <= maxSemester &&
+    toSemesterNumCourses >= profile.coursePerSemester
+    // toSemester in profile.semesters &&
+    // profile.semesters[toSemester - 1] &&
+    // profile.semesters[toSemester]!.length >= profile.coursePerSemester
+  ) {
+    return {
+      canMove: false,
+      reason: {
+        type: "full",
+        semesterIndex: toSemester
+      }
+    }
+  }
+
+  const req = checkCorequisiteRequirements(courseId, toSemester, graph, profile)
   if (!req.canMove) {
     return req
   }
@@ -192,7 +210,8 @@ export function _canMoveCourse(
       reason: {
         corequisite: false,
         type: "prerequisite",
-        courseId: failedPre
+        courseId: failedPre,
+        courseName: failedPre.map(courseID => graph.getNodeAttribute(courseID, "name"))
       }
     }
 
@@ -203,7 +222,8 @@ export function _canMoveCourse(
       reason: {
         corequisite: false,
         type: "dependent",
-        courseId: failedDep
+        courseId: failedDep,
+        courseName: failedDep.map(courseID => graph.getNodeAttribute(courseID, "name"))
       }
     }
   return { canMove: true }

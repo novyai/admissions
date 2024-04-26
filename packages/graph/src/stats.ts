@@ -5,10 +5,10 @@ import { CourseGraph } from "./course"
 import { BaseStudentProfile } from "./types"
 
 export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile) {
-  let semester = 1
+  let semester = 0
   forEachTopologicalGeneration(graph, coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
-      if (semester === 1) {
+      if (semester === 0) {
         calculateFanOut(graph, courseId)
       }
       graph.setNodeAttribute(courseId, "earliestFinish", semester)
@@ -16,7 +16,7 @@ export function computeNodeStats(graph: CourseGraph, profile: BaseStudentProfile
     semester += 1
   })
 
-  semester = profile.timeToGraduate
+  semester = profile.timeToGraduate - 1
   forEachTopologicalGeneration(reverse(graph), coursesInGeneration => {
     coursesInGeneration.forEach(courseId => {
       graph.setNodeAttribute(courseId, "latestFinish", semester)

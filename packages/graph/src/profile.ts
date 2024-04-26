@@ -4,12 +4,31 @@ import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
 import { Attributes } from "graphology-types"
 
-import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph, CoursePayload } from "./course"
+import {
+  addCourseToGraph,
+  COURSE_PAYLOAD_QUERY,
+  CourseAttributes,
+  CourseGraph,
+  CoursePayload
+} from "./course"
 import { Program, programHandler } from "./defaultCourses"
-import { _getAllDependents, graphToHydratedStudentProfile } from "./graph"
+import {
+  _getAllDependents,
+  getChangesBetweenGraphs,
+  getCorequisites,
+  getCoursesInSemester,
+  graphToHydratedStudentProfile
+} from "./graph"
 import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
-import { BaseStudentProfile, CourseNode, StudentProfile } from "./types"
+import {
+  BaseStudentProfile,
+  CourseNode,
+  NegativeScheduleConstraint,
+  PositiveScheduleConstraint,
+  ScheduleConstraints,
+  StudentProfile
+} from "./types"
 
 const GEN_ED_PROGRAM = {
   program: "GEN" as Program,
@@ -180,19 +199,49 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
  */
 export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
   const graph = await createGraph({ ...profile, semesters: [] })
-  computeNodeStats(graph, profile)
   scheduleCourses(graph, profile)
   return graphToHydratedStudentProfile(graph, profile)
 }
 
-/**
- * Schedules all of the courses in Graph based on the settings in profile by adding a semester attribute
- * to each node
- * @param graph
- * @param profile
- */
-export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile) {
+function schedulePositiveConstraints(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  constraints: PositiveScheduleConstraint[]
+) {
+  for (const constraint of constraints) {
+    const numNodesInSemester = getCoursesInSemester(graph, constraint.semester).length
+    if (numNodesInSemester + constraint.courseIDs.length > profile.coursePerSemester) {
+      throw Error(
+        `Invalid positive constraint (${JSON.stringify(constraint)}): there are already ${numNodesInSemester} courses in semester ${constraint.semester}, which exceeds the profile's coursePerSemester (${profile.coursePerSemester})`
+      )
+    }
+
+    for (const courseID of constraint.courseIDs) {
+      graph.setNodeAttribute(courseID, "semester", constraint.semester)
+      const corequisites = getCorequisites(graph, courseID)
+      for (const corequisite of corequisites) {
+        graph.setNodeAttribute(corequisite.id, "semester", constraint.semester)
+      }
+    }
+  }
+}
+
+export function scheduleCourses(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  constraints: ScheduleConstraints = { positive: [], negative: [] },
+  distributeCoursesEvenly: boolean = true
+) {
+  computeNodeStats(graph, profile)
+  const positiveConstrainedCourseIDs = constraints.positive.flatMap(c => c.courseIDs)
+  schedulePositiveConstraints(graph, profile, constraints.positive)
+  const fixedSemesters = constraints.positive.filter(c => !c.canAddCourses).map(c => c.semester)
+
   let currentSemester: number = 0
+  while (fixedSemesters.includes(currentSemester)) {
+    currentSemester += 1
+  }
+
   let numCoursesInCurrentSemesterByProgram: { [program in Program | "undefined"]?: number } = {}
   let numCoursesInCurrentSemester: number = 0
   let firstDeferredCourseId: string | null = null
@@ -207,23 +256,38 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
   }
 
-  const sortedCourses = topologicalGenerations(graph).flatMap(courseGeneration =>
-    courseGeneration
-      // don't directly schedule corequisites -- we'll add them when we schedule their parent
-      .filter(courseId => {
-        const edges = graph.mapOutEdges(courseId, (_, edge) => edge.type)
-        return edges.length === 0 || !edges.every(type => type === "COREQUISITE")
-      })
-      .map(courseId => graph.getNodeAttributes(courseId))
-      .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
-  )
+  const initializeNumCoursesInCurrentSemesterByProgram = (semester: number) => {
+    numCoursesInCurrentSemesterByProgram = {}
+    const coursesInSemester = getCoursesInSemester(graph, semester)
+    for (const course of coursesInSemester) {
+      addToNumCoursesInCurrentSemesterByProgram(course.program)
+    }
+  }
+
+  const isCourseNegativelyConstrained = (courseID: string, semester: number) =>
+    constraints.negative.some(
+      constraint => constraint.courseID == courseID && constraint.semester === semester
+    )
+
+  const allCourses = [...graph.nodeEntries()].map(entry => entry.attributes)
+  const sortedCourses = topologicalGenerations(graph)
+    .flatMap(courseGeneration =>
+      courseGeneration
+        // don't directly schedule corequisites -- we'll add them when we schedule their parent
+        .filter(courseId => {
+          const edges = graph.mapOutEdges(courseId, (_, edge) => edge.type)
+          return edges.length === 0 || !edges.every(type => type === "COREQUISITE")
+        })
+        .map(courseId => graph.getNodeAttributes(courseId))
+        .sort((courseA, courseB) => courseA.slack! ?? 0 - courseB.slack! ?? 0)
+    )
+    .filter(course => !positiveConstrainedCourseIDs.includes(course.id))
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
-
   const getProgramRatios = (): { [program in Program | "undefined"]?: number } => {
     const ratios: { [program in Program | "undefined"]?: number } = {}
 
-    for (const course of sortedCourses) {
+    for (const course of allCourses) {
       const normalizedProgram = course.program === undefined ? "undefined" : course.program
       if (!(normalizedProgram in ratios)) {
         ratios[normalizedProgram] = 0
@@ -239,9 +303,12 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
 
   const programRatios = getProgramRatios()
 
-  console.log(programRatios)
+  const tooManyProgramCourses = (
+    program: Program | undefined,
+    distributeProgramCoursesEvenly: boolean
+  ): boolean => {
+    if (!distributeProgramCoursesEvenly) return false
 
-  const tooManyProgramCourses = (program: Program | undefined): boolean => {
     const normProgram = program === undefined ? "undefined" : program
 
     const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
@@ -261,9 +328,11 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     return numCourses >= Math.ceil(profile.coursePerSemester * threshold)
   }
 
-  while (sortedCourses.length > 0) {
-    const course = sortedCourses.shift()!
-
+  const scheduleCourse = (
+    course: CourseAttributes,
+    distributeProgramCoursesEvenly: boolean,
+    limitToTimeTogGraduate: boolean
+  ) => {
     // check if the semester is full already and increment if it is
     if (
       numCoursesInCurrentSemester >= profile.coursePerSemester ||
@@ -271,9 +340,17 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
     ) {
       // console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
-      numCoursesInCurrentSemester = 0
-      numCoursesInCurrentSemesterByProgram = {}
+      while (fixedSemesters.includes(currentSemester)) {
+        currentSemester += 1
+      }
+      numCoursesInCurrentSemester = getCoursesInSemester(graph, currentSemester).length
+      initializeNumCoursesInCurrentSemesterByProgram(currentSemester)
       firstDeferredCourseId = null
+    }
+
+    if (currentSemester >= profile.timeToGraduate && limitToTimeTogGraduate) {
+      sortedCourses.unshift(course)
+      return
     }
 
     const allPrereqsCompleted = graph
@@ -285,19 +362,17 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
       .map(prereqId => graph.getNodeAttribute(prereqId, "semester"))
       .every(semester => semester! < currentSemester)
 
-    const corequisites = graph
-      .filterInEdges(course.id, (_, edge) => edge.type === RequirementType.COREQUISITE)
-      .map(edgeId => graph.source(edgeId))
-      .map(nodeId => graph.getNodeAttributes(nodeId))
+    const corequisites = getCorequisites(graph, course.id)
 
     if (
+      !isCourseNegativelyConstrained(course.id, currentSemester) &&
       allPrereqsCompleted &&
-      !tooManyProgramCourses(course.program) &&
+      !tooManyProgramCourses(course.program, distributeProgramCoursesEvenly) &&
       corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
-      graph.setNodeAttribute(course["id"], "semester", currentSemester)
+      graph.setNodeAttribute(course.id, "semester", currentSemester)
       numCoursesInCurrentSemester += 1
       addToNumCoursesInCurrentSemesterByProgram(course.program)
 
@@ -316,6 +391,26 @@ export function scheduleCourses(graph: CourseGraph, profile: BaseStudentProfile)
       sortedCourses.push(course)
     }
   }
+
+  while (sortedCourses.length > 0 && currentSemester < profile.timeToGraduate) {
+    const course = sortedCourses.shift()!
+    scheduleCourse(course, distributeCoursesEvenly, true)
+  }
+
+  // Go back and see if we can add remaining courses to older semesters
+  currentSemester = 0
+  while (fixedSemesters.includes(currentSemester)) {
+    currentSemester += 1
+  }
+  numCoursesInCurrentSemester = getCoursesInSemester(graph, currentSemester).length
+  initializeNumCoursesInCurrentSemesterByProgram(currentSemester)
+  firstDeferredCourseId = null
+  sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
+  while (sortedCourses.length > 0) {
+    const course = sortedCourses.shift()!
+    scheduleCourse(course, false, false)
+  }
+  return graph
 }
 
 export function toCourseNode(
@@ -357,68 +452,63 @@ export function toCourseNode(
  * @param profile The student profile containing scheduling constraints.
  * @param courseId The ID of the course to be pushed.
  */
-export function pushCourseAndDependents(graph: CourseGraph, courseId: string) {
-  const changes: Change[] = []
-  // Step 1: Identify the Course and Its Dependents
-  const dependents = _getAllDependents(courseId, graph)
-
-  // Step 2: Next semester
-  const currSemesterIndex = graph.getNodeAttribute(courseId, "semester")
-  if (currSemesterIndex === undefined) {
-    throw new Error(`Could not move ${courseId} because it has no semester`)
-  }
-  const nextSemesterIndex = currSemesterIndex + 1
-
-  // if no courses depend on it, just push it a semester that makes sense
-  if (dependents.length === 0) {
-    const mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-    if (mv.canMove) {
-      graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
-      changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
-    } else {
-      throw new Error(`Could not move ${courseId} because of ${mv.reason}`)
+export function pushCourseAndDependents(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  courseId: string
+): { graph: CourseGraph; changes: Change[] } {
+  try {
+    const fromSemester = graph.getNodeAttribute(courseId, "semester")
+    if (fromSemester === undefined) {
+      throw new Error(`Could not move ${courseId} because it has no semester`)
     }
+
+    const canMove = _canMoveCourse(courseId, fromSemester + 1, profile, graph)
+    if (canMove) {
+      graph.setNodeAttribute(courseId, "semester", fromSemester + 1)
+      return {
+        graph: graph,
+        changes: [{ type: ChangeType.Move, courseId: courseId, semester: fromSemester + 1 }]
+      }
+    }
+
+    const oldGraph = graph.copy()
+
+    const prevSemesters = [...Array(fromSemester + 1).keys()]
+    const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
+      const coursesInSemester = getCoursesInSemester(graph, semester)
+        .map(course => course.id)
+        .filter(id => id !== courseId)
+      return {
+        semester: semester,
+        canAddCourses: false,
+        courseIDs: coursesInSemester
+      }
+    })
+    const negativeConstraints: NegativeScheduleConstraint[] = [
+      {
+        courseID: courseId,
+        semester: fromSemester
+      }
+    ]
+
+    for (const nodeEntry of graph.nodeEntries()) {
+      nodeEntry.attributes.semester = undefined
+    }
+
+    const newGraph = scheduleCourses(graph, profile, {
+      positive: positiveConstraints,
+      negative: negativeConstraints
+    })
+
+    const changes = getChangesBetweenGraphs(oldGraph, newGraph)
 
     return {
       graph,
       changes
     }
-  }
-
-  // if there are courses that depend on it, we need to find the earliest semester that they can all be pushed to
-
-  // Step 3: Update the Course and Dependents
-
-  let mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-  while (!mv.canMove) {
-    // if there is a dependent issue, push them
-    if (mv.reason.type === "dependent") {
-      mv.reason.courseId.forEach(depId => {
-        const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(graph, depId)
-        graph = newGraph
-        changes.push(...newChanges)
-        console.log(
-          "after moving",
-          graph.getNodeAttribute(depId, "name"),
-          "to",
-          graph.getNodeAttribute(depId, "semester")
-        )
-      })
-      mv = _canMoveCourse(courseId, nextSemesterIndex, graph)
-      continue
-    }
-
-    throw new Error(`Could not move ${courseId} because of ${JSON.stringify(mv.reason)}`)
-  }
-
-  // now we can move:
-  if (mv.canMove) {
-    graph.setNodeAttribute(courseId, "semester", nextSemesterIndex)
-    changes.push({ type: ChangeType.Move, courseId, semester: nextSemesterIndex })
-  }
-
-  return {
-    graph,
-    changes
+  } catch (error) {
+    console.log("ERROR IN pushCourseAndDependents", JSON.stringify(error))
+    throw error
   }
 }

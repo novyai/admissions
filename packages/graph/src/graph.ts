@@ -1,14 +1,46 @@
 import {
+  BaseStudentProfile,
   CourseNode,
   HydratedStudentProfile,
   BaseStudentProfile as StudentProfile
 } from "@graph/types"
+import { Change, ChangeType } from "@repo/constants"
 import { RequirementType } from "@repo/db"
 import Graph from "graphology"
 
 import { CourseGraph } from "./course"
 import { toCourseNode } from "./profile"
 import { computeNodeStats } from "./stats"
+
+export const getCoursesInSemester = (graph: CourseGraph, semester: number) => {
+  const courses = [...graph.nodeEntries()].map(entry => entry.attributes)
+  return courses.filter(c => c.semester === semester)
+}
+
+export const getChangesBetweenGraphs = (oldGraph: CourseGraph, newGraph: CourseGraph): Change[] => {
+  const changes: Change[] = []
+
+  for (const newNodeEntry of newGraph.nodeEntries()) {
+    const newSemester = newNodeEntry.attributes.semester
+    const oldSemester = oldGraph.getNodeAttribute(newNodeEntry.node, "semester")
+
+    if (newSemester !== undefined && newSemester !== oldSemester) {
+      changes.push({
+        type: ChangeType.Move,
+        courseId: newNodeEntry.node,
+        semester: newSemester
+      })
+    }
+  }
+
+  return changes
+}
+
+export const getCorequisites = (graph: CourseGraph, courseID: string) =>
+  graph
+    .filterInEdges(courseID, (_, edge) => edge.type === RequirementType.COREQUISITE)
+    .map(edgeId => graph.source(edgeId))
+    .map(nodeId => graph.getNodeAttributes(nodeId))
 
 export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGraph {
   const graph: CourseGraph = new Graph()
@@ -44,6 +76,20 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
   computeNodeStats(graph, profile)
 
   return graph
+}
+
+export function hydratedProfileToBaseStudentProfile(
+  hydratedProfile: HydratedStudentProfile
+): BaseStudentProfile {
+  return {
+    requiredCourses: hydratedProfile.requiredCourses,
+    transferCredits: hydratedProfile.transferCredits,
+    programs: hydratedProfile.programs,
+    timeToGraduate: hydratedProfile.timeToGraduate,
+    currentSemester: hydratedProfile.currentSemester,
+    coursePerSemester: hydratedProfile.coursePerSemester,
+    startDate: hydratedProfile.startDate
+  }
 }
 
 export function graphToHydratedStudentProfile(
