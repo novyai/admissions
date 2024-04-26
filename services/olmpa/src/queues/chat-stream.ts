@@ -251,6 +251,12 @@ createWorker(async job => {
       const { graph: newGraph, changes } = pushCourseAndDependents(graph, profile, course.id)
       const newProfile = graphToHydratedStudentProfile(newGraph, profile)
 
+      const currentTimeToGraduate = profile.semesters.length
+      const newTimeToGraduate = changes.reduce(
+        (timeToGrad, change) => Math.max(timeToGrad, change.semester + 1),
+        1
+      )
+
       let systemPrompt = `
       This action made the following changes to your schedule:
 
@@ -261,15 +267,10 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${profile.timeToGraduate}, please make sure to mention these changes in your summary.
+        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${currentTimeToGraduate}, please make sure to mention these changes in your summary.
     `
 
-      const newTimeToGraduate = changes.reduce(
-        (timeToGrad, change) => Math.max(timeToGrad, change.semester + 1),
-        1
-      )
-
-      if (newTimeToGraduate > profile.timeToGraduate) {
+      if (newTimeToGraduate > currentTimeToGraduate) {
         systemPrompt = `
         Tell the student that the schedule change is serious because it delays their expected graduation time of ${profile.timeToGraduate} semesters to ${newTimeToGraduate} semesters and requires rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
         `
@@ -385,6 +386,8 @@ createWorker(async job => {
         }
       })
 
+      const currentTimeToGraduate = profile.semesters.length
+
       let systemPrompt = `
       This action made the following changes to your schedule:
 
@@ -395,7 +398,7 @@ createWorker(async job => {
         )
         .join("\n")}
 
-        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${profile.timeToGraduate}, please make sure to mention these changes in your summary.
+        Please summarize these changes in your response in 1-4 bullet points. If there are any changes that affect the student's expected graduation time of ${currentTimeToGraduate}, please make sure to mention these changes in your summary.
 
         End your message by emphasizing it's extremely important to meet with their advisor as soon as possible to dicuss the schedule changes.
     `
