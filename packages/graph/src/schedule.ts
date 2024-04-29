@@ -181,22 +181,6 @@ export function _canMoveCourse(
   console.log("toSemester", toSemester)
   console.log("toSemesterNumCourses", toSemesterNumCourses)
 
-  if (
-    toSemester <= maxSemester &&
-    toSemesterNumCourses >= profile.coursePerSemester
-    // toSemester in profile.semesters &&
-    // profile.semesters[toSemester - 1] &&
-    // profile.semesters[toSemester]!.length >= profile.coursePerSemester
-  ) {
-    return {
-      canMove: false,
-      reason: {
-        type: "full",
-        semesterIndex: toSemester
-      }
-    }
-  }
-
   const req = checkCorequisiteRequirements(courseId, toSemester, graph, profile)
   if (!req.canMove) {
     return req
@@ -226,5 +210,21 @@ export function _canMoveCourse(
         courseName: failedDep.map(courseID => graph.getNodeAttribute(courseID, "name"))
       }
     }
+
+  if (
+    toSemester <= maxSemester &&
+    toSemesterNumCourses >= profile.coursePerSemester
+    // toSemester in profile.semesters &&
+    // profile.semesters[toSemester - 1] &&
+    // profile.semesters[toSemester]!.length >= profile.coursePerSemester
+  ) {
+    return {
+      canMove: false,
+      reason: {
+        type: "full",
+        semesterIndex: toSemester
+      }
+    }
+  }
   return { canMove: true }
 }

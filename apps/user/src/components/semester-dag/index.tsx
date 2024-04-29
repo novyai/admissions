@@ -40,12 +40,7 @@ import {
   SemesterNodeData,
   SemesterNodeType
 } from "./nodeTypes/semester-node"
-import {
-  getEdgesIDsInCoursePath,
-  getModifiedEdge,
-  getNodeIDsInCoursePath,
-  isGenEdNode
-} from "./utils"
+import { getEdgesIDsInCoursePath, getModifiedEdge, getNodeIDsInCoursePath } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
@@ -87,6 +82,9 @@ export function SemesterDAG(props: SemesterDAGProps) {
   )
 }
 
+export const COREQ_EDGE_COLOR = "black-900"
+export const PREREQ_EDGE_COLOR = "black-200"
+
 function SemesterDAGInternal({
   nodes,
   edges,
@@ -121,14 +119,12 @@ function SemesterDAGInternal({
   const handleReset = (node: CourseNodeType) => {
     resetNodePlacement(node.id)
     setNodes(nds =>
-      nds.map(n =>
-        n.type === "semesterNode" ?
-          {
-            ...n,
-            className: cn(defaultSemesterNode.className)
-          }
-        : n
-      )
+      nds.map(n => {
+        if (n.type === "semesterNode") {
+          n.className = cn(defaultSemesterNode.className)
+        }
+        return n
+      })
     )
   }
 
@@ -145,7 +141,10 @@ function SemesterDAGInternal({
             e => ({
               ...e,
               hidden: false,
-              style: { ...e.style, stroke: e.type == "prerequisite" ? "lightskyblue" : "darkblue" }
+              style: {
+                ...e.style,
+                stroke: e.type == "prerequisite" ? PREREQ_EDGE_COLOR : COREQ_EDGE_COLOR
+              }
             }),
             e => ({
               ...e,
@@ -160,10 +159,7 @@ function SemesterDAGInternal({
           .filter(n => !isGhostCourseNode(n))
           .map(n => ({
             ...n,
-            className: cn(
-              n.className,
-              `animate-none ${isGenEdNode(n) ? "bg-zinc-100" : "bg-background"}`
-            )
+            className: defaultCourseNode.className
           }))
       )
     }
@@ -223,7 +219,10 @@ function SemesterDAGInternal({
         getModifiedEdge(e, coursePathEdgeIDs, e => ({
           ...e,
           hidden: !showEdges,
-          style: { ...e.style, stroke: "lightgray" }
+          style: {
+            ...e.style,
+            stroke: e.type == "prerequisite" ? PREREQ_EDGE_COLOR : COREQ_EDGE_COLOR
+          }
         }))
       )
     )
@@ -305,6 +304,7 @@ function SemesterDAGInternal({
         edgeTypes={edgeTypes}
         nodes={nodes}
         edges={edges}
+        onlyRenderVisibleElements={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStart={onNodeDragStart}

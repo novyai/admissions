@@ -7,12 +7,11 @@ import { PromptComposer } from "@ui/components/prompt-composer"
 import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Separator } from "@ui/components/ui/separator"
-import { cn } from "@ui/lib/utils"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { useAdvisor } from "@/hooks/use-advisor"
-import { SemesterDAG } from "@/components/semester-dag"
+import { COREQ_EDGE_COLOR, PREREQ_EDGE_COLOR, SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
@@ -24,8 +23,7 @@ import {
   getChangedCourseNodeIDs,
   getGhostCourseNodesAndEdges,
   getModifiedEdges,
-  getModifiedNodes,
-  isGenEdNode
+  getModifiedNodes
 } from "../semester-dag/utils"
 import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
 import { AppointmentScheduler } from "./appointment-scheduler"
@@ -106,17 +104,11 @@ export function Editor({
       defaultEdges: newDefaultEdges
     } = await hydratedProfileAndNodesByVersion(version.id)
 
-    const genEdIDs = newDefaultNodes.filter(n => isGenEdNode(n)).map(n => n.id)
-    const nodesWithColoredGenEdCourses = getModifiedNodes(newDefaultNodes, genEdIDs, n => ({
-      ...n,
-      className: "bg-zinc-100"
-    }))
-
     setProfile(newProfile)
-    setDefaultNodes(nodesWithColoredGenEdCourses)
+    setDefaultNodes(newDefaultNodes)
 
     if (lastVersion === undefined) {
-      setNodes(nodesWithColoredGenEdCourses)
+      setNodes(newDefaultNodes)
       setEdges(newDefaultEdges)
     } else {
       setNodes(newDefaultNodes)
@@ -138,16 +130,22 @@ export function Editor({
 
       setNodes([
         ...ghostCourseNodes,
-        ...getModifiedNodes(nodesWithColoredGenEdCourses, changedNodeIDs, n => ({
+        ...getModifiedNodes(newDefaultNodes, changedNodeIDs, n => ({
           ...n,
-          className: cn(n.className, "bg-sky-100 animate-pulse")
+          data: {
+            ...n.data,
+            pulsing: true
+          }
         }))
       ])
       setEdges([
         ...ghostEdges,
         ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
           ...e,
-          style: { ...e.style, stroke: "lightskyblue" },
+          style: {
+            ...e.style,
+            stroke: e.type == "prerequisite" ? COREQ_EDGE_COLOR : PREREQ_EDGE_COLOR
+          },
           hidden: false
         }))
       ])

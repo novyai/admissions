@@ -38,13 +38,13 @@ const removeGenEdProgram = (profile: HydratedStudentProfile) => {
 
   const genEdCourseIDs: string[] = []
   for (const [courseID, course] of profile.graph.entries()) {
-    if (course.program === "GEN") {
+    if (course.programs?.includes("GEN")) {
       genEdCourseIDs.push(courseID)
       profile.graph.delete(courseID)
     }
   }
   profile.semesters = profile.semesters.map(courses =>
-    courses.filter(course => course.program !== "GEN")
+    courses.filter(course => !course.programs?.includes("GEN"))
   )
   profile.requiredCourses = profile.requiredCourses.filter(
     courseID => !genEdCourseIDs.includes(courseID)

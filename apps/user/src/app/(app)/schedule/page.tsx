@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { redirect, RedirectType } from "next/navigation"
-import { auth } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import { parseBlob } from "@graph/blob"
 import { programName } from "@graph/defaultCourses"
 import { db } from "@repo/db"
@@ -49,7 +49,7 @@ export default async function Page() {
   const { userId, protect } = auth()
 
   protect({
-    redirectUrl: "/"
+    unauthenticatedUrl: "/"
   })
 
   if (!userId) {

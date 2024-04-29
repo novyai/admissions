@@ -1,13 +1,17 @@
-import { authMiddleware } from "@clerk/nextjs"
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
 // See https://clerk.com/docs/references/nextjs/auth-middleware
 // for more information about configuring your Middleware
 
-export default authMiddleware({
-  // Allow signed out users to access the specified routes:
-  publicRoutes: ["/", "/api/webhooks/clerk"]
-  // Prevent the specified routes from accessing
-  // authentication information:
+const isProtectedRoute = createRouteMatcher([
+  "/chat(.*)",
+  "/create(.*)",
+  "/schedule(.*)",
+  "/api/ai(.*)"
+])
+
+export default clerkMiddleware((auth, req) => {
+  if (isProtectedRoute(req)) auth().protect()
 })
 
 export const config = {

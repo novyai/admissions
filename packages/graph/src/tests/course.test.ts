@@ -1,8 +1,8 @@
-import { addCourseToGraph, COURSE_PAYLOAD_QUERY, CourseGraph } from "@graph/course"
+import { addCourseToGraph, CourseGraph, CoursePayload } from "@graph/course"
 import { buildSemesters } from "@graph/graph"
 import { scheduleCourses } from "@graph/profile"
 import { computeNodeStats } from "@graph/stats"
-import { Prisma, RequirementType } from "@repo/db"
+import { RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
 import Graph from "graphology"
 
@@ -19,13 +19,14 @@ const baseProfile = {
 describe("addCourseToGraph function", () => {
   test("adds a new course node to the graph", async () => {
     const graph = new Graph() as CourseGraph
-    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseMap = new Map<string, CoursePayload>()
     const courseId = "test-course-id"
     const courseName = "Test Course"
     courseMap.set(courseId, {
       id: courseId,
       name: courseName,
-      conditions: []
+      conditions: [],
+      programs: []
     })
 
     addCourseToGraph({
@@ -45,13 +46,14 @@ describe("addCourseToGraph function", () => {
       earliestFinish: undefined,
       latestFinish: undefined,
       slack: undefined,
-      semester: undefined
+      semester: undefined,
+      programs: []
     })
   })
 
   test("does not add a course node if it already exists in the graph", async () => {
     const graph = new Graph() as CourseGraph
-    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseMap = new Map<string, CoursePayload>()
     const courseId = "existing-course-id"
     const courseName = "Existing Course"
     graph.addNode(courseId, {
@@ -62,7 +64,8 @@ describe("addCourseToGraph function", () => {
       earliestFinish: undefined,
       latestFinish: undefined,
       slack: undefined,
-      semester: undefined
+      semester: undefined,
+      programs: []
     })
     const initialNodeCount = graph.order
 
@@ -118,12 +121,13 @@ const prerequisiteConditions = [
 describe("addCourseToGraph function with AND and OR conditions", () => {
   test("handles OR conditions correctly", async () => {
     const graph = new Graph() as CourseGraph
-    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseMap = new Map<string, CoursePayload>()
     const courseId = "course-with-or-condition"
 
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with OR Condition",
+      programs: [],
       conditions: [
         {
           logicalOperator: "OR",
@@ -134,12 +138,14 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
     courseMap.set(prerequisiteId1, {
       id: prerequisiteId1,
       name: "Prerequisite 1",
-      conditions: []
+      conditions: [],
+      programs: []
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
-      conditions: []
+      conditions: [],
+      programs: []
     })
 
     addCourseToGraph({
@@ -166,7 +172,7 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
 
   test("handles AND conditions correctly", async () => {
     const graph = new Graph() as CourseGraph
-    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseMap = new Map<string, CoursePayload>()
     const courseId = "course-with-and-condition"
     const prerequisiteId1 = "prerequisite-1"
     const prerequisiteId2 = "prerequisite-2"
@@ -179,17 +185,20 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
           logicalOperator: "AND",
           conditions: prerequisiteConditions
         }
-      ]
+      ],
+      programs: []
     })
     courseMap.set(prerequisiteId1, {
       id: prerequisiteId1,
       name: "Prerequisite 1",
-      conditions: []
+      conditions: [],
+      programs: []
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
-      conditions: []
+      conditions: [],
+      programs: []
     })
 
     addCourseToGraph({
@@ -218,13 +227,14 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
 describe("addCourseToGraph function with corequisite conditions", () => {
   test("handles corequisite conditions correctly", async () => {
     const graph = new Graph() as CourseGraph
-    const courseMap = new Map<string, Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>>()
+    const courseMap = new Map<string, CoursePayload>()
     const courseId = "course-with-corequisite"
     const corequisiteId = "corequisite-1"
 
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with Corequisite",
+      programs: [],
       conditions: [
         {
           logicalOperator: "OR",
@@ -246,7 +256,8 @@ describe("addCourseToGraph function with corequisite conditions", () => {
     courseMap.set(corequisiteId, {
       id: corequisiteId,
       name: "Corequisite 1",
-      conditions: []
+      conditions: [],
+      programs: []
     })
 
     addCourseToGraph({
