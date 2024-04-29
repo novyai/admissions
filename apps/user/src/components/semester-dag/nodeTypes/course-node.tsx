@@ -1,5 +1,6 @@
 "use client"
 
+import { Program, ProgramOption } from "@graph/defaultCourses"
 import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 import { motion } from "framer-motion"
@@ -18,13 +19,23 @@ export const defaultCourseNode: Partial<Node> = {
   // extent: 'parent'
 }
 
+type KEYS = Program | "EXTRA"
+const colorsForPrograms: { [key in KEYS]?: string } = {
+  [ProgramOption.CS]: "bg-sky-200",
+  [ProgramOption.GEN]: "bg-yellow-200",
+  ["EXTRA"]: "bg-green-200"
+}
+
 export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNodeData>) {
   return (
     <motion.div
       className={cn(
         "border rounded-lg px-2 py-1 -1",
         (selected || dragging) && "border-ring z-20",
-        data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : ""
+        data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : "",
+        data.programs && data.programs[0] ?
+          colorsForPrograms[data.programs[0]]
+        : colorsForPrograms["EXTRA"]
       )}
       layout
       animate={dragging && selected}

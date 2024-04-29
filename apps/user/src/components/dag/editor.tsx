@@ -11,7 +11,7 @@ import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { useAdvisor } from "@/hooks/use-advisor"
-import { SemesterDAG } from "@/components/semester-dag"
+import { COREQ_EDGE_COLOR, PREREQ_EDGE_COLOR, SemesterDAG } from "@/components/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
@@ -142,7 +142,10 @@ export function Editor({
         ...ghostEdges,
         ...getModifiedEdges(newDefaultEdges, changedEdgeIDs, e => ({
           ...e,
-          style: { ...e.style, stroke: "lightskyblue" },
+          style: {
+            ...e.style,
+            stroke: e.type == "prerequisite" ? COREQ_EDGE_COLOR : PREREQ_EDGE_COLOR
+          },
           hidden: false
         }))
       ])
