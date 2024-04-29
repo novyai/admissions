@@ -43,9 +43,7 @@ export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNod
       key={id}
     >
       <Handle type="target" position={Position.Left} />
-      <p className="text-ellipsis text-center">
-        {data.name} - {data.programs}
-      </p>
+      <p className="text-ellipsis text-center">{data.name}</p>
       <Handle type="source" position={Position.Right} />
     </motion.div>
   )
