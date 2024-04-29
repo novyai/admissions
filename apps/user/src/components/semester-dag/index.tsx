@@ -40,12 +40,7 @@ import {
   SemesterNodeData,
   SemesterNodeType
 } from "./nodeTypes/semester-node"
-import {
-  getEdgesIDsInCoursePath,
-  getModifiedEdge,
-  getNodeIDsInCoursePath,
-  isGenEdNode
-} from "./utils"
+import { getEdgesIDsInCoursePath, getModifiedEdge, getNodeIDsInCoursePath } from "./utils"
 
 const nodeTypes = {
   semesterNode: SemesterNode,
