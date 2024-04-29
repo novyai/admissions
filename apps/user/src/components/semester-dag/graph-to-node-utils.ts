@@ -30,7 +30,9 @@ const getEdges = (course: CourseNode) => {
       type: "corequisite",
       source: course.id,
       target: coreq,
-      zIndex: 3
+      zIndex: 3,
+      label: "Corequisite",
+      labelShowBg: false
     }
   })
   return [...preqs, ...coreqs]
