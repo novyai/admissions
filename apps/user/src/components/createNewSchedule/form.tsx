@@ -61,8 +61,6 @@ export function CreateNewScheduleForm({
     )
     .flat()
 
-  console.log(programs)
-
   const years = ["2021", "2022", "2023", "2024", "2025"]
   const semesters = ["Fall", "Spring"]
 

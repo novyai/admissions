@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { auth } from "@clerk/nextjs"
+import { auth } from "@clerk/nextjs/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 
 import { getProgramsForAllUniversities } from "@/components/createNewSchedule/action"

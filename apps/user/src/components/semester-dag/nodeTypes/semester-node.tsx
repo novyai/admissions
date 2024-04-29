@@ -32,7 +32,7 @@ export const defaultSemesterNode: Partial<Node> = {
 }
 
 export function SemesterNode({ data }: SemesterNodeProps) {
-  const taken = "semesterIndex" in data && data.semesterIndex < data.currSemester
+  const completed = "semesterIndex" in data && data.semesterIndex < data.currSemester
   const isCurrSemester = "semesterIndex" in data && data.semesterIndex == data.currSemester
   let name
   if ("transfer" in data) {
@@ -40,7 +40,7 @@ export function SemesterNode({ data }: SemesterNodeProps) {
   } else {
     const code = getSemesterCode(data.semesterIndex, data.startDate)
     name = `${code.semester} ${code.year} ${
-      taken ? "(Completed)"
+      completed ? "(completed)"
       : isCurrSemester ? "(Current)"
       : ""
     }`
@@ -50,7 +50,7 @@ export function SemesterNode({ data }: SemesterNodeProps) {
     <div
       className={cn(
         "flex w-full h-full justify-center pt-2 font-semibold",
-        taken ? "bg-muted text-muted-foreground" : ""
+        completed ? "bg-muted text-muted-foreground" : ""
       )}
     >
       <p>{"transfer" in data ? `Transfer Credits` : `${name}`}</p>
