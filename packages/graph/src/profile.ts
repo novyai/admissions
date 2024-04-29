@@ -332,7 +332,11 @@ export function scheduleCourses(
 
   const programRatios = getProgramRatios()
 
-  const tooManyProgramCourses = (program: Program | undefined) => {
+  const tooManyProgramCourses = (
+    program: Program | undefined,
+    distributeProgramCoursesEvenly: boolean
+  ) => {
+    if (!distributeProgramCoursesEvenly) return false
     const normProgram = program === undefined ? "undefined" : program
 
     const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
@@ -357,7 +361,7 @@ export function scheduleCourses(
 
   const scheduleCourse = (
     course: CourseAttributes,
-    _distributeProgramCoursesEvenly: boolean,
+    distributeProgramCoursesEvenly: boolean,
     limitToTimeTogGraduate: boolean
   ) => {
     // check if the semester is full already and increment if it is
@@ -392,7 +396,11 @@ export function scheduleCourses(
     const corequisites = getCorequisites(graph, course.id)
 
     const tooManyCourses =
-      course.programs ? !course.programs.some(program => tooManyProgramCourses(program)) : false
+      course.programs ?
+        !course.programs.some(program =>
+          tooManyProgramCourses(program, distributeProgramCoursesEvenly)
+        )
+      : false
     if (
       !isCourseNegativelyConstrained(course.id, currentSemester) &&
       allPrereqsCompleted &&
