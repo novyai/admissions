@@ -22,7 +22,7 @@ export const defaultCourseNode: Partial<Node> = {
 type KEYS = Program | "EXTRA"
 const colorsForPrograms: { [key in KEYS]?: string } = {
   [ProgramOption.CS]: "bg-sky-200",
-  [ProgramOption.GEN]: "bg-yellow-200",
+  [ProgramOption.GEN]: "bg-purple-200",
   ["EXTRA"]: "bg-green-200"
 }
 
@@ -37,10 +37,10 @@ export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNod
           colorsForPrograms[data.programs[0]]
         : colorsForPrograms["EXTRA"]
       )}
-      layout
-      animate={dragging && selected}
+      layout={!dragging}
       // create new component when animated changes, see issue workaround https://github.com/framer/motion/issues/2238#issue-1809290539
       key={id}
+      // onAnimationIteration={useUpdateNodeInternals}
     >
       <Handle type="target" position={Position.Left} />
       <p className="text-ellipsis text-center">{data.name}</p>

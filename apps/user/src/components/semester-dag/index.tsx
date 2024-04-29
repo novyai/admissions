@@ -304,6 +304,7 @@ function SemesterDAGInternal({
         edgeTypes={edgeTypes}
         nodes={nodes}
         edges={edges}
+        onlyRenderVisibleElements={false}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeDragStart={onNodeDragStart}
