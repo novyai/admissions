@@ -27,15 +27,7 @@ export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNod
         data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : ""
       )}
       layout
-      animate={
-        dragging ?
-          {
-            translateX: -100
-          }
-        : {
-            translateX: 0
-          }
-      }
+      animate={dragging && selected}
       // create new component when animated changes, see issue workaround https://github.com/framer/motion/issues/2238#issue-1809290539
       key={id}
     >
