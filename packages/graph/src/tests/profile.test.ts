@@ -177,7 +177,8 @@ describe("pushing classes", () => {
       removeGenEdProgram(studentProfile)
       const graph = studentProfileToGraph(studentProfile)
       // push last class in chain
-      const updated = pushCourseAndDependents(graph, profile, classToPush)
+
+      const updated = pushCourseAndDependents(graph, studentProfile, classToPush)
       const semesters = buildSemesters(updated.graph)
 
       const semesterIds = semesters.map(semester => semester.map(c => c.id).sort())

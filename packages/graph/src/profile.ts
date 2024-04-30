@@ -19,11 +19,12 @@ import {
   getCoursesInSemester,
   graphToHydratedStudentProfile
 } from "./graph"
-import { _canMoveCourse } from "./schedule"
+import { _canMoveCourse, canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
 import {
   BaseStudentProfile,
   CourseNode,
+  HydratedStudentProfile,
   NegativeScheduleConstraint,
   PositiveScheduleConstraint,
   ScheduleConstraints,
@@ -487,7 +488,7 @@ export function toCourseNode(
  */
 export function pushCourseAndDependents(
   graph: CourseGraph,
-  profile: BaseStudentProfile,
+  profile: HydratedStudentProfile,
   courseId: string
 ): { graph: CourseGraph; changes: Change[] } {
   try {
@@ -496,8 +497,8 @@ export function pushCourseAndDependents(
       throw new Error(`Could not move ${courseId} because it has no semester`)
     }
 
-    const canMove = _canMoveCourse(courseId, fromSemester + 1, profile, graph)
-    if (canMove) {
+    const canMove = canMoveCourse(courseId, fromSemester + 1, profile)
+    if (canMove.canMove) {
       graph.setNodeAttribute(courseId, "semester", fromSemester + 1)
       return {
         graph: graph,
