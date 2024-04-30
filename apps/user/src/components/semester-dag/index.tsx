@@ -270,7 +270,6 @@ function SemesterDAGInternal({
       console.error("Cannot add to semester", canMove.reason)
       handleReset(node)
     } else {
-      console.log(canMove)
       console.log("moving", node.id, "to", semester)
       const newNodes = nodes.map(n =>
         n.id === node.id ?
