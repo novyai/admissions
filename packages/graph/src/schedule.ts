@@ -169,10 +169,6 @@ export function _canMoveCourse(
   }
 
   const nodes = [...graph.nodeEntries()]
-  const maxSemester = nodes.reduce(
-    (maxSemester, currNode) => Math.max(maxSemester, currNode.attributes.semester ?? 0),
-    0
-  )
 
   const toSemesterNumCourses = nodes.filter(
     nodeEntry => nodeEntry.attributes.semester === toSemester
@@ -212,7 +208,6 @@ export function _canMoveCourse(
     }
 
   if (
-    toSemester <= maxSemester &&
     toSemesterNumCourses >= profile.coursePerSemester
     // toSemester in profile.semesters &&
     // profile.semesters[toSemester - 1] &&
