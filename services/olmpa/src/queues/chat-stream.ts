@@ -272,13 +272,13 @@ createWorker(async job => {
 
       if (newTimeToGraduate > currentTimeToGraduate) {
         systemPrompt = `
-        Tell the student that the schedule change is serious because it delays their expected graduation time of ${profile.timeToGraduate} semesters to ${newTimeToGraduate} semesters and requires rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
+        Tell the student that the schedule change is serious because it delays their current graduation time of ${currentTimeToGraduate} semesters to ${newTimeToGraduate} semesters and requires rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
         `
         await publish({
           type: SOCKET_EVENTS.SHOW_APPOINTMENT,
           data: undefined
         })
-      } else if (changes.length > 5) {
+      } else if (changes.length > 8) {
         systemPrompt = `
         Tell the student that this is a massive change to the student's schedule, and would require rescheduling ${changes.length} courses. ALWAYS end your message asking whether the student would like to schedule an appointment OR reschedule the course anyway.
       `
