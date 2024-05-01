@@ -484,6 +484,8 @@ export function rescheduleCourse(
   profile: BaseStudentProfile,
   courseId: string
 ): { graph: CourseGraph; changes: Change[] } {
+  const oldGraph = graph.copy()
+
   const fromSemester = graph.getNodeAttribute(courseId, "semester")
   const currentTimeToGraduate = [...graph.nodeEntries()].reduce(
     (maxSemester, nodeEntry) => Math.max(maxSemester, nodeEntry.attributes.semester! + 1),
@@ -509,8 +511,6 @@ export function rescheduleCourse(
       changes: pushedChanges
     }
   }
-
-  const oldGraph = graph.copy()
 
   const prevSemesters = [...Array(fromSemester).keys()]
   const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
