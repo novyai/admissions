@@ -50,7 +50,7 @@ import fixedJson from "./fixedJson.json"
 //   }
 // }
 
-async function insertCourses() {
+async function insertCourses(uniId: string) {
   try {
     for (const course of courseData) {
       try {
@@ -64,7 +64,7 @@ async function insertCourses() {
           update: {
             university: {
               connect: {
-                id: "1"
+                id: uniId
               }
             },
             department: {
@@ -72,7 +72,7 @@ async function insertCourses() {
                 where: {
                   code_universityId: {
                     code: course.courseSubject,
-                    universityId: "1"
+                    universityId: uniId
                   }
                 },
                 create: {
@@ -80,7 +80,7 @@ async function insertCourses() {
                   name: course.courseSubject,
                   university: {
                     connect: {
-                      id: "1"
+                      id: uniId
                     }
                   }
                 }
@@ -93,7 +93,7 @@ async function insertCourses() {
                 where: {
                   code_universityId: {
                     code: course.courseSubject,
-                    universityId: "1"
+                    universityId: uniId
                   }
                 },
                 create: {
@@ -101,7 +101,7 @@ async function insertCourses() {
                   name: course.courseSubject,
                   university: {
                     connect: {
-                      id: "1"
+                      id: uniId
                     }
                   }
                 }
@@ -109,7 +109,7 @@ async function insertCourses() {
             },
             university: {
               connect: {
-                id: "1"
+                id: uniId
               }
             },
             courseSubject: course.courseSubject,
@@ -444,10 +444,11 @@ async function insertCourses() {
 // }
 
 async function main() {
+  const unis = []
   try {
     for (const uni of fixedJson) {
       // Step 1: Insert Universities
-      await db.university.upsert({
+      const { id } = await db.university.upsert({
         where: {
           id: uni.id
         },
@@ -459,20 +460,24 @@ async function main() {
           id: uni.id
         }
       })
+      unis.push(id)
     }
 
-    await insertCourses()
+    await insertCourses(unis[0])
 
     await updatePrerequisites()
 
-    for (const uni of fixedJson) {
+    for (let i = 0; i < fixedJson.length; i++) {
+      const uniId = unis[i]
+      const uni = fixedJson[i]
+
       for (const program of uni.programs) {
         const pInDb = await db.program.create({
           data: {
             name: program.name,
             university: {
               connect: {
-                id: uni.id
+                id: uniId
               }
             },
             totalDegreeHours: program.totalDegreeHours

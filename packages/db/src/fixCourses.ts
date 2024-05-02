@@ -3,6 +3,20 @@ import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.
 import { db, type LogicalOperator, type RequirementType } from "@repo/db"
 
 export async function updatePrerequisites() {
+  const uni = await db.university.findFirst({
+    where: {
+      name: "University of South Florida"
+    },
+    select: {
+      id: true
+    }
+  })
+  if (!uni || !uni.id) {
+    throw Error("No Uni Found")
+  }
+
+  const { id: uniId } = uni
+
   for (const course of fixedDenormalizedCourses) {
     try {
       let courseInDb = await db.course.findUnique({
@@ -35,7 +49,7 @@ export async function updatePrerequisites() {
                 where: {
                   code_universityId: {
                     code: course.courseSubject,
-                    universityId: "1"
+                    universityId: uniId
                   }
                 },
                 create: {
@@ -43,7 +57,7 @@ export async function updatePrerequisites() {
                   code: course.courseSubject,
                   university: {
                     connect: {
-                      id: "1"
+                      id: uniId
                     }
                   }
                 }
