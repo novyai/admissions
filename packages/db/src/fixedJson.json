@@ -7,11 +7,210 @@
         "name": "Computer Science And Engineering",
         "universityId": "1",
         "totalDegreeHours": 120,
-        "tracks": [{
-          "name": "Computer Science And Engineering",
-          "id": "1"
-        }]
+        "tracks": [
+          {
+            "name": "Computer Science And Engineering",
+            "requirements": [
+              {
+                "name": "Math and Science Courses",
+                "description": "Math and Science Courses",
+                "track": {
+                  "connect": {
+                    "id": "1"
+                  }
+                },
+                "creditHoursNeeded": 19,
+                "nonOverlapping": false,
+                "courses": {
+                  "connect": [
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COT",
+                        "courseNumber": "3100"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "MAC",
+                        "courseNumber": "2311"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "MAC",
+                        "courseNumber": "2282"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "MAC",
+                        "courseNumber": "2312"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "PHY",
+                        "courseNumber": "2048"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "PHY",
+                        "courseNumber": "2048L"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "PHY",
+                        "courseNumber": "2049"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "PHY",
+                        "courseNumber": "2049L"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Basic Engineering Courses",
+                "description": "Basic Engineering Courses",
+                "track": {
+                  "connect": {
+                    "id": "1"
+                  }
+                },
+                "creditHoursNeeded": 8,
+                "nonOverlapping": false,
+                "courses": {
+                  "connect": [
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "EGN",
+                        "courseNumber": "3000"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "EGN",
+                        "courseNumber": "3000L"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "EGN",
+                        "courseNumber": "3443"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "EGN",
+                        "courseNumber": "4450"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Specialization Courses",
+                "description": "Specialization Courses",
+                "track": {
+                  "connect": {
+                    "id": "1"
+                  }
+                },
+                "creditHoursNeeded": 35,
+                "nonOverlapping": false,
+                "courses": {
+                  "connect": [
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COP",
+                        "courseNumber": "2510"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COP",
+                        "courseNumber": "3514"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COP",
+                        "courseNumber": "4530"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COP",
+                        "courseNumber": "4600"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CDA",
+                        "courseNumber": "3103"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CDA",
+                        "courseNumber": "3201"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CDA",
+                        "courseNumber": "3201L"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CDA",
+                        "courseNumber": "4205"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CDA",
+                        "courseNumber": "4205L"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CEN",
+                        "courseNumber": "4020"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CEN",
+                        "courseNumber": "4020"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COT",
+                        "courseNumber": "4400"
+                      }
+                    },
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "CNT",
+                        "courseNumber": "4419"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   }
 ]
+    

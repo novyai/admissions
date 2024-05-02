@@ -61,7 +61,7 @@ export const ElysiaLogging =
       .derive(ctx => {
         const clientIP =
           app.server ?
-            getIP(ctx.request.headers, ipHeaders) ??
+            getIP(ctx.request.headers as unknown as Headers, ipHeaders) ??
             app.server.requestIP(ctx.request)?.address ??
             undefined
           : undefined

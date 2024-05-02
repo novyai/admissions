@@ -61,3 +61,30 @@ export const getDegreeData = async (deptCourses: Prisma.CourseWhereInput[]) => {
     dependentMap
   }
 }
+
+export async function getSchedules(userId: string) {
+  return db.schedule.findMany({
+    where: {
+      userID: userId
+    },
+    select: {
+      id: true,
+      _count: {
+        select: {
+          versions: true
+        }
+      },
+      versions: {
+        select: {
+          id: true,
+          blob: true,
+          createdAt: true
+        },
+        orderBy: {
+          createdAt: "desc"
+        },
+        take: 1
+      }
+    }
+  })
+}

@@ -3,6 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
     "NODE_ENV",
+    "DATABASE_URL",
     "OPENAI_API_KEY",
     "OPENAI_ORG_ID",
     "RW_ENV",

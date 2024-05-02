@@ -31,13 +31,12 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@prisma/client": "5.12.1",
-    "@prisma/extension-accelerate": "^1.0.0"
+    "@prisma/client": "5.13.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "prisma": "^5.12.1",
+    "prisma": "5.13.0",
     "rimraf": "^5.0.5"
   }
 }

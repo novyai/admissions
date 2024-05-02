@@ -11,7 +11,6 @@ import courseData from "@db/data/sheet/New_Courses_Updated.json"
 // import universityData from "@db/data/sheet/university_data.json"
 // import gradesData from "@db/data/sheet/university_grades_data.json"
 // import { faker } from "@faker-js/faker"
-import { Prisma } from "@prisma/client"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
 // import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
@@ -460,9 +459,15 @@ async function main() {
           id: uni.id
         }
       })
+    }
 
+    await insertCourses()
+
+    await updatePrerequisites()
+
+    for (const uni of fixedJson) {
       for (const program of uni.programs) {
-        await db.program.create({
+        const pInDb = await db.program.create({
           data: {
             name: program.name,
             university: {
@@ -470,93 +475,46 @@ async function main() {
                 id: uni.id
               }
             },
-            totalDegreeHours: program.totalDegreeHours,
-            tracks: {
-              connectOrCreate: program.tracks.map(track => ({
-                where: { id: track.id },
-                create: track
-              }))
-            }
+            totalDegreeHours: program.totalDegreeHours
+          },
+          select: {
+            id: true
           }
         })
-      }
-    }
 
-    await insertCourses()
-
-    await updatePrerequisites()
-
-    const csRequirements: Prisma.RequirementCreateInput[] = [
-      {
-        name: "Math and Science Courses",
-        description: "Math and Science Courses",
-        track: {
-          connect: {
-            id: "1"
-          }
-        },
-        creditHoursNeeded: 19,
-        nonOverlapping: false,
-        courses: {
-          connect: [
-            {
-              courseIdentifier: {
-                courseSubject: "COT",
-                courseNumber: "3100"
+        for (const track of program.tracks) {
+          const trackInDb = await db.track.create({
+            data: {
+              name: track.name,
+              program: {
+                connect: {
+                  id: pInDb.id
+                }
               }
             },
-            {
-              courseIdentifier: {
-                courseSubject: "MAC",
-                courseNumber: "2311"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "MAC",
-                courseNumber: "2282"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "MAC",
-                courseNumber: "2312"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "PHY",
-                courseNumber: "2048"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "PHY",
-                courseNumber: "2048L"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "PHY",
-                courseNumber: "2049"
-              }
-            },
-            {
-              courseIdentifier: {
-                courseSubject: "PHY",
-                courseNumber: "2049L"
-              }
+            select: {
+              id: true
             }
-          ]
+          })
+
+          await Promise.all(
+            track.requirements.map(req => {
+              return db.requirement.create({
+                data: {
+                  trackId: trackInDb.id,
+                  courses: req.courses,
+                  name: req.name,
+                  description: req.description,
+                  creditHoursNeeded: req.creditHoursNeeded,
+                  nonOverlapping: req.nonOverlapping
+                }
+              })
+            })
+          )
         }
       }
-    ]
-
-    for (const req of csRequirements) {
-      await db.requirement.create({
-        data: req
-      })
     }
+
     // and Departments
     // await insertDepts()
 

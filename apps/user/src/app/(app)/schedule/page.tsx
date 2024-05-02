@@ -1,9 +1,9 @@
 import Link from "next/link"
 import { redirect, RedirectType } from "next/navigation"
+import { getSchedules } from "@/db/degree"
 import { auth } from "@clerk/nextjs/server"
 import { parseBlob } from "@graph/blob"
 import { programName } from "@graph/defaultCourses"
-import { db } from "@repo/db"
 import { Button } from "@repo/ui/components/ui/button"
 import {
   Table,
@@ -16,34 +16,6 @@ import {
 import { Badge } from "@ui/components/ui/badge"
 
 import { ScheduleTableActions } from "./schedule-table-actions"
-
-async function getSchedules(userId: string) {
-  "use server"
-  return await db.schedule.findMany({
-    where: {
-      userID: userId
-    },
-    select: {
-      id: true,
-      _count: {
-        select: {
-          versions: true
-        }
-      },
-      versions: {
-        select: {
-          id: true,
-          blob: true,
-          createdAt: true
-        },
-        orderBy: {
-          createdAt: "desc"
-        },
-        take: 1
-      }
-    }
-  })
-}
 
 export default async function Page() {
   const { userId, protect } = auth()
