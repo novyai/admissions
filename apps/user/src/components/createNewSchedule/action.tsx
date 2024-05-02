@@ -48,16 +48,7 @@ export async function createNewSchedule(userId: string, programs: Program[], sta
 export async function getProgramsForAllUniversities(): Promise<UniversityPrograms[]> {
   return await db.university.findMany({
     select: {
-      Program: {
-        include: {
-          department: {
-            select: {
-              id: true,
-              code: true
-            }
-          }
-        }
-      },
+      Program: true,
       id: true,
       name: true
     }

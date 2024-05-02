@@ -46,5 +46,5 @@ export type HydratedCourseWithPrereqs = Course & {
 export type UniversityPrograms = {
   id: string
   name: string
-  Program: { id: string; name: string; department: { code: string } }[]
+  Program: { id: string; name: string }[]
 }

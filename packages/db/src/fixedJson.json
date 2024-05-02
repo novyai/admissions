@@ -1,0 +1,17 @@
+[
+  {
+    "name": "University of South Florida",
+    "id": "1",
+    "programs": [
+      {
+        "name": "Computer Science And Engineering",
+        "universityId": "1",
+        "totalDegreeHours": 120,
+        "tracks": [{
+          "name": "Computer Science And Engineering",
+          "id": "1"
+        }]
+      }
+    ]
+  }
+]

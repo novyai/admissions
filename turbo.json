@@ -44,9 +44,14 @@
       "dependsOn": ["^db:generate"],
       "persistent": false
     },
+    "studio": {},
+    "db:reset": {},
     "db:generate": {},
     "db:migrate:dev": {},
     "db:format": {
+      "cache": false
+    },
+    "db:seed": {
       "cache": false
     },
     "db:push": {

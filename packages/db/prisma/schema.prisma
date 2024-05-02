@@ -61,14 +61,14 @@ model University {
 // Table for storing department data
 model Department {
   id           String     @id @default(uuid())
-  code         String     @unique
+  code         String     
   name         String
   universityId String
   courses      Course[]
   university   University @relation(fields: [universityId], references: [id])
-  Program      Program[]
 
   @@index([universityId])
+  @@unique([code, universityId])
 }
 
 // Table for storing student data
@@ -101,7 +101,22 @@ model Grade {
   gradeRepeatIncludeInd Boolean
 }
 
-// Table for storing unique courses
+enum Semester {
+  FALL
+  SPRING
+  WINTER
+  SUMMER
+}
+
+model SemestersOffered {
+  id String @id @default(uuid())
+  courseId String
+  course Course @relation(fields: [courseId], references: [id])
+  semester Semester
+
+  @@index([courseId])
+}
+
 model Course {
   id                String              @id @default(uuid())
   courseSubject     String
@@ -116,9 +131,10 @@ model Course {
   university        University?         @relation(fields: [universityId], references: [id])
   universityGrade   UniversityGrade[]
   prerequisites     Prerequisite[]
-  ProgramCourse     ProgramCourse[]
-  AlternativeCourse AlternativeCourse[]
-  ElectiveCourse    ElectiveCourse[]
+
+  semestersOffered SemestersOffered[]
+  requirements Requirement[]
+
 
   @@unique(fields: [courseNumber, courseSubject], name: "courseIdentifier")
   @@index([departmentId])
@@ -178,53 +194,38 @@ model Program {
   name              String
   totalDegreeHours  Int
   universityId      String
-  departmentId      String
   
-  programCourses    ProgramCourse[]
   university        University          @relation(fields: [universityId], references: [id])
-  department        Department          @relation(fields: [departmentId], references: [id])
-  AlternativeCourse AlternativeCourse[]
-  ElectiveCourse    ElectiveCourse[]
+  tracks Track[]
 
   @@index([universityId])
-  @@index([departmentId])
 }
 
-model ProgramCourse {
-  id        String  @id @default(uuid())
-  courseId  String
-  semester  Int
-  year      Int
+model Track {
+  id String @id @default(uuid())
+  name String
   programId String
-  course    Course  @relation(fields: [courseId], references: [id])
-  program   Program @relation(fields: [programId], references: [id])
+  program Program @relation(fields: [programId], references: [id])
 
-  @@index([courseId])
+  requirements Requirement[]
+
   @@index([programId])
 }
 
-model ElectiveCourse {
-  id        String  @id @default(uuid())
-  courseId  String
-  programId String
-  category  String
-  course    Course  @relation(fields: [courseId], references: [id])
-  program   Program @relation(fields: [programId], references: [id])
+model Requirement {
+  id String @id @default(uuid())
+  trackId String
+  track Track @relation(fields: [trackId], references: [id])
 
-  @@index([courseId])
-  @@index([programId])
-}
+  name String
+  description String
+  
+  courses Course[]
 
-model AlternativeCourse {
-  id        String  @id @default(uuid())
-  courseId  String
-  altCourse String
-  programId String
-  course    Course  @relation(fields: [courseId], references: [id])
-  program   Program @relation(fields: [programId], references: [id])
+  creditHoursNeeded Int
+  nonOverlapping Boolean 
 
-  @@index([courseId])
-  @@index([programId])
+  @@index([trackId])
 }
 
 model UniversityGrade {

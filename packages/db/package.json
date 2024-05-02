@@ -21,6 +21,7 @@
     "db:format": "prisma format",
     "db:generate": "prisma generate --no-engine",
     "db:dev": "docker compose -f ./admissions/docker-compose.yml up -d",
+    "db:reset": "prisma migrate reset",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "lint": "eslint --max-warnings 0",
     "build": "prisma generate --no-engine",

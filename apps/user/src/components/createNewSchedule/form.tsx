@@ -53,7 +53,7 @@ export function CreateNewScheduleForm({
   const programs = universityPrograms
     .map(university =>
       university.Program.map(program => ({
-        value: program.department.code,
+        value: program.id,
         label: program.name,
         id: university.id,
         universityId: university.name
