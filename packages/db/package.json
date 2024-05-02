@@ -17,7 +17,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
+    "db:seed": "bun run src/seed.ts",
     "db:format": "prisma format",
     "db:generate": "prisma generate --no-engine",
     "db:dev": "docker compose -f ./admissions/docker-compose.yml up -d",
