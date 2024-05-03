@@ -1,29 +1,29 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { UniversityPrograms } from "@/types"
-import { z } from "zod"
+import { Program } from "@graph/defaultCourses"
+import { SemesterYearType } from "@graph/types"
 
-import StudentCoursesForm from "@/components/createNewSchedule/student-courses-form"
+import {
+  createNewSchedule,
+  getAllCoursesForUniversity
+} from "@/components/createNewSchedule/action"
+import StudentCoursesForm, {
+  CoursesInfo
+} from "@/components/createNewSchedule/student-courses-form"
 import { StudentInfoForm } from "@/components/createNewSchedule/student-info-form"
 
-export const SEMESTER_OPTIONS = ["FALL", "SPRING"] as const
-export const SemesterEnum = z.enum(SEMESTER_OPTIONS)
-type Semester = z.infer<typeof SemesterEnum>
-
-// const UniversityProgram = z.object({
-//   value: z.string(),
-//   label: z.string(),
-//   id: z.string(),
-//   universityId: z.string()
-// })
-// type UniversityProgramType = z.infer<typeof UniversityProgram>
-
 export interface StudentInfo {
-  majors: string[]
-  university: string
-  yearStart?: number
-  semesterStart?: Semester
+  majors: Program[]
+  universityId: string
+  start: SemesterYearType
+}
+
+export interface CourseIdName {
+  id: string
+  name: string
 }
 
 const getStartYearOptions = (): number[] => {
@@ -33,34 +33,46 @@ const getStartYearOptions = (): number[] => {
 }
 
 export default function CreateForms({
+  userId,
   universityPrograms
 }: {
   userId: string
   universityPrograms: UniversityPrograms[]
 }) {
+  const router = useRouter()
+
   const [selectedFormIndex, setSelectedFormIndex] = useState(0)
-
-  const yearStartOptions = getStartYearOptions()
-
   const [studentInfo, setStudentInfo] = useState<StudentInfo>()
+  const [courseOptions, setCourseOptions] = useState<CourseIdName[]>([])
 
   const handleStudentInfoFormSubmit = (studentInfo: StudentInfo) => {
     setSelectedFormIndex(selectedFormIndex + 1)
     setStudentInfo(studentInfo)
+    getAllCoursesForUniversity(studentInfo.universityId).then(courses => setCourseOptions(courses))
   }
 
-  studentInfo
+  const handleCoursesFormSubmit = async (coursesInfo: CoursesInfo) => {
+    console.log("coursesInfo", coursesInfo)
+    if (studentInfo === undefined) {
+      throw Error("studentInfo is undefined")
+    }
+    const scheduleId = await createNewSchedule(userId, studentInfo.majors, studentInfo.start)
+    router.push(`/schedule/${scheduleId}`)
+  }
 
   return (
-    <>
+    selectedFormIndex === 0 ?
       <StudentInfoForm
-        formIndex={0}
-        selectedFormIndex={selectedFormIndex}
         universityPrograms={universityPrograms}
-        yearStartOptions={yearStartOptions}
+        yearStartOptions={getStartYearOptions()}
         handleSubmit={handleStudentInfoFormSubmit}
       />
-      <StudentCoursesForm formIndex={1} selectedFormIndex={selectedFormIndex} />
-    </>
+    : selectedFormIndex === 1 ?
+      <StudentCoursesForm
+        studentInfo={studentInfo}
+        handleSubmit={handleCoursesFormSubmit}
+        courses={courseOptions}
+      />
+    : <></>
   )
 }

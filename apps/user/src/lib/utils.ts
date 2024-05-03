@@ -13,6 +13,6 @@ export function generateBrowserUUID(): string {
   })
 }
 
-export function capitalizeFirstLetter(string: string) {
+export function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
 }

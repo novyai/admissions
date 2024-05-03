@@ -4,7 +4,7 @@ import { UniversityPrograms } from "@/types"
 import { createBlob } from "@graph/blob"
 import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
-import { BaseStudentProfile } from "@graph/types"
+import { BaseStudentProfile, SemesterYearType } from "@graph/types"
 import { db } from "@repo/db"
 
 import { calculateSemesterDifference } from "@/lib/schedule/utils"
@@ -15,8 +15,12 @@ import { calculateSemesterDifference } from "@/lib/schedule/utils"
  * @param programs The user's programs to pull in courses from
  * @returns The ID of the newly created schedule
  */
-export async function createNewSchedule(userId: string, programs: Program[], startDate: string) {
-  const currentSemester = calculateSemesterDifference(startDate)
+export async function createNewSchedule(
+  userId: string,
+  programs: Program[],
+  startTerm: SemesterYearType
+) {
+  const currentSemester = calculateSemesterDifference(startTerm) - 1
   const baseProfile: BaseStudentProfile = {
     programs,
     requiredCourses: [],
@@ -24,7 +28,7 @@ export async function createNewSchedule(userId: string, programs: Program[], sta
     timeToGraduate: 8,
     coursePerSemester: 5,
     currentSemester: currentSemester,
-    startDate: startDate
+    startTerm: startTerm
   }
   const studentProfile = await getStudentProfileFromRequirements(baseProfile)
 
@@ -43,6 +47,19 @@ export async function createNewSchedule(userId: string, programs: Program[], sta
   })
 
   return schedule.id
+}
+
+export async function getAllCoursesForUniversity(
+  universityId: string
+): Promise<Array<{ id: string; name: string }>> {
+  return await db.course.findMany({
+    select: {
+      name: true,
+      id: true
+    },
+    where: { universityId: universityId },
+    take: 10
+  })
 }
 
 export async function getProgramsForAllUniversities(): Promise<UniversityPrograms[]> {

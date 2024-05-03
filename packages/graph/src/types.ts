@@ -2,6 +2,16 @@ import { z } from "zod"
 
 import { Program } from "./defaultCourses"
 
+export const SEMESTER_OPTIONS = ["FALL", "SPRING", "SUMMER"] as const
+export const SemesterEnum = z.enum(SEMESTER_OPTIONS)
+export type Semester = z.infer<typeof SemesterEnum>
+
+export const SemesterYear = z.object({
+  semester: SemesterEnum,
+  year: z.number()
+})
+export type SemesterYearType = z.infer<typeof SemesterYear>
+
 export type CourseNode = {
   id: string
   name: string
@@ -25,7 +35,7 @@ export type BaseStudentProfile = {
   timeToGraduate: number // in semesters
   currentSemester: number
   coursePerSemester: number
-  startDate: string
+  startTerm: SemesterYearType
 }
 
 export const studentProfileSchema = z.custom<StudentProfile>()

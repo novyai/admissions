@@ -88,7 +88,7 @@ export function hydratedProfileToBaseStudentProfile(
     timeToGraduate: hydratedProfile.timeToGraduate,
     currentSemester: hydratedProfile.currentSemester,
     coursePerSemester: hydratedProfile.coursePerSemester,
-    startDate: hydratedProfile.startDate
+    startTerm: hydratedProfile.startTerm
   }
 }
 

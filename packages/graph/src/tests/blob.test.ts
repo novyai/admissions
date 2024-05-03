@@ -11,7 +11,7 @@ const profile: BaseStudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 5,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 test("blob", async () => {

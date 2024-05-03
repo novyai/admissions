@@ -2,18 +2,19 @@ import { addCourseToGraph, CourseGraph, CoursePayload } from "@graph/course"
 import { buildSemesters } from "@graph/graph"
 import { scheduleCourses } from "@graph/profile"
 import { computeNodeStats } from "@graph/stats"
+import { BaseStudentProfile } from "@graph/types"
 import { RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
 import Graph from "graphology"
 
-const baseProfile = {
+const baseProfile: BaseStudentProfile = {
   requiredCourses: [],
   transferCredits: [],
   programs: [],
   timeToGraduate: 0,
   currentSemester: 0,
   coursePerSemester: 5,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 describe("addCourseToGraph function", () => {

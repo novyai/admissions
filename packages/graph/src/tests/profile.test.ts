@@ -19,7 +19,7 @@ const mathProfile: StudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 3,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 const compositionProfile: StudentProfile = {
@@ -30,7 +30,7 @@ const compositionProfile: StudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 3,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 const removeGenEdProgram = (profile: HydratedStudentProfile) => {
@@ -195,7 +195,7 @@ const csProfile: BaseStudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 5,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 test("test blob", async () => {

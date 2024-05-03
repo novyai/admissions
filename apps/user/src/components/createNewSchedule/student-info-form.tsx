@@ -1,6 +1,7 @@
-import { SEMESTER_OPTIONS, SemesterEnum, StudentInfo } from "@/app/(app)/create/create-forms"
+import { StudentInfo } from "@/app/(app)/create/create-forms"
 import { UniversityPrograms } from "@/types"
 import { Program } from "@graph/defaultCourses"
+import { Semester, SemesterEnum } from "@graph/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@repo/ui/components/multiselect"
 import { Button } from "@repo/ui/components/ui/button"
@@ -23,7 +24,7 @@ import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { capitalizeFirstLetter } from "@/lib/utils"
+import { capitalize } from "@/lib/utils"
 
 // export const programs = [
 //   {
@@ -37,21 +38,17 @@ import { capitalizeFirstLetter } from "@/lib/utils"
 // ]
 
 export function StudentInfoForm({
-  selectedFormIndex,
-  formIndex,
   universityPrograms,
-
   yearStartOptions,
   handleSubmit
 }: {
-  selectedFormIndex: number
-  formIndex: number
   universityPrograms: UniversityPrograms[]
   yearStartOptions: number[]
   handleSubmit: (studentInfo: StudentInfo) => void
 }) {
+  const semesterOptions: Semester[] = ["FALL", "SPRING"]
   const universities = universityPrograms.map(university => ({
-    value: university.name,
+    value: university.id,
     label: university.name
   }))
 
@@ -60,25 +57,23 @@ export function StudentInfoForm({
       university.Program.map(program => ({
         value: program.department.code,
         label: program.name,
-        id: university.id,
-        universityId: university.name
+        universityId: university.id
       }))
     )
     .flat()
 
-  const enumValues = universities.map(university => university.value)
   const formSchema = z.object({
-    university: z.enum(enumValues as [string, ...string[]]),
+    universityId: z.string(),
     majors: z.array(z.custom<Option>()).min(1),
-    semesterStart: SemesterEnum.optional(),
-    yearStart: z.number().optional()
+    semesterStart: SemesterEnum,
+    yearStart: z.string()
   })
 
   const { formState, getValues, trigger, setError, ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       majors: [],
-      university: "",
+      universityId: undefined,
       semesterStart: undefined,
       yearStart: undefined
     }
@@ -92,146 +87,143 @@ export function StudentInfoForm({
       })
       return
     }
-    console.log(result.data.majors)
-    if (result.data.university !== "University of South Florida") {
-      setError("university", {
+    const usf = universities.find(university => university.label == "University of South Florida")
+    if (result.data.universityId !== usf?.value) {
+      setError("universityId", {
         message: "We only support University of South Florida at the moment"
       })
       return
     }
     handleSubmit({
-      university: result.data.university,
+      universityId: result.data.universityId,
       majors: result.data.majors.map(option => option.value as Program),
-      semesterStart: result.data.semesterStart,
-      yearStart: result.data.yearStart
+      start: {
+        semester: result.data.semesterStart,
+        year: parseInt(result.data.yearStart)
+      }
     })
-    // const scheduleId = await createNewSchedule(
-    //   userId,
-    //   result.data.majors.map(option => option.value as Program),
-    //   result.data.start
-    // )
-    // router.push(`/schedule/${scheduleId}`)
   }
 
-  const programsForUniversity = (university: string) => {
-    return programs.filter(program => program.universityId === university)
+  const programsForUniversity = () => {
+    const universityId = getValues().universityId
+    return programs.filter(program => program.universityId === universityId)
   }
 
-  return formIndex === selectedFormIndex ?
-      <Form
-        trigger={trigger}
-        getValues={getValues}
-        setError={setError}
-        formState={formState}
-        {...form}
-      >
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="university"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>University</FormLabel>
-                <Select
-                  onValueChange={e => {
-                    // clear the options
-                    form.setValue("majors", [])
-                    field.onChange(e)
-                  }}
-                  defaultValue={field.value}
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a University" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {universities.map(university => (
-                      <SelectItem key={university.value} value={university.value}>
-                        {university.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="majors"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Majors</FormLabel>
-                <MultiSelect
-                  name={field.name}
-                  onChange={field.onChange}
-                  value={field.value}
-                  options={programsForUniversity(getValues().university)}
-                  closeOnSelect
-                  trigger={trigger}
-                  placeholder="Select your majors"
-                />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="yearStart"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Starting Year</FormLabel>
-                <Select defaultValue={field.value?.toString() ?? ""} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a starting year" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {yearStartOptions.map(year => (
-                      <SelectItem key={year} value={year.toString()}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+  return (
+    <Form
+      trigger={trigger}
+      getValues={getValues}
+      setError={setError}
+      formState={formState}
+      {...form}
+    >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="universityId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>University</FormLabel>
+              <Select
+                onValueChange={e => {
+                  // clear the options
+                  form.setValue("majors", [])
+                  field.onChange(e)
+                }}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a University" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {universities.map(university => (
+                    <SelectItem key={university.value} value={university.value}>
+                      {university.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="majors"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Majors</FormLabel>
+              <MultiSelect
+                name={field.name}
+                onChange={field.onChange}
+                value={field.value}
+                options={programsForUniversity()}
+                closeOnSelect
+                trigger={trigger}
+                placeholder="Select your majors"
+              />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="yearStart"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Starting Year</FormLabel>
+              <Select defaultValue={field.value?.toString() ?? ""} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a starting year" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {yearStartOptions.map(year => (
+                    <SelectItem key={year} value={year.toString()}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="semesterStart"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Starting Semester</FormLabel>
-                <Select defaultValue={field.value} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a starting semester" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {SEMESTER_OPTIONS.map(semester => (
-                      <SelectItem key={semester} value={semester}>
-                        {capitalizeFirstLetter(semester)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          ></FormField>
-          <Button type="submit" disabled={!formState.isValid || formState.isSubmitting}>
-            <>
-              {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Submit
-            </>
-          </Button>
-        </form>
-      </Form>
-    : <></>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="semesterStart"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Starting Semester</FormLabel>
+              <Select defaultValue={field.value} onValueChange={field.onChange}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a starting semester" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {semesterOptions.map(semester => (
+                    <SelectItem key={semester} value={semester}>
+                      {capitalize(semester)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        ></FormField>
+        <Button type="submit" disabled={!formState.isValid || formState.isSubmitting}>
+          <>
+            {formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Submit
+          </>
+        </Button>
+      </form>
+    </Form>
+  )
 }
