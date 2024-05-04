@@ -8,7 +8,7 @@ import { SemesterYearType } from "@graph/types"
 
 import {
   createNewSchedule,
-  getAllCoursesForUniversity
+  getAllComputerScienceCoursesForUniversity
 } from "@/components/createNewSchedule/action"
 import StudentCoursesForm, {
   CoursesInfo
@@ -48,7 +48,9 @@ export default function CreateForms({
   const handleStudentInfoFormSubmit = (studentInfo: StudentInfo) => {
     setSelectedFormIndex(selectedFormIndex + 1)
     setStudentInfo(studentInfo)
-    getAllCoursesForUniversity(studentInfo.universityId).then(courses => setCourseOptions(courses))
+    getAllComputerScienceCoursesForUniversity(studentInfo.universityId).then(courses =>
+      setCourseOptions(courses)
+    )
   }
 
   const handleCoursesFormSubmit = async (coursesInfo: CoursesInfo) => {
@@ -56,7 +58,12 @@ export default function CreateForms({
     if (studentInfo === undefined) {
       throw Error("studentInfo is undefined")
     }
-    const scheduleId = await createNewSchedule(userId, studentInfo.majors, studentInfo.start)
+    const scheduleId = await createNewSchedule(
+      userId,
+      studentInfo.majors,
+      studentInfo.start,
+      coursesInfo
+    )
     router.push(`/schedule/${scheduleId}`)
   }
 

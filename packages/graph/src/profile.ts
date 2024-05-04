@@ -209,9 +209,12 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
  * Load all courses into a student's profile and build their schedule
  * @param profile the basic information about the student's profile
  */
-export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
+export const getStudentProfileFromRequirements = async (
+  profile: BaseStudentProfile,
+  constraints?: ScheduleConstraints
+) => {
   const graph = await createGraph({ ...profile, semesters: [] })
-  scheduleCourses(graph, profile)
+  scheduleCourses(graph, profile, constraints)
   return graphToHydratedStudentProfile(graph, profile)
 }
 

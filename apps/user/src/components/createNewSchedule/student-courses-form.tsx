@@ -11,7 +11,7 @@ import { z } from "zod"
 import { calculateSemesterDifference, getSemesterCode } from "@/lib/schedule/utils"
 import { capitalize } from "@/lib/utils"
 
-export type CoursesInfo = { [semesterIndex: number]: Option[] }
+export type CoursesInfo = { [semesterIndex: string]: Option[] }
 
 const getSemesterLabels = (semesterYearStart: SemesterYearType) => {
   let semesterLabels: SemesterYearType[] = []

@@ -3,11 +3,32 @@
 import { UniversityPrograms } from "@/types"
 import { createBlob } from "@graph/blob"
 import { Program } from "@graph/defaultCourses"
-import { getStudentProfileFromRequirements } from "@graph/profile"
-import { BaseStudentProfile, SemesterYearType } from "@graph/types"
+import { getCoursesForProgram, getStudentProfileFromRequirements } from "@graph/profile"
+import {
+  BaseStudentProfile,
+  PositiveScheduleConstraint,
+  ScheduleConstraints,
+  SemesterYearType
+} from "@graph/types"
 import { db } from "@repo/db"
 
 import { calculateSemesterDifference } from "@/lib/schedule/utils"
+
+import { CoursesInfo } from "./student-courses-form"
+
+function convertCoursesInfoToPositiveConstraints(
+  coursesInfo: CoursesInfo
+): PositiveScheduleConstraint[] {
+  const constraints: PositiveScheduleConstraint[] = []
+  for (const semester in coursesInfo) {
+    constraints.push({
+      semester: parseInt(semester),
+      courseIDs: coursesInfo[semester].map(course => course.value),
+      canAddCourses: false
+    })
+  }
+  return constraints
+}
 
 /**
  * Create a new schedule and its first version for the user
@@ -18,7 +39,8 @@ import { calculateSemesterDifference } from "@/lib/schedule/utils"
 export async function createNewSchedule(
   userId: string,
   programs: Program[],
-  startTerm: SemesterYearType
+  startTerm: SemesterYearType,
+  coursesInfo: CoursesInfo
 ) {
   const currentSemester = calculateSemesterDifference(startTerm) - 1
   const baseProfile: BaseStudentProfile = {
@@ -30,7 +52,12 @@ export async function createNewSchedule(
     currentSemester: currentSemester,
     startTerm: startTerm
   }
-  const studentProfile = await getStudentProfileFromRequirements(baseProfile)
+
+  const constraints: ScheduleConstraints = {
+    positive: convertCoursesInfoToPositiveConstraints(coursesInfo),
+    negative: []
+  }
+  const studentProfile = await getStudentProfileFromRequirements(baseProfile, constraints)
 
   const schedule = await db.schedule.create({
     data: {
@@ -49,17 +76,25 @@ export async function createNewSchedule(
   return schedule.id
 }
 
-export async function getAllCoursesForUniversity(
+export async function getAllComputerScienceCoursesForUniversity(
   universityId: string
 ): Promise<Array<{ id: string; name: string }>> {
-  return await db.course.findMany({
-    select: {
-      name: true,
-      id: true
-    },
-    where: { universityId: universityId },
-    take: 10
-  })
+  let courses: Array<{ id: string; name: string }> = []
+  const { requiredCourses, extraToQuery } = await getCoursesForProgram("CS")
+
+  universityId
+
+  for (const coursePayloadList of [requiredCourses, extraToQuery]) {
+    if (coursePayloadList) {
+      courses = courses.concat(
+        coursePayloadList.map(coursePayload => ({
+          id: coursePayload.id,
+          name: coursePayload.name
+        }))
+      )
+    }
+  }
+  return courses
 }
 
 export async function getProgramsForAllUniversities(): Promise<UniversityPrograms[]> {
