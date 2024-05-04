@@ -31,7 +31,6 @@ export default async function CreateSchedulePage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Let&apos;s get you started!</p>
           <CreateForms userId={userId} universityPrograms={universityPrograms} />
         </CardContent>
       </Card>

@@ -40,7 +40,7 @@ export async function createNewSchedule(
   userId: string,
   programs: Program[],
   startTerm: SemesterYearType,
-  coursesInfo: CoursesInfo
+  coursesInfo?: CoursesInfo
 ) {
   const currentSemester = calculateSemesterDifference(startTerm) - 1
   const baseProfile: BaseStudentProfile = {
@@ -54,7 +54,7 @@ export async function createNewSchedule(
   }
 
   const constraints: ScheduleConstraints = {
-    positive: convertCoursesInfoToPositiveConstraints(coursesInfo),
+    positive: coursesInfo ? convertCoursesInfoToPositiveConstraints(coursesInfo) : [],
     negative: []
   }
   const studentProfile = await getStudentProfileFromRequirements(baseProfile, constraints)

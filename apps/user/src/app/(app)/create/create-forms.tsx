@@ -6,6 +6,7 @@ import { UniversityPrograms } from "@/types"
 import { Program } from "@graph/defaultCourses"
 import { SemesterYearType } from "@graph/types"
 
+import { calculateSemesterDifference as calculateNumSemestersFromTerm } from "@/lib/schedule/utils"
 import {
   createNewSchedule,
   getAllComputerScienceCoursesForUniversity
@@ -45,7 +46,13 @@ export default function CreateForms({
   const [studentInfo, setStudentInfo] = useState<StudentInfo>()
   const [courseOptions, setCourseOptions] = useState<CourseIdName[]>([])
 
-  const handleStudentInfoFormSubmit = (studentInfo: StudentInfo) => {
+  const handleStudentInfoFormSubmit = async (studentInfo: StudentInfo) => {
+    if (calculateNumSemestersFromTerm(studentInfo.start) < 1) {
+      const scheduleId = await createNewSchedule(userId, studentInfo.majors, studentInfo.start)
+      router.push(`/schedule/${scheduleId}`)
+      return
+    }
+
     setSelectedFormIndex(selectedFormIndex + 1)
     setStudentInfo(studentInfo)
     getAllComputerScienceCoursesForUniversity(studentInfo.universityId).then(courses =>
@@ -54,7 +61,6 @@ export default function CreateForms({
   }
 
   const handleCoursesFormSubmit = async (coursesInfo: CoursesInfo) => {
-    console.log("coursesInfo", coursesInfo)
     if (studentInfo === undefined) {
       throw Error("studentInfo is undefined")
     }
