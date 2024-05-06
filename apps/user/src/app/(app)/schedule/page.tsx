@@ -81,7 +81,7 @@ async function ScheduleTable({ userId }: { userId: string }) {
         {schedules.map(schedule => {
           const hasVersions = schedule.versions.length > 0
           const blob = hasVersions ? parseBlob(schedule.versions[0].blob) : undefined
-          const programs = blob?.programs
+          const tracks = blob?.tracks
           return (
             <TableRow key={schedule.id}>
               <TableCell className="font-medium">
@@ -90,7 +90,7 @@ async function ScheduleTable({ userId }: { userId: string }) {
                 </Button>
               </TableCell>
               <TableCell>
-                {programs ? programs.map(p => <Badge key={p}>{p}</Badge>) : "No Programs"}
+                {tracks ? tracks.map(p => <Badge key={p}>{p}</Badge>) : "No Programs"}
               </TableCell>
               <TableCell>
                 {hasVersions ? timeSince(new Date(schedule.versions[0].createdAt)) : "Not modified"}

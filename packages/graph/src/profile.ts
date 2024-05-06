@@ -3,7 +3,6 @@ import { db, RequirementType } from "@repo/db"
 import { getTrack } from "@repo/db/queries/track"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
-import { Attributes } from "graphology-types"
 
 import {
   addCourseToGraph,
@@ -33,7 +32,7 @@ import {
 
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
-  const trackIds = [...profile.programs, "GEN"]
+  const trackIds = [...profile.tracks, "GEN"]
   const tracks = await Promise.all(trackIds.map(async t => getTrack(t)))
 
   // DIFFERENT TYPE OF TRACKS:
@@ -78,7 +77,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
 
   const hydratedCourses = await db.course.findMany({
     where: {
-      id: { in: [...requiredCoursesSet] }
+      id: { in: [...requiredCoursesSet, ...coursesToHydrateSet] }
     },
     ...COURSE_PAYLOAD_QUERY
   })
@@ -148,6 +147,13 @@ export function scheduleCourses(
   distributeCoursesEvenly: boolean = true
 ) {
   computeNodeStats(graph, profile)
+  console.log(
+    "test",
+    graph.mapNodes((c, attr) => ({
+      c,
+      attr
+    }))
+  )
   const positiveConstrainedCourseIDs = constraints.positive.flatMap(c => c.courseIDs)
   schedulePositiveConstraints(graph, profile, constraints.positive)
   const fixedSemesters = constraints.positive.filter(c => !c.canAddCourses).map(c => c.semester)
@@ -348,21 +354,20 @@ export function scheduleCourses(
 }
 
 export function toCourseNode(
-  graph: Graph,
+  graph: CourseGraph,
   courseId: string,
-  course: Attributes | undefined
+  course: CourseAttributes | undefined
 ): CourseNode {
   if (!course) {
     course = graph.getNodeAttributes(courseId)
   }
   return {
     id: courseId,
-    name: course["name"],
-    programs: course["programs"],
-
-    earliestFinish: course["earliestFinish"],
-    latestFinish: course["latestFinish"],
-    fanOut: course["fanOut"],
+    name: course.name,
+    tracks: course.tracks,
+    earliestFinish: course.earliestFinish,
+    latestFinish: course.latestFinish,
+    fanOut: course.fanOut,
 
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
     prerequisites: graph

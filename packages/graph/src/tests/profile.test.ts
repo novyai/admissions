@@ -5,7 +5,7 @@ import { ChangeType } from "@repo/constants"
 import { describe, expect, test } from "bun:test"
 
 const mathProfile: StudentProfile = {
-  programs: [],
+  tracks: [],
   semesters: [],
   requiredCourses: [
     "7d02c58e-f2b8-494e-ad9c-9ddc973de80f",
@@ -22,7 +22,7 @@ const mathProfile: StudentProfile = {
 }
 
 const compositionProfile: StudentProfile = {
-  programs: [],
+  tracks: [],
   semesters: [],
   requiredCourses: ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
   transferCredits: [],
@@ -33,17 +33,17 @@ const compositionProfile: StudentProfile = {
 }
 
 const removeGenEdProgram = (profile: HydratedStudentProfile) => {
-  profile.programs = profile.programs.filter(program => program === "GEN")
+  profile.tracks = profile.tracks.filter(program => program === "GEN")
 
   const genEdCourseIDs: string[] = []
   for (const [courseID, course] of profile.graph.entries()) {
-    if (course.programs?.includes("GEN")) {
+    if (course.tracks?.includes("GEN")) {
       genEdCourseIDs.push(courseID)
       profile.graph.delete(courseID)
     }
   }
   profile.semesters = profile.semesters.map(courses =>
-    courses.filter(course => !course.programs?.includes("GEN"))
+    courses.filter(course => !course.tracks?.includes("GEN"))
   )
   profile.requiredCourses = profile.requiredCourses.filter(
     courseID => !genEdCourseIDs.includes(courseID)
@@ -188,7 +188,7 @@ describe("pushing classes", () => {
 })
 
 const csProfile: BaseStudentProfile = {
-  programs: ["0f9f18f2-c995-417e-9410-f611e0fff2c3"],
+  tracks: ["0f9f18f2-c995-417e-9410-f611e0fff2c3"],
   requiredCourses: [],
   transferCredits: [],
   timeToGraduate: 4,

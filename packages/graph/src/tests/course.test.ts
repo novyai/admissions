@@ -9,7 +9,7 @@ import Graph from "graphology"
 const baseProfile = {
   requiredCourses: [],
   transferCredits: [],
-  programs: [],
+  tracks: [],
   timeToGraduate: 0,
   currentSemester: 0,
   coursePerSemester: 5,

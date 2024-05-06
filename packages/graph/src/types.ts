@@ -3,7 +3,7 @@ import { z } from "zod"
 export type CourseNode = {
   id: string
   name: string
-  programs: string[] | undefined
+  tracks: string[] | undefined
   dependents: string[]
   prerequisites: string[]
   corequisites: string[]
@@ -19,7 +19,7 @@ export type BaseStudentProfile = {
    */
   requiredCourses: string[]
   transferCredits: string[]
-  programs: string[]
+  tracks: string[]
   timeToGraduate: number // in semesters
   currentSemester: number
   coursePerSemester: number

@@ -1,7 +1,6 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { UniversityPrograms } from "@/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@repo/ui/components/multiselect"
 import { Button } from "@repo/ui/components/ui/button"
@@ -24,7 +23,7 @@ import { Loader2 } from "lucide-react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
-import { createNewSchedule } from "./action"
+import { createNewSchedule, UniversityProgram } from "./action"
 
 // export const programs = [
 //   {
@@ -42,7 +41,7 @@ export function CreateNewScheduleForm({
   universityPrograms
 }: {
   userId: string
-  universityPrograms: UniversityPrograms[]
+  universityPrograms: UniversityProgram[]
 }) {
   const universities = universityPrograms.map(university => ({
     value: university.name,
@@ -51,13 +50,16 @@ export function CreateNewScheduleForm({
 
   const programs = universityPrograms
     .map(university =>
-      university.Program.map(program => ({
-        value: program.id,
-        label: program.name,
-        id: university.id,
-        universityId: university.name
-      }))
+      university.Program.map(program =>
+        program.tracks.map(track => ({
+          value: track.id,
+          label: track.name,
+          id: university.id,
+          universityId: university.name
+        }))
+      )
     )
+    .flat()
     .flat()
 
   const years = ["2021", "2022", "2023", "2024", "2025"]

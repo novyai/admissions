@@ -25,7 +25,7 @@ export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNod
         "border rounded-lg px-2 py-1 -1",
         (selected || dragging) && "border-ring z-20",
         data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : "",
-        data.programs && data.programs[0] ? "bg-sky-200" : "bg-green-200"
+        data.tracks && data.tracks[0] ? "bg-sky-200" : "bg-green-200"
       )}
       layout={!dragging}
       // create new component when animated changes, see issue workaround https://github.com/framer/motion/issues/2238#issue-1809290539
