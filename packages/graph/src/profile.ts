@@ -19,12 +19,11 @@ import {
   getCoursesInSemester,
   graphToHydratedStudentProfile
 } from "./graph"
-import { _canMoveCourse, canMoveCourse } from "./schedule"
+import { _canMoveCourse } from "./schedule"
 import { computeNodeStats } from "./stats"
 import {
   BaseStudentProfile,
   CourseNode,
-  HydratedStudentProfile,
   NegativeScheduleConstraint,
   PositiveScheduleConstraint,
   ScheduleConstraints,
@@ -480,6 +479,85 @@ export function toCourseNode(
   }
 }
 
+export function rescheduleCourse(
+  graph: CourseGraph,
+  profile: BaseStudentProfile,
+  courseId: string
+): { graph: CourseGraph; changes: Change[] } {
+  const oldGraph = graph.copy()
+
+  const fromSemester = graph.getNodeAttribute(courseId, "semester")
+  const currentTimeToGraduate = [...graph.nodeEntries()].reduce(
+    (maxSemester, nodeEntry) => Math.max(maxSemester, nodeEntry.attributes.semester! + 1),
+    1
+  )
+  if (fromSemester === undefined) {
+    throw new Error(`Could not move ${courseId} because it has no semester`)
+  }
+  const { graph: pushedGraph, changes: pushedChanges } = pushCourseAndDependents(
+    graph,
+    profile,
+    courseId
+  )
+  const latestChangeSemester = pushedChanges.reduce(
+    (maxSemester, change) => Math.max(maxSemester, change.semester),
+    0
+  )
+
+  // if pushing course and dependents didn't affect grad time, just return
+  if (latestChangeSemester < currentTimeToGraduate) {
+    return {
+      graph: pushedGraph,
+      changes: pushedChanges
+    }
+  }
+
+  const prevSemesters = [...Array(fromSemester).keys()]
+  const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
+    const coursesInSemester = getCoursesInSemester(graph, semester).map(course => course.id)
+    return {
+      semester: semester,
+      canAddCourses: false,
+      courseIDs: coursesInSemester
+    }
+  })
+  if (fromSemester === profile.currentSemester) {
+    const coursesInSemester = getCoursesInSemester(graph, fromSemester)
+      .map(course => course.id)
+      .filter(id => id !== courseId) // don't freeze the course we're pushing
+    positiveConstraints.push({
+      semester: fromSemester,
+      canAddCourses: false,
+      courseIDs: coursesInSemester
+    })
+  }
+
+  console.log("POSITIVE CONSTRAINTS", positiveConstraints)
+
+  const negativeConstraints: NegativeScheduleConstraint[] = [
+    {
+      courseID: courseId,
+      semester: fromSemester
+    }
+  ]
+
+  for (const nodeEntry of graph.nodeEntries()) {
+    nodeEntry.attributes.semester = undefined
+  }
+
+  const newGraph = scheduleCourses(graph, profile, {
+    positive: positiveConstraints,
+    negative: negativeConstraints
+  })
+
+  const changes = getChangesBetweenGraphs(oldGraph, newGraph)
+
+  return {
+    graph,
+    changes
+  }
+}
+
 /**
  * Pushes a course and all of its dependents to a later semester while keeping a valid schedule.
  * @param graph The course graph.
@@ -488,54 +566,74 @@ export function toCourseNode(
  */
 export function pushCourseAndDependents(
   graph: CourseGraph,
-  profile: HydratedStudentProfile,
+  profile: BaseStudentProfile,
   courseId: string
 ): { graph: CourseGraph; changes: Change[] } {
   try {
-    const fromSemester = graph.getNodeAttribute(courseId, "semester")
+    const changes: Change[] = []
+
+    let fromSemester = graph.getNodeAttribute(courseId, "semester")
     if (fromSemester === undefined) {
       throw new Error(`Could not move ${courseId} because it has no semester`)
     }
+    let nextSemester = fromSemester + 1
 
-    const canMove = canMoveCourse(courseId, fromSemester + 1, profile)
-    if (canMove.canMove) {
-      graph.setNodeAttribute(courseId, "semester", fromSemester + 1)
-      return {
-        graph: graph,
-        changes: [{ type: ChangeType.Move, courseId: courseId, semester: fromSemester + 1 }]
+    let mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+
+    // if there is a dependent issue, push them
+    while (!mv.canMove) {
+      if (mv.reason.type === "dependent" || mv.reason.type === "prerequisite") {
+        mv.reason.courseId.forEach(depOrPreID => {
+          const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(
+            graph,
+            profile,
+            depOrPreID
+          )
+          graph = newGraph
+          changes.push(...newChanges)
+          console.log(
+            "after moving",
+            graph.getNodeAttribute(depOrPreID, "name"),
+            "to",
+            graph.getNodeAttribute(depOrPreID, "semester")
+          )
+        })
+        mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+        continue
+      } else if (mv.reason.type === "full") {
+        computeNodeStats(graph, profile)
+        const nodeAttrs = [...graph.nodeEntries()].map(nodeEntry => nodeEntry.attributes)
+
+        const nextSemesterNodeAttrs = nodeAttrs.filter(node => node.semester === nextSemester)
+
+        const courseWithMostSlack = nextSemesterNodeAttrs.reduce(
+          (maxNode, currNode) => (maxNode.slack! >= currNode.slack! ? maxNode : currNode),
+          nextSemesterNodeAttrs[0]
+        )
+
+        const { graph: newGraph, changes: newChanges } = pushCourseAndDependents(
+          graph,
+          profile,
+          courseWithMostSlack.id
+        )
+        graph = newGraph
+        changes.push(...newChanges)
+        mv = _canMoveCourse(courseId, nextSemester, profile, graph)
+        continue
       }
+
+      throw new Error(
+        `Could not move ${graph.getNodeAttribute(courseId, "name")} because of ${JSON.stringify(mv.reason)}`
+      )
     }
 
-    const oldGraph = graph.copy()
-
-    const prevSemesters = [...Array(fromSemester + 1).keys()]
-    const positiveConstraints: PositiveScheduleConstraint[] = prevSemesters.flatMap(semester => {
-      const coursesInSemester = getCoursesInSemester(graph, semester)
-        .map(course => course.id)
-        .filter(id => id !== courseId)
-      return {
-        semester: semester,
-        canAddCourses: false,
-        courseIDs: coursesInSemester
-      }
-    })
-    const negativeConstraints: NegativeScheduleConstraint[] = [
-      {
-        courseID: courseId,
-        semester: fromSemester
-      }
-    ]
-
-    for (const nodeEntry of graph.nodeEntries()) {
-      nodeEntry.attributes.semester = undefined
+    // now we can move:
+    if (mv.canMove) {
+      graph.setNodeAttribute(courseId, "semester", nextSemester)
+      changes.push({ type: ChangeType.Move, courseId, semester: nextSemester })
     }
 
-    const newGraph = scheduleCourses(graph, profile, {
-      positive: positiveConstraints,
-      negative: negativeConstraints
-    })
-
-    const changes = getChangesBetweenGraphs(oldGraph, newGraph)
+    console.log("CHANGES", changes)
 
     return {
       graph,
