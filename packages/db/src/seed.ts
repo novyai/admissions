@@ -2,9 +2,11 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
 import Prisma, { db, type LogicalOperator, type RequirementType } from "@repo/db"
 
-import courseData from "./data/usf/courses.json"
-import requisiteData from "./data/usf/cs/requisites.json"
+import baseCourseData from "./data/usf/courses.json"
+import csRequisiteData from "./data/usf/cs/requisites.json"
 import csTrackData from "./data/usf/cs/tracks.json"
+import genEdRequirementData from "./data/usf/gen/requirements.json"
+import genEdRequisiteData from "./data/usf/gen/requisites.json"
 
 const uniInformation = [
   {
@@ -17,7 +19,7 @@ const DEFAULT_CREDIT_HOURS = 3
 
 async function insertCourses(uniId: string) {
   try {
-    for (const course of courseData) {
+    for (const course of baseCourseData) {
       try {
         await db.course.upsert({
           where: {
@@ -113,7 +115,7 @@ export async function updatePrerequisites() {
 
   const { id: uniId } = uni
   const courseRequisiteMapping: Map<string, string[]> = new Map()
-  for (const course of requisiteData) {
+  for (const course of [...csRequisiteData, ...genEdRequisiteData]) {
     try {
       let courseInDb = await db.course.upsert({
         where: {
@@ -378,18 +380,26 @@ async function main() {
             }
           })
 
-          await Promise.all(
-            track.requirements.map(req => {
-              return db.requirement.create({
-                data: {
-                  trackId: trackInDb.id,
-                  courses: req.courses,
-                  creditHoursNeeded: req.creditHoursNeeded,
-                  nonOverlapping: req.nonOverlapping
-                }
-              })
+          for (const req of track.requirements) {
+            await db.requirement.create({
+              data: {
+                trackId: trackInDb.id,
+                courses: req.courses,
+                creditHoursNeeded: req.creditHoursNeeded,
+                nonOverlapping: req.nonOverlapping
+              }
             })
-          )
+          }
+          for (const req of genEdRequirementData) {
+            await db.requirement.create({
+              data: {
+                trackId: trackInDb.id,
+                courses: req.courses,
+                creditHoursNeeded: req.creditHoursNeeded,
+                nonOverlapping: req.nonOverlapping
+              }
+            })
+          }
         }
       }
     }

@@ -1,0 +1,461 @@
+[
+
+  {
+    "courseSubject": "AMH",
+    "courseNumber": "2020",
+    "name": "American History II",
+    "description": "A history of the United States with attention given to relevant developments in the Western Hemisphere from 1877 to the present.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "POS",
+    "courseNumber": "2041",
+    "name": "American National Government",
+    "description": "This course is intended to introduce students to the theory, institutions, and processes of American government and politics. In addition to learning fundamental information about the American political system, this course is designed to help students think critically about American government and politics.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "ARH",
+    "courseNumber": "2000",
+    "name": "Art and Culture",
+    "description": "This course offers students an enhanced appreciation and understanding of art. Student will critically evaluate a broad range of imagery, media, artists, movements and historical periods in the visual arts.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "HUM",
+    "courseNumber": "1020",
+    "name": "Introduction to Humanities",
+    "description": "Analysis of selected works of literature, music, film, and visual art, representing artists of diverse periods, cultures, genders, and races. Especially recommended for students who later take 4000-level Humanities courses",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "LIT",
+    "courseNumber": "2000",
+    "name": "Introduction to Literature",
+    "description": "This course will introduce students to the three major literary forms of prose, poetry and drama as well as to various “schools” of literary criticism.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "MUL",
+    "courseNumber": "2010",
+    "name": "Music and Culture",
+    "description": "This course is intended to expose students to a variety of music and musical experiences through lecture, discussion, and direct experience involving critical listening. Students will enhance their awareness of the various elements, origins, and developments in music, as well as enrich critical thinking skills related to evaluating music. Students will prepare critiques of music performances in writing. By the end of the course, the student should have the background for appreciating the major genres of music, as well as having an enhanced ability to appreciate the various primary elements of any musical creation and /or performance.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "PHI",
+    "courseNumber": "2010",
+    "name": "Introduction to Philosophy",
+    "description": "An introduction to several major themes in philosophy, as well as central philosophical concepts, texts, and methods.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "THE",
+    "courseNumber": "2000",
+    "name": "Theatre and Culture",
+    "description": "This course explores the contributions of theater practitioners and audiences to the performance experience, aspects of theater making and an overview of theater history.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "ANT",
+    "courseNumber": "2000",
+    "name": "Introduction to Anthropology",
+    "description": "The cross-cultural study of the human species in biological and social perspective. Surveys the four major branches of anthropology: physical anthropology, archaeology, linguistic anthropology, and cultural anthropology.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "ECO",
+    "courseNumber": "2013",
+    "name": "Economic Principles (Macroeconomics)",
+    "description": "ECO 2013 introduces students to basic economic terminology, definitions and measurements of macroeconomic data, simple macroeconomic models, fiscal and monetary policy, and international macroeconomic linkages.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "PSY",
+    "courseNumber": "2012",
+    "name": "Introduction to Psychological Science",
+    "description": "This course is an introduction to psychology for majors and nonmajors. It presents psychological theory and methods in a survey of various areas of psychology including clinical, cognitive, developmental, health, industrial, social and biopsychology.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "SYG",
+    "courseNumber": "2000",
+    "name": "Introduction to Sociology",
+    "description": "This course introduces undergraduate students to the discipline of sociology. During the semester, we will analyze sociological theories, core concepts, and issues through readings, lectures, discussions, films, and hands-on research assignments.",
+    "creditHours": 3,
+    "conditions": []
+  },
+  {
+    "courseSubject": "AFA",
+    "courseNumber": "2000",
+    "name": "Introduction to the Black Experience",
+    "creditHours": "3",
+    "description": "Fundamental perspectives on the nature and significance of the Black Experience in Africa and black communities in the Americas.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ANT",
+    "courseNumber": "2410",
+    "name": "Cultural Anthropology",
+    "creditHours": "3",
+    "description": "Students are exposed to methods and concepts for cross cultural study of the world’s peoples. Case studies demonstrate variations in human adaptation and encourage an understanding of and appreciation for diverse cultures and their values.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ARH",
+    "courseNumber": "2051",
+    "name": "History of Visual Arts II",
+    "creditHours": 3,
+    "description": "Survey of World Art since 1300 CE. Introduction to problems of analyzing and interpreting the art of various global cultures without making the Western perspective a privileged one.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ASL",
+    "courseNumber": "3514",
+    "name": "Deaf Culture",
+    "creditHours": "3",
+    "description": "This is an introduction to Deaf culture, the emergence of the Deaf community as a linguistic and cultural group, and the history of American Sign Language. Students will study cultural norms, values, and rules of social behavior of the Deaf community. cultures without making the Western perspective a privileged one.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "BUL",
+    "courseNumber": "3320",
+    "name": "Law and Business I",
+    "creditHours": 3,
+    "description": "This course covers the nature of legal and societal institutions and environments, the major aspects of public, private, commercial and business related law including diversity, discrimination law and global dispute resolution.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "COM",
+    "courseNumber": "3014",
+    "name": "Communication, Gender and Identity",
+    "creditHours": 3,
+    "description": "Examines the communicative origins and implications of gender roles.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ECH",
+    "courseNumber": "3783",
+    "name": "Sustaining the Earth: An Engineering Approach",
+    "creditHours": 3,
+    "description": "It provides a global perspective on ecological principles revealing how all the world’s life is connected and sustained within the biosphere and how technology provides the tools to design solutions in the context of social and environmental development.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "EDF",
+    "courseNumber": "2085",
+    "name": "Education, Diversity, and Global Society",
+    "creditHours": 3,
+    "description": "The course explores the role of formal and informal education within an increasingly diverse and global society. The course covers sociocultural approaches to education with a focus on immigration, race, gender, language, sexuality, and ability.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3615",
+    "name": "Engineering Economics with Social and Global Implications",
+    "creditHours": 3,
+    "description": "Presents basic economic models used to evaluate engineering project investments with an understanding of the implications of human and cultural diversity on financial decisions through lectures, problem solving, and critical writing.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "EGS",
+    "courseNumber": "3720",
+    "name": "Globalization and Technology",
+    "creditHours": 3,
+    "description": "This course explores the fundamental processes underlying globalization with particular emphasis on the role of technological development in both historical and contemporary context.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "EVT",
+    "courseNumber": "4651",
+    "name": "Equity in Schools and the Workplace",
+    "creditHours": 3,
+    "description": "Examine equity issues related to gender, race, culture, economics in schools/workplaces. Explore legal, ethical, psychological, social perspectives including stereotyping, prejudice and discrimination for personal implications and systems change.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "GEA",
+    "courseNumber": "2000",
+    "name": "World Regional Geography",
+    "creditHours": 3,
+    "description": "Comparative and analytical analysis of representative world regions with emphasis on cultural, political, economic, environmental and physical diversity",
+    "conditions": []
+  },
+  {
+    "courseSubject": "GEO",
+    "courseNumber": "2400",
+    "name": "Human Geography",
+    "creditHours": 3,
+    "description": "Human geography encompasses those branches in geography which focus primarily upon the relationships between humans and the environments they construct. This course will examine the object of study of human geography, as well as explore many of the components of human geography, including economic geography, geopolitics, cultural geography, urban geography, population geography, and the relationships between geography and globalization.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "GEO",
+    "courseNumber": "4372",
+    "name": "Global Conservation",
+    "creditHours": 3,
+    "description": "The course examines environmental conservation and policy from a global perspective. It holistically integrates the science of conservation with environmental, economic, sociocultural, and political realities that challenge conservation efforts.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "GEY",
+    "courseNumber": "3625",
+    "name": "Sociological Aspects of Aging",
+    "creditHours": 3,
+    "description": "Consideration of human aging in a broad sociocultural context. Course emphasis will be on historical, philosophical, and demographic aspects of aging, theories of social gerontology, attitudes toward aging and the aged, and cross-cultural perspective.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "HFT",
+    "courseNumber": "3868",
+    "name": "International Wine and Culture",
+    "creditHours": 3,
+    "description": "This course explores wines of the world with a focus on the geographic, historic, cultural, religious, and economic influences that shape wine availability, production, economics and consumption. Students will examine how wine and diversity intertwines and influences cultural patterns.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "HFT",
+    "courseNumber": "3894",
+    "name": "International Food and Culture",
+    "creditHours": 3,
+    "description": "This course explores cuisines with a focus on the geographic, historic, cultural, religious, and economic influences that shape food availability and consumption. Students will examine how diversity shapes cultural food patterns.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "HSC",
+    "courseNumber": "2130",
+    "name": "Sex, Health, and Decision-Making",
+    "creditHours": 3,
+    "description": "This course explores the fundamental relationship between sexuality, decision making and health outcomes from a public health perspective. Students explore sexuality issues and learn tools that promote sexual health and healthy relationships.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "HUM",
+    "courseNumber": "2250",
+    "name": "Studies in Culture: The Twentieth Century",
+    "creditHours": 3,
+    "description": "Analyses of selected works of twentieth century art, including films, paintings, music, and literature, in the context of major political, social, and economic events, such as war, depression, totalitarianism, and technological change.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "IDH",
+    "courseNumber": "4200",
+    "name": "Honors Geographical Perspectives",
+    "creditHours": 3,
+    "description": "This course explores how the interconnectedness of diverse spaces, places, and peoples constitute community, through the examination of locales, historical periods, and the people who inhabit them.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "IDS",
+    "courseNumber": "2192",
+    "name": "Global History and Politics Since 1945",
+    "creditHours": 3,
+    "description": "This interdisciplinary course, team-taught by the History Department and the School of Interdisciplinary Global Studies, introduces students to the major political, economic, and cultural events and forces that have shaped the world since 1945.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "IDS",
+    "courseNumber": "2231",
+    "name": "Introduction to Global Sustainability",
+    "creditHours": 3,
+    "description": "The course presents theory and practice of sustainability and discusses its three components: environment, society and economy.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ISM",
+    "courseNumber": "4041",
+    "name": "Global Cyber Ethics",
+    "creditHours": 3,
+    "description": "This course provides students an in-depth look at the social costs and moral problems that have arisen by the expanded use of the Internet, and offers up-to-date legal and philosophical perspectives on the global scale for the business community.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "ISM",
+                "courseNumber": "3011"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "ISS",
+    "courseNumber": "3420",
+    "name": "Interdisciplinary Approaches to Disability Studies",
+    "creditHours": 3,
+    "description": "This course examines disability as an aspect of human and cultural diversity and explores moral, religious, historical, cultural, social, medical, artistic, and legal perspectives on minds and bodies that do not conform to normative expectations.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "LAE",
+    "courseNumber": "3414",
+    "name": "Childrens and Young Adult Literature Diverse Portrayals of the Human Experience",
+    "creditHours": 3,
+    "description": "Students will examine children’s literature as a literary art form, a visual art form, and a powerful genre that communicates messages about the human experience.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "LDR",
+    "courseNumber": "2010",
+    "name": "Leadership Fundamentals",
+    "creditHours": 3,
+    "description": "This introductory course includes the study and application of leadership theories, concepts, and skills. Students will analyze their leadership responsibilities for the common good and purposeful change in a global context.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "LIN",
+    "courseNumber": "2002",
+    "name": "Language, Culture & Film",
+    "creditHours": 3,
+    "description": "This course offers an introductory exposure to an array of major world languages and the corresponding cultural and social contexts, using lectures about and films in the target languages, as well as linguistic and cultural study materials.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "MHS",
+    "courseNumber": "3063",
+    "name": "Cultural Diversity, Health and Behavioral Health",
+    "creditHours": 3,
+    "description": "This course examines critical issues around cultural diversity, behavioral health, health disparities, promoting social change and culturally competent practice with a focus on race/ethnicity, gender, sexual orientation and identity, class and disability.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "MUH",
+    "courseNumber": "3016",
+    "name": "Survey of Jazz",
+    "creditHours": 3,
+    "description": "This course introduces undergraduate students to Jazz music. Students will study historical, cultural and social issues associated with the evolution of jazz music and learn to hear and discern specific musical traits found in jazz music.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "NSP",
+    "courseNumber": "3667",
+    "name": "Introduction to Global Health",
+    "creditHours": 3,
+    "description": "This course provides an overview of global health focusing on public/population health promotion and chronic/acute disease prevention and management. Evidence-based and basic epidemiological principles are presented throughout the course.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "PHC",
+    "courseNumber": "4464",
+    "name": "Introduction to Health Disparities & Social Determinants",
+    "creditHours": 3,
+    "description": "This course provides an overview of health disparities. We will examine social and cultural determinants of health, including race/ethnicity, geography, SES, gender, sexual orientation, disability status, migration status, age, religion and spirituality.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "REL",
+    "courseNumber": "2300",
+    "name": "Introduction to World Religions",
+    "creditHours": 3,
+    "description": "Introduction to World Religions is designed to give students a broad and general overview of the major religious traditions of the world. Students will be exposed to the history, primary beliefs, and information necessary for a primary understanding of each of the religions studied in the course.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "SPC",
+    "courseNumber": "3710",
+    "name": "Communication and Cultural Diversity",
+    "creditHours": 3,
+    "description": "Examination of communication and cultural diversity within the United States. Cultural groups include gender, racial and ethnic (e.g., African American, Latino American, Asian American), social class, age and generation, religious (e.g. Jewish) and physical ability.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "THE",
+    "courseNumber": "4574",
+    "name": "Sport as Performance",
+    "creditHours": 3,
+    "description": "Students will use contemporary theory to critique and analyze the interconnected elements of athletic and stage performance, including the athlete/artist, stadium/stage and audience/spectator. Spanning topics from the body to the arena, team mascots, professional wrestling and social media, the course will inform and expand our knowledge in both disciplines.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "WST",
+    "courseNumber": "3015",
+    "name": "Introduction to Women’s Studies",
+    "creditHours": 3,
+    "description": "This course introduces the interdisciplinary field of Women’s Studies through a critical examination of the way gender, race, class and sexuality are socially constructed and demonstrates how activism is inherent in Women’s Studies discourse.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "ISM",
+    "courseNumber": "3011",
+    "name": "AI and Analytics for Organizations",
+    "creditHours": 3,
+    "description": "This course focuses on the use of critical thinking skills and common workplace tools to understand business scenarios, analyze data, and provide results and visualizations that will aid in data-supported business decisions. Descriptive, diagnostic, predictive, prescriptive, and advance analytics will be covered as well as the use of AI in business analytics.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "CGS",
+                "courseNumber": "2100"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "QMB",
+                "courseNumber": "2100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CGS",
+    "courseNumber": "2100",
+    "name": "Computers in Business",
+    "creditHours": 3,
+    "description": "A study of the use and impact of computers in all areas of business organizations. Course includes hands-on experience and the use of software packages for business analysis.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "QMB",
+    "courseNumber": "2100",
+    "name": "Business and Economic Statistics II",
+    "creditHours": 3,
+    "description": "A study of the use and impact of computers in all areas of business organizations. Course includes hands-on experience and the use of software packages for business analysis.",
+    "conditions": [
+        {
+          "logicalOperator": "OR",
+          "conditions": [
+            {
+              "type": "PREREQUISITE",
+              "minimumGrade": "C",
+              "prerequisites": [
+                {
+                  "courseSubject": "MAC",
+                  "courseNumber": "1147"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+  }
+]

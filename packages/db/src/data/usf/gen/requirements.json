@@ -1,0 +1,339 @@
+[   
+    {
+        "name": "SCIV", 
+        "description": "Civics Literacy",
+        "creditHoursNeeded": 3,
+        "nonOverlapping": false, 
+        "courses": {
+            "connect": [
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "AMH",
+                        "courseNumber": "2020"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "POS",
+                        "courseNumber": "2041"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "name": "SGEH", 
+        "description": "General Education Core Humanities",
+        "creditHoursNeeded": 3,
+        "nonOverlapping": false, 
+        "courses": {
+            "connect": [
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ARH",
+                        "courseNumber": "2000"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "HUM",
+                        "courseNumber": "1020"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "LIT",
+                        "courseNumber": "2000"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "MUL",
+                        "courseNumber": "2010"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "PHI",
+                        "courseNumber": "2010"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "THE",
+                        "courseNumber": "2000"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "name": "SGES", 
+        "description": "General Education Core Social Sciences",
+        "creditHoursNeeded": 3,
+        "nonOverlapping": false, 
+        "courses": {
+            "connect": [
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "AMH",
+                        "courseNumber": "2020"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ANT",
+                        "courseNumber": "2000"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ECO",
+                        "courseNumber": "2013"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "POS",
+                        "courseNumber": "2041"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "PSY",
+                        "courseNumber": "2012"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "SYG",
+                        "courseNumber": "2000"
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "name": "TGED", 
+        "description": "Human & Cultural Diversity",
+        "creditHoursNeeded": 3,
+        "nonOverlapping": false, 
+        "courses": {
+            "connect": [
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "AFA",
+                        "courseNumber": "2000"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ANT",
+                        "courseNumber": "2410"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ARH",
+                        "courseNumber": "2051"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ASL",
+                        "courseNumber": "3514"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "BUL",
+                        "courseNumber": "3320"
+                    }
+                    
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "COM",
+                        "courseNumber": "3014"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ECH",
+                        "courseNumber": "3783"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "EDF",
+                        "courseNumber": "2085"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "EGN",
+                        "courseNumber": "3615"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "EGS",
+                        "courseNumber": "3720"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "EVT",
+                        "courseNumber": "4651"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "GEA",
+                        "courseNumber": "2000"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "GEO",
+                        "courseNumber": "2400"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "GEO",
+                        "courseNumber": "4372"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "GEY",
+                        "courseNumber": "3625"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "HFT",
+                        "courseNumber": "3868"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "HFT",
+                        "courseNumber": "3894"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "HSC",
+                        "courseNumber": "2130"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "HUM",
+                        "courseNumber": "2250"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "IDH",
+                        "courseNumber": "4200"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "IDS",
+                        "courseNumber": "2192"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "IDS",
+                        "courseNumber": "2231"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ISM",
+                        "courseNumber": "4041"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "ISS",
+                        "courseNumber": "3420"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "LAE",
+                        "courseNumber": "3414"
+                    }
+                },
+
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "LDR",
+                        "courseNumber": "2010"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "LIN",
+                        "courseNumber": "2002"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "MHS",
+                        "courseNumber": "3063"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "MUH",
+                        "courseNumber": "3016"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "NSP",
+                        "courseNumber": "3667"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "PHC",
+                        "courseNumber": "4464"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "REL",
+                        "courseNumber": "2300"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "SPC",
+                        "courseNumber": "3710"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "THE",
+                        "courseNumber": "4574"
+                    }
+                },
+                {
+                    "courseIdentifier": {
+                        "courseSubject": "WST",
+                        "courseNumber": "3015"
+                    }
+                }
+
+            ]
+        }
+    }
+]
