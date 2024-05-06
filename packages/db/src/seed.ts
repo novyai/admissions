@@ -115,8 +115,7 @@ async function insertCourses(uniId: string) {
             courseSubject: course.courseSubject,
             courseNumber: course.courseNumber,
             name: course.courseTitle,
-            startTerm: course.startTerm,
-            endTerm: course.endTerm
+            creditHours: 3 // TODO: FILL IN HERE
           }
         })
         console.log("processed course: ", course.courseSubject, course.courseNumber)

@@ -19,11 +19,60 @@ export async function updatePrerequisites() {
   const courseRequisiteMapping: Map<string, string[]> = new Map()
   for (const course of fixedDenormalizedCourses) {
     try {
-      let courseInDb = await db.course.findUnique({
+      let courseInDb = await db.course.upsert({
         where: {
           courseIdentifier: {
             courseSubject: course.courseSubject,
             courseNumber: course.courseNumber
+          }
+        },
+        create: {
+          name: course.name,
+          courseSubject: course.courseSubject,
+          courseNumber: course.courseNumber,
+          creditHours: 3, // NEED TO PROPERLY FILL THIS IN
+          department: {
+            connectOrCreate: {
+              where: {
+                code_universityId: {
+                  code: course.courseSubject,
+                  universityId: uniId
+                }
+              },
+              create: {
+                name: course.courseSubject,
+                code: course.courseSubject,
+                university: {
+                  connect: {
+                    id: uniId
+                  }
+                }
+              }
+            }
+          }
+        },
+        update: {
+          name: course.name,
+          courseSubject: course.courseSubject,
+          courseNumber: course.courseNumber,
+          department: {
+            connectOrCreate: {
+              where: {
+                code_universityId: {
+                  code: course.courseSubject,
+                  universityId: uniId
+                }
+              },
+              create: {
+                name: course.courseSubject,
+                code: course.courseSubject,
+                university: {
+                  connect: {
+                    id: uniId
+                  }
+                }
+              }
+            }
           }
         },
         include: {
@@ -38,45 +87,6 @@ export async function updatePrerequisites() {
           }
         }
       })
-      if (!courseInDb) {
-        courseInDb = await db.course.create({
-          data: {
-            name: course.name,
-            courseSubject: course.courseSubject,
-            courseNumber: course.courseNumber,
-            department: {
-              connectOrCreate: {
-                where: {
-                  code_universityId: {
-                    code: course.courseSubject,
-                    universityId: uniId
-                  }
-                },
-                create: {
-                  name: course.courseSubject,
-                  code: course.courseSubject,
-                  university: {
-                    connect: {
-                      id: uniId
-                    }
-                  }
-                }
-              }
-            }
-          },
-          include: {
-            conditions: {
-              include: {
-                conditions: {
-                  include: {
-                    prerequisites: true
-                  }
-                }
-              }
-            }
-          }
-        })
-      }
 
       console.log(`Fixing ${courseInDb.name} (${courseInDb.id})`)
 
