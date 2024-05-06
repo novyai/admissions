@@ -12,7 +12,7 @@
     "./queries/user": "./src/queries/user.ts",
     "./queries/conversation": "./src/queries/conversation.ts",
     "./queries/track": "./src/queries/track.ts",
-    "./data/*": "./src/data/*.json"
+    "./archive/*": "./src/archive/*.json"
   },
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
