@@ -30,7 +30,11 @@ export async function updatePrerequisites() {
           name: course.name,
           courseSubject: course.courseSubject,
           courseNumber: course.courseNumber,
-          creditHours: 3, // NEED TO PROPERLY FILL THIS IN
+          description: course.description,
+          creditHours:
+            typeof course.creditHours === "string" ?
+              parseInt(course.creditHours)
+            : course.creditHours,
           department: {
             connectOrCreate: {
               where: {
@@ -88,10 +92,7 @@ export async function updatePrerequisites() {
         }
       })
 
-      console.log(`Fixing ${courseInDb.name} (${courseInDb.id})`)
-
       // delete the old pre-requisites
-      console.log("Deleting old prerequisites...")
       await db.prerequisite.deleteMany({
         where: {
           conditionId: {
@@ -115,7 +116,6 @@ export async function updatePrerequisites() {
       })
 
       // add the new pre-requisites
-      console.log("Adding new prerequisites...")
       for (const conditionGroup of course.conditions) {
         const createdConditionGroup = await db.conditionGroup.create({
           data: {
@@ -165,7 +165,6 @@ export async function updatePrerequisites() {
                 courseId: true
               }
             })
-            console.log(`adding ${preqID.courseId} to ${courseInDb.id}`)
             courseRequisiteMapping.set(courseInDb.id, [
               ...(courseRequisiteMapping.get(courseInDb.id) ?? []),
               preqID.courseId
@@ -173,32 +172,6 @@ export async function updatePrerequisites() {
           }
         }
       }
-
-      const updatedCourse = await db.course.findUnique({
-        where: {
-          courseIdentifier: {
-            courseSubject: course.courseSubject,
-            courseNumber: course.courseNumber
-          }
-        },
-        include: {
-          conditions: {
-            include: {
-              conditions: {
-                include: {
-                  prerequisites: {
-                    include: {
-                      course: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      })
-
-      console.log(`Updated Course in DB: ${JSON.stringify(updatedCourse?.name)}`)
     } catch (error) {
       console.error(
         `Error fixing course in DB: ${course.courseSubject} ${course.courseNumber}`,
@@ -206,9 +179,6 @@ export async function updatePrerequisites() {
       )
     }
   }
-  console.log(
-    `Creating course requisites for ${courseRequisiteMapping.size} courses ${[...courseRequisiteMapping.keys()]}`
-  )
 
   await db.courseRequisites.deleteMany()
 
@@ -216,8 +186,9 @@ export async function updatePrerequisites() {
     ...courseRequisiteMapping.keys()
   ]
     .map((courseId, _i) => {
-      const reqForCourse = recursePrereqs(courseId, courseRequisiteMapping)
-      return reqForCourse.map(reqId => ({
+      const seen = new Set<string>()
+      recursePrereqs(courseId, courseRequisiteMapping, seen)
+      return [...seen].map(reqId => ({
         courseId,
         requisitesId: reqId
       }))
@@ -230,14 +201,20 @@ export async function updatePrerequisites() {
   })
 }
 
-function recursePrereqs(k: string, courseRequisiteMapping: Map<string, string[]>): string[] {
-  const requisites = courseRequisiteMapping.get(k)
-  console.log(`${k} has ${requisites}`)
-  if (!requisites) {
-    return []
+function recursePrereqs(
+  k: string,
+  courseRequisiteMapping: Map<string, string[]>,
+  seen: Set<string> = new Set()
+) {
+  if (seen.has(k)) {
+    return
   }
-  return [
-    ...requisites,
-    ...requisites.map(requisite => recursePrereqs(requisite, courseRequisiteMapping)).flat()
-  ]
+  seen.add(k)
+  const requisites = courseRequisiteMapping.get(k)
+  if (!requisites) {
+    return
+  }
+  for (const requisite of requisites) {
+    recursePrereqs(requisite, courseRequisiteMapping, seen)
+  }
 }

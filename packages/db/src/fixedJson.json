@@ -10,18 +10,12 @@
             "name": "Computer Science And Engineering",
             "requirements": [
               {
-                "name": "Math and Science Courses",
-                "description": "Math and Science Courses",
-                "creditHoursNeeded": 19,
+                "name": "Calc 1",
+                "description": "Calc 1",
+                "creditHoursNeeded": 4,
                 "nonOverlapping": false,
                 "courses": {
                   "connect": [
-                    {
-                      "courseIdentifier": {
-                        "courseSubject": "COT",
-                        "courseNumber": "3100"
-                      }
-                    },
                     {
                       "courseIdentifier": {
                         "courseSubject": "MAC",
@@ -31,13 +25,45 @@
                     {
                       "courseIdentifier": {
                         "courseSubject": "MAC",
-                        "courseNumber": "2282"
+                        "courseNumber": "2281"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Calc 2",
+                "description": "Calc 2",
+                "creditHoursNeeded": 4,
+                "nonOverlapping": false,
+                "courses": {
+                  "connect": [
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "MAC",
+                        "courseNumber": "2312"
                       }
                     },
                     {
                       "courseIdentifier": {
                         "courseSubject": "MAC",
-                        "courseNumber": "2312"
+                        "courseNumber": "2282"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "name": "Math and Science Courses without Calc 1 or 2",
+                "description": "Math and Science Courses without Calc 1 or 2",
+                "creditHoursNeeded": 11,
+                "nonOverlapping": false,
+                "courses": {
+                  "connect": [
+                    {
+                      "courseIdentifier": {
+                        "courseSubject": "COT",
+                        "courseNumber": "3100"
                       }
                     },
                     {
