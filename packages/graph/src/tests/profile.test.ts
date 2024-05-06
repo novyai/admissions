@@ -1,4 +1,3 @@
-import { ProgramOption } from "@graph/defaultCourses"
 import { buildSemesters, studentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
 import { BaseStudentProfile, HydratedStudentProfile, StudentProfile } from "@graph/types"
@@ -189,7 +188,7 @@ describe("pushing classes", () => {
 })
 
 const csProfile: BaseStudentProfile = {
-  programs: [ProgramOption.CS],
+  programs: ["0f9f18f2-c995-417e-9410-f611e0fff2c3"],
   requiredCourses: [],
   transferCredits: [],
   timeToGraduate: 4,

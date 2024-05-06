@@ -2,7 +2,6 @@
 
 import { UniversityPrograms } from "@/types"
 import { createBlob } from "@graph/blob"
-import { Program } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { db } from "@repo/db"
@@ -15,7 +14,7 @@ import { calculateSemesterDifference } from "@/lib/schedule/utils"
  * @param programs The user's programs to pull in courses from
  * @returns The ID of the newly created schedule
  */
-export async function createNewSchedule(userId: string, programs: Program[], startDate: string) {
+export async function createNewSchedule(userId: string, programs: string[], startDate: string) {
   const currentSemester = calculateSemesterDifference(startDate)
   const baseProfile: BaseStudentProfile = {
     programs,

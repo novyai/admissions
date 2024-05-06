@@ -6,7 +6,6 @@ import {
   countRequiredCoursesInConditionGroup,
   countRequiredCoursesInPrerequisiteTree
 } from "./conditions"
-import { Program } from "./defaultCourses"
 import { HydratedStudentProfile } from "./types"
 
 export const getCourseAndSemesterIndexFromIdNameCode = (
@@ -35,7 +34,7 @@ export type CourseAttributes = {
   semester?: number
   id: string
   name: string
-  programs: Program[] | undefined
+  tracks: string[] | undefined
 } & (
   | {
       hasAttributes: false
@@ -82,7 +81,7 @@ export const COURSE_PAYLOAD_QUERY = {
 export type CoursePayload = {
   id: string
   name: string
-  programs: Program[] | undefined
+  tracks: string[] | undefined
   conditions: Array<{
     conditions: Array<{
       prerequisites: Array<{
@@ -121,7 +120,7 @@ export const addCourseToGraph = ({
   graph.addNode(courseId, {
     id: course.id,
     name: course.name,
-    programs: course.programs,
+    tracks: course.tracks,
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,

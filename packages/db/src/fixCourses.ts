@@ -1,6 +1,6 @@
 import fixedDenormalizedCourses from "@db/data/sheet/fixed_denormalized_courses.json"
 
-import { db, type LogicalOperator, type RequirementType } from "@repo/db"
+import Prisma, { db, type LogicalOperator, type RequirementType } from "@repo/db"
 
 export async function updatePrerequisites() {
   const uni = await db.university.findFirst({
@@ -16,7 +16,7 @@ export async function updatePrerequisites() {
   }
 
   const { id: uniId } = uni
-
+  const courseRequisiteMapping: Map<string, string[]> = new Map()
   for (const course of fixedDenormalizedCourses) {
     try {
       let courseInDb = await db.course.findUnique({
@@ -135,10 +135,7 @@ export async function updatePrerequisites() {
           })
 
           for (const prerequisite of condition.prerequisites) {
-            console.log(
-              `Adding prerequisite ${prerequisite.courseSubject} ${prerequisite.courseNumber}`
-            )
-            await db.prerequisite.create({
+            const preqID = await db.prerequisite.create({
               data: {
                 condition: {
                   connect: {
@@ -153,8 +150,16 @@ export async function updatePrerequisites() {
                     }
                   }
                 }
+              },
+              select: {
+                courseId: true
               }
             })
+            console.log(`adding ${preqID.courseId} to ${courseInDb.id}`)
+            courseRequisiteMapping.set(courseInDb.id, [
+              ...(courseRequisiteMapping.get(courseInDb.id) ?? []),
+              preqID.courseId
+            ])
           }
         }
       }
@@ -183,7 +188,7 @@ export async function updatePrerequisites() {
         }
       })
 
-      console.log(`Updated Course in DB: ${JSON.stringify(updatedCourse)}`)
+      console.log(`Updated Course in DB: ${JSON.stringify(updatedCourse?.name)}`)
     } catch (error) {
       console.error(
         `Error fixing course in DB: ${course.courseSubject} ${course.courseNumber}`,
@@ -191,4 +196,38 @@ export async function updatePrerequisites() {
       )
     }
   }
+  console.log(
+    `Creating course requisites for ${courseRequisiteMapping.size} courses ${[...courseRequisiteMapping.keys()]}`
+  )
+
+  await db.courseRequisites.deleteMany()
+
+  const courseRequisites: Prisma.CourseRequisitesCreateManyInput[] = [
+    ...courseRequisiteMapping.keys()
+  ]
+    .map((courseId, _i) => {
+      const reqForCourse = recursePrereqs(courseId, courseRequisiteMapping)
+      return reqForCourse.map(reqId => ({
+        courseId,
+        requisitesId: reqId
+      }))
+    })
+    .flat()
+
+  await db.courseRequisites.createMany({
+    data: courseRequisites,
+    skipDuplicates: true
+  })
+}
+
+function recursePrereqs(k: string, courseRequisiteMapping: Map<string, string[]>): string[] {
+  const requisites = courseRequisiteMapping.get(k)
+  console.log(`${k} has ${requisites}`)
+  if (!requisites) {
+    return []
+  }
+  return [
+    ...requisites,
+    ...requisites.map(requisite => recursePrereqs(requisite, courseRequisiteMapping)).flat()
+  ]
 }

@@ -3,7 +3,6 @@ import { redirect, RedirectType } from "next/navigation"
 import { getSchedules } from "@/db/degree"
 import { auth } from "@clerk/nextjs/server"
 import { parseBlob } from "@graph/blob"
-import { programName } from "@graph/defaultCourses"
 import { Button } from "@repo/ui/components/ui/button"
 import {
   Table,
@@ -91,9 +90,7 @@ async function ScheduleTable({ userId }: { userId: string }) {
                 </Button>
               </TableCell>
               <TableCell>
-                {programs ?
-                  programs.map(p => <Badge key={p}>{programName[p]}</Badge>)
-                : "No Programs"}
+                {programs ? programs.map(p => <Badge key={p}>{p}</Badge>) : "No Programs"}
               </TableCell>
               <TableCell>
                 {hasVersions ? timeSince(new Date(schedule.versions[0].createdAt)) : "Not modified"}

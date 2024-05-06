@@ -1,11 +1,10 @@
 import { createBlob, parseBlob } from "@graph/blob"
-import { ProgramOption } from "@graph/defaultCourses"
 import { getStudentProfileFromRequirements } from "@graph/profile"
 import { BaseStudentProfile } from "@graph/types"
 import { expect, test } from "bun:test"
 
 const profile: BaseStudentProfile = {
-  programs: [ProgramOption.CS],
+  programs: ["0f9f18f2-c995-417e-9410-f611e0fff2c3"],
   requiredCourses: [],
   transferCredits: [],
   timeToGraduate: 4,

@@ -30,7 +30,7 @@ enum DegreeStatus {
 
 model User {
   id                  String                @id @default(uuid())
-  uid                 String?                @unique
+  uid                 String?               @unique
   email               String                @unique
   firstName           String?
   lastName            String?
@@ -60,14 +60,14 @@ model University {
 // Table for storing department data
 model Department {
   id           String     @id @default(uuid())
-  code         String     
+  code         String
   name         String
   universityId String
   courses      Course[]
   university   University @relation(fields: [universityId], references: [id])
 
-  @@index([universityId])
   @@unique([code, universityId])
+  @@index([universityId])
 }
 
 // Table for storing student data
@@ -108,37 +108,48 @@ enum Semester {
 }
 
 model SemestersOffered {
-  id String @id @default(uuid())
+  id       String   @id @default(uuid())
   courseId String
-  course Course @relation(fields: [courseId], references: [id])
+  course   Course   @relation(fields: [courseId], references: [id])
   semester Semester
 
   @@index([courseId])
 }
 
 model Course {
-  id                String              @id @default(uuid())
-  courseSubject     String
-  courseNumber      String
-  name              String
-  startTerm         Int?
-  endTerm           Int?
-  departmentId      String
-  universityId      String?
-  conditions        ConditionGroup[]
-  department        Department          @relation(fields: [departmentId], references: [id])
-  university        University?         @relation(fields: [universityId], references: [id])
-  universityGrade   UniversityGrade[]
-  prerequisites     Prerequisite[]
+  id              String            @id @default(uuid())
+  courseSubject   String
+  courseNumber    String
+  name            String
+  creditHours     Int
+  departmentId    String
+  universityId    String?
+  conditions      ConditionGroup[]
+  department      Department        @relation(fields: [departmentId], references: [id])
+  university      University?       @relation(fields: [universityId], references: [id])
+  universityGrade UniversityGrade[]
+  prerequisites   Prerequisite[]
 
   semestersOffered SemestersOffered[]
-  requirements Requirement[]
+  requirements     Requirement[]
 
+  courseRequisites CourseRequisites[]
+  requisites       CourseRequisites[] @relation("Requisites")
 
   @@unique(fields: [courseNumber, courseSubject], name: "courseIdentifier")
   @@index([departmentId])
   @@index([universityId])
   @@index([id])
+}
+
+model CourseRequisites {
+  courseId     String
+  requisitesId String
+  course       Course @relation(fields: [courseId], references: [id])
+  requisites   Course @relation("Requisites", fields: [requisitesId], references: [id])
+
+  @@unique([courseId, requisitesId])
+  @@index([requisitesId])
 }
 
 model ConditionGroup {
@@ -189,22 +200,22 @@ model DegreeData {
 }
 
 model Program {
-  id                String              @id @default(uuid())
-  name              String
-  totalDegreeHours  Int
-  universityId      String
-  
-  university        University          @relation(fields: [universityId], references: [id])
-  tracks Track[]
+  id               String @id @default(uuid())
+  name             String
+  totalDegreeHours Int
+  universityId     String
+
+  university University @relation(fields: [universityId], references: [id])
+  tracks     Track[]
 
   @@index([universityId])
 }
 
 model Track {
-  id String @id @default(uuid())
-  name String
+  id        String  @id @default(uuid())
+  name      String
   programId String
-  program Program @relation(fields: [programId], references: [id])
+  program   Program @relation(fields: [programId], references: [id])
 
   requirements Requirement[]
 
@@ -212,17 +223,14 @@ model Track {
 }
 
 model Requirement {
-  id String @id @default(uuid())
+  id      String @id @default(uuid())
   trackId String
-  track Track @relation(fields: [trackId], references: [id])
+  track   Track  @relation(fields: [trackId], references: [id])
 
-  name String
-  description String
-  
   courses Course[]
 
   creditHoursNeeded Int
-  nonOverlapping Boolean 
+  nonOverlapping    Boolean
 
   @@index([trackId])
 }
@@ -286,10 +294,6 @@ model Version {
 
   @@index([scheduleId])
 }
-
-
-
-
 
 model Conversation {
   id String @id @default(uuid())

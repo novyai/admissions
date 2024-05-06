@@ -448,25 +448,29 @@ async function main() {
   try {
     for (const uni of fixedJson) {
       // Step 1: Insert Universities
-      const { id } = await db.university.upsert({
+      const uniInDb = await db.university.findFirst({
         where: {
-          id: uni.id
-        },
-        update: {
           name: uni.name
-        },
-        create: {
-          name: uni.name,
-          id: uni.id
         }
       })
-      unis.push(id)
+
+      if (!uniInDb) {
+        const createdUni = await db.university.create({
+          data: {
+            name: uni.name
+          }
+        })
+        unis.push(createdUni.id)
+      } else {
+        unis.push(uniInDb.id)
+      }
     }
 
     await insertCourses(unis[0])
 
     await updatePrerequisites()
 
+    console.log("unis", unis, fixedJson.length)
     for (let i = 0; i < fixedJson.length; i++) {
       const uniId = unis[i]
       const uni = fixedJson[i]
@@ -508,8 +512,6 @@ async function main() {
                 data: {
                   trackId: trackInDb.id,
                   courses: req.courses,
-                  name: req.name,
-                  description: req.description,
                   creditHoursNeeded: req.creditHoursNeeded,
                   nonOverlapping: req.nonOverlapping
                 }

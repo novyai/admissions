@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"
 import { UniversityPrograms } from "@/types"
-import { Program } from "@graph/defaultCourses"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@repo/ui/components/multiselect"
 import { Button } from "@repo/ui/components/ui/button"
@@ -67,14 +66,14 @@ export function CreateNewScheduleForm({
   const enumValues = universities.map(university => university.value)
   const formSchema = z.object({
     university: z.enum(enumValues as [string, ...string[]]),
-    majors: z.array(z.custom<Option>()).min(1),
+    programs: z.array(z.custom<Option>()).min(1),
     start: z.string()
   })
 
   const { formState, getValues, trigger, setError, ...form } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      majors: [],
+      programs: [],
       university: "",
       start: ""
     }
@@ -91,7 +90,7 @@ export function CreateNewScheduleForm({
       })
       return
     }
-    console.log(result.data.majors)
+    console.log(result.data.programs)
     if (result.data.university !== "University of South Florida") {
       setError("university", {
         message: "We only support University of South Florida at the moment"
@@ -101,7 +100,7 @@ export function CreateNewScheduleForm({
 
     const scheduleId = await createNewSchedule(
       userId,
-      result.data.majors.map(option => option.value as Program),
+      result.data.programs.map(option => option.value),
       result.data.start
     )
 
@@ -130,7 +129,7 @@ export function CreateNewScheduleForm({
               <Select
                 onValueChange={e => {
                   // clear the options
-                  form.setValue("majors", [])
+                  form.setValue("programs", [])
                   field.onChange(e)
                 }}
                 defaultValue={field.value}
@@ -154,7 +153,7 @@ export function CreateNewScheduleForm({
         />
         <FormField
           control={form.control}
-          name="majors"
+          name="programs"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Majors</FormLabel>
