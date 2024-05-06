@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { Q_BASE_URL } from "@/constants"
 
-export const runtime = "edge"
-
 export async function POST(request: Request): Promise<Response> {
   try {
     const {

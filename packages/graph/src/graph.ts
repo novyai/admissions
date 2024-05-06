@@ -50,7 +50,7 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
     graph.addNode(courseNode.id, {
       id: courseNode.id,
       name: courseNode.name,
-      programs: courseNode.programs,
+      tracks: courseNode.tracks,
       hasAttributes: false,
       fanOut: undefined,
       earliestFinish: undefined,
@@ -84,7 +84,7 @@ export function hydratedProfileToBaseStudentProfile(
   return {
     requiredCourses: hydratedProfile.requiredCourses,
     transferCredits: hydratedProfile.transferCredits,
-    programs: hydratedProfile.programs,
+    tracks: hydratedProfile.tracks,
     timeToGraduate: hydratedProfile.timeToGraduate,
     currentSemester: hydratedProfile.currentSemester,
     coursePerSemester: hydratedProfile.coursePerSemester,
@@ -111,11 +111,11 @@ export function graphToHydratedStudentProfile(
   }
 }
 
-export function buildSemesters(graph: Graph) {
+export function buildSemesters(graph: CourseGraph) {
   const semesters = graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
     .reduce((acc: CourseNode[][], course: CourseNode) => {
-      const semesterIndex: number = graph.getNodeAttribute(course.id, "semester")
+      const semesterIndex = graph.getNodeAttribute(course.id, "semester")!
       if (semesterIndex in acc) {
         acc[semesterIndex].push(course)
         return acc

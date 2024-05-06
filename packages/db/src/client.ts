@@ -1,12 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client/edge"
-import { withAccelerate } from "@prisma/extension-accelerate"
+import { Prisma, PrismaClient } from "@prisma/client"
 
-type AcceleratedPrismaClient = PrismaClient
-
-export const db: AcceleratedPrismaClient = new PrismaClient().$extends(
-  withAccelerate()
-) as unknown as AcceleratedPrismaClient
-
-export * from "@prisma/client/edge"
+export const db = new PrismaClient()
+export * from "@prisma/client"
 
 export default Prisma

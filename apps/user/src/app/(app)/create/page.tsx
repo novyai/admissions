@@ -13,7 +13,6 @@ export default async function CreateSchedulePage() {
   }
 
   const universityPrograms = await getProgramsForAllUniversities()
-
   return (
     <div className="flex items-center justify-center h-screen">
       <Card className="w-[500px]">

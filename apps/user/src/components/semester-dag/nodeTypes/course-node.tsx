@@ -1,6 +1,5 @@
 "use client"
 
-import { Program, ProgramOption } from "@graph/defaultCourses"
 import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 import { motion } from "framer-motion"
@@ -19,13 +18,6 @@ export const defaultCourseNode: Partial<Node> = {
   // extent: 'parent'
 }
 
-type KEYS = Program | "EXTRA"
-const colorsForPrograms: { [key in KEYS]?: string } = {
-  [ProgramOption.CS]: "bg-sky-200",
-  [ProgramOption.GEN]: "bg-purple-200",
-  ["EXTRA"]: "bg-green-200"
-}
-
 export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNodeData>) {
   return (
     <motion.div
@@ -33,9 +25,7 @@ export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNod
         "border rounded-lg px-2 py-1 -1",
         (selected || dragging) && "border-ring z-20",
         data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : "",
-        data.programs && data.programs[0] ?
-          colorsForPrograms[data.programs[0]]
-        : colorsForPrograms["EXTRA"]
+        data.tracks && data.tracks[0] ? "bg-sky-200" : "bg-green-200"
       )}
       layout={!dragging}
       // create new component when animated changes, see issue workaround https://github.com/framer/motion/issues/2238#issue-1809290539

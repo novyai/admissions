@@ -3,6 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "globalEnv": [
     "NODE_ENV",
+    "DATABASE_URL",
     "OPENAI_API_KEY",
     "OPENAI_ORG_ID",
     "RW_ENV",
@@ -44,9 +45,14 @@
       "dependsOn": ["^db:generate"],
       "persistent": false
     },
+    "studio": {},
+    "db:reset": {},
     "db:generate": {},
     "db:migrate:dev": {},
     "db:format": {
+      "cache": false
+    },
+    "db:seed": {
       "cache": false
     },
     "db:push": {

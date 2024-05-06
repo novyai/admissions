@@ -1,8 +1,8 @@
 import { Change, ChangeType } from "@repo/constants"
 import { db, RequirementType } from "@repo/db"
+import { getTrack } from "@repo/db/queries/track"
 import Graph from "graphology"
 import { topologicalGenerations } from "graphology-dag"
-import { Attributes } from "graphology-types"
 
 import {
   addCourseToGraph,
@@ -11,7 +11,6 @@ import {
   CourseGraph,
   CoursePayload
 } from "./course"
-import { Program, programHandler } from "./defaultCourses"
 import {
   _getAllDependents,
   getChangesBetweenGraphs,
@@ -31,177 +30,79 @@ import {
   StudentProfile
 } from "./types"
 
-const GEN_ED_PROGRAM = {
-  program: "GEN" as Program,
-  requiredCourses: [
-    {
-      id: "GEN-SGEH",
-      name: "Gen Ed Core Humanities",
-      conditions: []
-    },
-    // {
-    //   id: "GEN-SGEM",
-    //   name: "Gen Ed Core Mathematics",
-    //   conditions: []
-    // },
-    // {
-    //   id: "GEN-SGEN",
-    //   name: "Gen Ed Core Natural Sciences",
-    //   conditions: []
-    // },
-    {
-      id: "GEN-SGES",
-      name: "Gen Ed Core Social Sciences",
-      conditions: []
-    },
-    {
-      id: "GEN-TGEC",
-      name: "Gen Ed Creative Thinking",
-      conditions: []
-    },
-    // {
-    //   id: "GEN-TGEI",
-    //   name: "Gen Ed Information & Data Literacy",
-    //   conditions: []
-    // },
-    {
-      id: "GEN-TGED",
-      name: "Gen Ed Human & Cultural Diversity",
-      conditions: []
-    },
-    {
-      id: "GEN-TGEH",
-      name: "Gen Ed High Impact Practice",
-      conditions: []
-    }
-  ],
-  extraToQuery: undefined
-}
-
-export const getCoursesForProgram = async (
-  program: Program
-): Promise<{
-  program: Program
-  requiredCourses: CoursePayload[] | undefined
-  extraToQuery: CoursePayload[] | undefined
-}> => {
-  const { requiredCourses: requiredCoursesWhereInput, extraToQuery: extraToQueryWhereInput } =
-    programHandler[program]
-
-  if (program == "GEN") {
-    return {
-      ...GEN_ED_PROGRAM,
-      requiredCourses: GEN_ED_PROGRAM.requiredCourses.map(course => ({
-        ...course,
-        programs: ["GEN"]
-      }))
-    }
-  }
-
-  const requiredCourses =
-    requiredCoursesWhereInput !== undefined ?
-      await db.course.findMany({
-        where: requiredCoursesWhereInput,
-        ...COURSE_PAYLOAD_QUERY
-      })
-    : undefined
-
-  const extraToQueryCourses =
-    extraToQueryWhereInput !== undefined ?
-      await db.course.findMany({
-        where: extraToQueryWhereInput,
-        ...COURSE_PAYLOAD_QUERY
-      })
-    : undefined
-
-  return {
-    program,
-    requiredCourses: requiredCourses?.map(course => ({
-      ...course,
-      programs: [program]
-    })),
-    extraToQuery: extraToQueryCourses?.map(course => ({
-      ...course,
-      programs: [program]
-    }))
-  }
-}
-
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
-  const programsWithGenEd = [...profile.programs, "GEN"] as Program[]
-  const programCourseData = await Promise.all(programsWithGenEd.map(p => getCoursesForProgram(p)))
+  const trackIds = [...profile.tracks, "GEN"]
+  const tracks = await Promise.all(trackIds.map(async t => getTrack(t)))
 
-  const requiredCoursesNotInProgram = await db.course.findMany({
-    where: {
-      id: {
-        in: profile.requiredCourses
+  // DIFFERENT TYPE OF TRACKS:
+
+  // IF ALL COURSES ARE REQUIRED PICK ALL (courses.length = number of credits)
+  // TODO: IF N COURSES ARE REQUIRED PICK SOME N (right now I am just saying all)
+
+  const requiredCoursesSet = new Set<string>()
+  const coursesToHydrateSet = new Set<string>()
+  // WE SHOULD PROBABLY START COLORING BY REQUIREMENT
+  const courseToTrack = new Map<string, Set<string>>()
+
+  function addToCoursesTrackMap(courseId: string, trackId: string) {
+    if (!courseToTrack.has(courseId)) {
+      courseToTrack.set(courseId, new Set<string>())
+    }
+    courseToTrack.get(courseId)!.add(trackId)
+  }
+
+  for (const track of tracks) {
+    if (track === null) {
+      continue
+    }
+    for (const requirement of track.requirements) {
+      for (const c of requirement.courses) {
+        // CONDITIONAL LOGIC FOR WHICH COURSES NEEDS TO BE IN HERE
+        requiredCoursesSet.add(c.id)
+        addToCoursesTrackMap(c.id, track.id)
+        for (const req of c.courseRequisites) {
+          coursesToHydrateSet.add(req.requisitesId)
+          addToCoursesTrackMap(req.requisitesId, track.id)
+        }
       }
+    }
+  }
+
+  for (const courseId of profile.requiredCourses) {
+    requiredCoursesSet.add(courseId)
+  }
+
+  const courseMap = new Map<string, CoursePayload>()
+
+  const hydratedCourses = await db.course.findMany({
+    where: {
+      id: { in: [...requiredCoursesSet, ...coursesToHydrateSet] }
     },
     ...COURSE_PAYLOAD_QUERY
   })
 
-  const courseMap = new Map<string, CoursePayload>()
-
-  function addToCourseMap(course: CoursePayload, program: Program | undefined) {
-    if (courseMap.get(course.id)) {
-      const prevPrograms = courseMap.get(course.id)!.programs ?? []
-      courseMap.set(course.id, {
-        ...course,
-        programs: program ? [...prevPrograms, program] : prevPrograms
-      })
-    } else {
-      courseMap.set(course.id, course)
-    }
+  for (const course of hydratedCourses) {
+    courseMap.set(course.id, {
+      ...course,
+      tracks: [...(courseToTrack.get(course.id) ?? new Set<string>())]
+    })
   }
 
-  const allRequiredCourses = [...profile.requiredCourses]
-
-  programCourseData.forEach(program => {
-    program.requiredCourses?.forEach(course => {
-      allRequiredCourses.push(course.id)
-      addToCourseMap(course, program.program)
-    })
-    program.extraToQuery?.forEach(course => {
-      addToCourseMap(course, program.program)
-    })
-  })
-
-  requiredCoursesNotInProgram.forEach(course => {
-    addToCourseMap({ ...course, programs: [] }, undefined)
-  })
-
-  programCourseData.forEach(program => {
-    program.requiredCourses?.forEach(course => {
-      addCourseToGraph({
-        courseId: course.id,
-        graph,
-        courseMap,
-        requiredCourses: allRequiredCourses
-      })
-    })
-    program.extraToQuery?.forEach(course => {
-      addCourseToGraph({
-        courseId: course.id,
-        graph,
-        courseMap,
-        requiredCourses: allRequiredCourses
-      })
-    })
-  })
-
-  requiredCoursesNotInProgram.map(c =>
+  for (const courseId of courseMap.keys()) {
     addCourseToGraph({
-      courseId: c.id,
-      graph,
-      courseMap,
-      requiredCourses: allRequiredCourses
+      courseId: courseId,
+      graph: graph,
+      courseMap: courseMap,
+      requiredCourses: [...requiredCoursesSet]
     })
-  )
+  }
 
-  profile.semesters.forEach((sem, i) => {
-    sem.forEach(c => graph.setNodeAttribute(c, "semester", i))
-  })
+  for (const [i, sem] of profile.semesters.entries()) {
+    for (const courseId of sem) {
+      graph.setNodeAttribute(courseId, "semester", i)
+    }
+  }
 
   return graph
 }
@@ -246,6 +147,13 @@ export function scheduleCourses(
   distributeCoursesEvenly: boolean = true
 ) {
   computeNodeStats(graph, profile)
+  console.log(
+    "test",
+    graph.mapNodes((c, attr) => ({
+      c,
+      attr
+    }))
+  )
   const positiveConstrainedCourseIDs = constraints.positive.flatMap(c => c.courseIDs)
   schedulePositiveConstraints(graph, profile, constraints.positive)
   const fixedSemesters = constraints.positive.filter(c => !c.canAddCourses).map(c => c.semester)
@@ -255,7 +163,7 @@ export function scheduleCourses(
     currentSemester += 1
   }
 
-  let numCoursesInCurrentSemesterByProgram: { [program in Program | "undefined"]?: number } = {}
+  let numCoursesInCurrentSemesterByTrack: { [track in string | "undefined"]?: number } = {}
   let numCoursesInCurrentSemester: number = 0
   let firstDeferredCourseId: string | null = null
 
@@ -263,22 +171,22 @@ export function scheduleCourses(
     graph.setNodeAttribute(course["id"], "semester", currentSemester)
     numCoursesInCurrentSemester += 1
 
-    if (!course.programs) {
+    if (!course.tracks) {
       return
     }
-    course.programs.forEach(p => {
+    course.tracks.forEach(p => {
       const normalizedProgram = p === undefined ? "undefined" : p
 
-      const numCourses = numCoursesInCurrentSemesterByProgram[normalizedProgram]
+      const numCourses = numCoursesInCurrentSemesterByTrack[normalizedProgram]
       if (numCourses === undefined) {
-        numCoursesInCurrentSemesterByProgram[normalizedProgram] = 0
+        numCoursesInCurrentSemesterByTrack[normalizedProgram] = 0
       }
-      numCoursesInCurrentSemesterByProgram[normalizedProgram]! += 1
+      numCoursesInCurrentSemesterByTrack[normalizedProgram]! += 1
     })
   }
 
   const initializeNumCoursesInCurrentSemesterByProgram = (semester: number) => {
-    numCoursesInCurrentSemesterByProgram = {}
+    numCoursesInCurrentSemesterByTrack = {}
     const coursesInSemester = getCoursesInSemester(graph, semester)
     for (const course of coursesInSemester) {
       addCourseToSemester(course)
@@ -305,17 +213,17 @@ export function scheduleCourses(
 
   sortedCourses.sort((courseA, courseB) => courseA.slack! - courseB.slack!)
 
-  const getProgramRatios = (): { [program in Program | "undefined"]: number } => {
-    const ratios: { [program in Program | "undefined"]?: number } = {
+  const getProgramRatios = (): { [track in string | "undefined"]: number } => {
+    const ratios: { [track in string | "undefined"]?: number } = {
       undefined: 0
     }
 
     for (const course of sortedCourses) {
-      const programs = course.programs === undefined ? "undefined" : course.programs
-      if (programs === "undefined" || programs.length === 0) {
+      const tracks = course.tracks === undefined ? "undefined" : course.tracks
+      if (tracks === "undefined" || tracks.length === 0) {
         ratios["undefined"]! += 1
       } else {
-        for (const program of programs) {
+        for (const program of tracks) {
           if (!(program in ratios)) {
             ratios[program] = 0
           }
@@ -324,38 +232,38 @@ export function scheduleCourses(
       }
     }
 
-    for (const [program, numCourses] of Object.entries(ratios)) {
-      ratios[program as Program] = (numCourses ?? 0) / sortedCourses.length
+    for (const [track, numCourses] of Object.entries(ratios)) {
+      ratios[track] = (numCourses ?? 0) / sortedCourses.length
     }
 
-    return ratios as { [program in Program | "undefined"]: number }
+    return ratios as { [track in string | "undefined"]: number }
   }
 
   const programRatios = getProgramRatios()
 
-  const tooManyProgramCourses = (
-    program: Program | undefined,
-    distributeProgramCoursesEvenly: boolean
+  const tooManyTrackCourses = (
+    track: string | undefined,
+    distributeTrackCoursesEvenly: boolean
   ) => {
-    if (!distributeProgramCoursesEvenly) return false
-    const normProgram = program === undefined ? "undefined" : program
+    if (!distributeTrackCoursesEvenly) return false
+    const normProgram = track === undefined ? "undefined" : track
 
-    const numCourses = numCoursesInCurrentSemesterByProgram[normProgram]
+    const numCourses = numCoursesInCurrentSemesterByTrack[normProgram]
     if (numCourses === undefined) return false
     const onlyOneProgramLeft = sortedCourses.every(course => {
-      if (!course.programs || !program) {
+      if (!course.tracks || !track) {
         return false
       }
       if (normProgram === "undefined") {
-        return course.programs === undefined
+        return course.tracks === undefined
       } else {
-        return course.programs.includes(program)
+        return course.tracks.includes(track)
       }
     })
 
     if (onlyOneProgramLeft) return false
 
-    const threshold = program === undefined ? programRatios["undefined"]! : programRatios[program]!
+    const threshold = track === undefined ? programRatios["undefined"]! : programRatios[track]!
 
     return numCourses >= Math.ceil(profile.coursePerSemester * threshold)
   }
@@ -397,10 +305,8 @@ export function scheduleCourses(
     const corequisites = getCorequisites(graph, course.id)
 
     const tooManyCourses =
-      course.programs ?
-        !course.programs.some(program =>
-          tooManyProgramCourses(program, distributeProgramCoursesEvenly)
-        )
+      course.tracks ?
+        !course.tracks.some(program => tooManyTrackCourses(program, distributeProgramCoursesEvenly))
       : false
     if (
       !isCourseNegativelyConstrained(course.id, currentSemester) &&
@@ -448,21 +354,20 @@ export function scheduleCourses(
 }
 
 export function toCourseNode(
-  graph: Graph,
+  graph: CourseGraph,
   courseId: string,
-  course: Attributes | undefined
+  course: CourseAttributes | undefined
 ): CourseNode {
   if (!course) {
     course = graph.getNodeAttributes(courseId)
   }
   return {
     id: courseId,
-    name: course["name"],
-    programs: course["programs"],
-
-    earliestFinish: course["earliestFinish"],
-    latestFinish: course["latestFinish"],
-    fanOut: course["fanOut"],
+    name: course.name,
+    tracks: course.tracks,
+    earliestFinish: course.earliestFinish,
+    latestFinish: course.latestFinish,
+    fanOut: course.fanOut,
 
     dependents: graph.mapOutboundNeighbors(courseId, dependentId => dependentId),
     prerequisites: graph
