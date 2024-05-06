@@ -121,6 +121,7 @@ model Course {
   courseSubject   String
   courseNumber    String
   name            String
+  description     String?         @db.Text
   creditHours     Int
   departmentId    String
   universityId    String?

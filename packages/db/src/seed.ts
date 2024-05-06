@@ -465,7 +465,7 @@ async function main() {
       }
     }
 
-    await insertCourses(unis[0])
+    // await insertCourses(unis[0])
 
     await updatePrerequisites()
 
