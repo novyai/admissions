@@ -22,9 +22,6 @@ export const defaultCourseNode: Partial<Node> = {
 export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNodeData>) {
   const updateNodeInternals = useUpdateNodeInternals()
 
-  useEffect(() => {
-    updateNodeInternals(id)
-  })
   return (
     <motion.div
       className={cn(
