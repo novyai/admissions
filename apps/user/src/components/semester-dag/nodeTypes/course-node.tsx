@@ -1,6 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
 import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 import { motion } from "framer-motion"

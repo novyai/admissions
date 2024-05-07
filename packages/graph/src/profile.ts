@@ -56,7 +56,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     if (track === null) {
       continue
     }
-    for (const requirement of track.requirements.slice(0, 2)) {
+    for (const requirement of track.requirements) {
       for (const c of requirement.courses) {
         // CONDITIONAL LOGIC FOR WHICH COURSES NEEDS TO BE IN HERE
         requiredCoursesSet.add(c.id)
