@@ -104,6 +104,8 @@ export function Editor({
       defaultEdges: newDefaultEdges
     } = await hydratedProfileAndNodesByVersion(version.id)
 
+    console.log("defaultEdges", newDefaultEdges)
+
     setProfile(newProfile)
     setDefaultNodes(newDefaultNodes)
 
