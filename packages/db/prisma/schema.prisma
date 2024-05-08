@@ -220,7 +220,7 @@ model Track {
 
   requirements        Requirement[]
   requirementGroup    RequirementGroup[]
-  RequirementSubgroup RequirementSubgroup[]
+  requirementSubgroup RequirementSubgroup[]
 
   @@index([programId])
 }
@@ -233,7 +233,7 @@ model RequirementGroup {
 
   trackId     String        
   track       Track         @relation(fields: [trackId], references: [id])
-  Requirement Requirement[]
+  requirements Requirement[]
 
   @@index([trackId])
 }
