@@ -13,6 +13,7 @@ export async function getTrack(trackId: string) {
               select: {
                 id: true,
                 name: true,
+                creditHours: true,
                 courseRequisites: {
                   select: {
                     requisitesId: true
