@@ -9,6 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@ui/components/ui/accordion"
+import { Badge } from "@ui/components/ui/badge"
 import { Button } from "@ui/components/ui/button"
 import {
   DropdownMenu,
@@ -170,6 +171,13 @@ const STATUS_INFORMATION = {
   }
 }
 
+function getAttributes(graph: CourseGraph, courseId: string) {
+  if (graph.hasNode(courseId)) {
+    return graph.getNodeAttributes(courseId)
+  }
+  return null
+}
+
 function getStatusForCourse(course: CourseAttributes, currentSemester: number): Status {
   if (!course.semester) {
     return "not_planned"
@@ -188,9 +196,13 @@ function getStatusForRequirement(
   graph: CourseGraph,
   currentSemester: number
 ): Status {
-  const statuses = requirement.courses.map(course =>
-    getStatusForCourse(graph.getNodeAttributes(course.id), currentSemester)
-  )
+  const statuses = requirement.courses.map(course => {
+    const attributes = getAttributes(graph, course.id)
+    if (!attributes) {
+      return "not_planned"
+    }
+    return getStatusForCourse(attributes, currentSemester)
+  })
   if (statuses.includes("not_planned")) {
     return "not_planned"
   }
@@ -261,21 +273,28 @@ function CourseRow({
   currentSemester: number
   startDate: string
 }) {
-  const courseData = graph.getNodeAttributes(course.id)
+  const courseData = getAttributes(graph, course.id)
 
-  const status = getStatusForCourse(courseData, currentSemester)
-  const semesterCode =
-    courseData.semester ?
-      getSemesterCode(courseData.semester, startDate)
-    : {
-        semester: "No",
-        year: "semester"
-      }
+  let status: Status = "not_planned"
+  let semesterCode: {
+    semester: string
+    year: string | number
+  } = {
+    semester: "No",
+    year: "semester"
+  }
+
+  if (courseData) {
+    status = getStatusForCourse(courseData, currentSemester)
+    if (courseData.semester) {
+      semesterCode = getSemesterCode(courseData.semester, startDate)
+    }
+  }
   return (
     <div className="pl-8 flex gap-2 items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
       <StatusIcon status={status} />
       <div>
-        <h5 className="font-medium text-md">{courseData.name}</h5>
+        <h5 className="font-medium text-md">{course?.name}</h5>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {status === "not_planned" ?
             "Not planned"
@@ -285,6 +304,9 @@ function CourseRow({
             </>
           }
         </p>
+      </div>
+      <div>
+        <Badge variant={"outline"}>{course.creditHours} credits</Badge>
       </div>
       <div>
         <DropdownMenu>
