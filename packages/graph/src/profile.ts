@@ -52,7 +52,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     if (track === null) {
       continue
     }
-    // fill out nonOverlapping reqs first so we don't run out of courses
+    // fill out nonOverlapping reqs first so we don't run out of courses for that req
     const sortedReqs = [...track.requirements]
     sortedReqs.sort((reqA, reqB) => {
       if (reqA.nonOverlapping === reqB.nonOverlapping) return 0
@@ -66,7 +66,21 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
         requirement.nonOverlapping ?
           requirement.courses.filter(c => !requiredCoursesSet.has(c.id))
         : requirement.courses
+
       while (totalCreditHours < requirement.creditHoursNeeded) {
+        if (courseIndex === validCourseOptions.length) {
+          console.log(
+            `requirement.courses (length ${requirement.courses.length})`,
+            requirement.courses.map(c => ({
+              name: c.name,
+              creditHours: c.creditHours
+            }))
+          )
+          console.log("validCourseOptions", validCourseOptions.length)
+          throw Error(
+            `validCourseOptions was not enough to fulfill requirement ${requirement.id} needing ${requirement.creditHoursNeeded} credit hours`
+          )
+        }
         const course = validCourseOptions[courseIndex]
         requirementCourses.push(course)
         totalCreditHours += course.creditHours
