@@ -224,6 +224,12 @@
                             "courseSubject": "CNT",
                             "courseNumber": "4419"
                           }
+                        },
+                        {
+                          "courseIdentifier": {
+                            "courseSubject": "CIS",
+                            "courseNumber": "4250"
+                          }
                         }
                       ]
                     }
