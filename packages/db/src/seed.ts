@@ -110,6 +110,36 @@ export async function updatePrerequisites() {
   const courseRequisiteMapping: Map<string, string[]> = new Map()
   for (const course of [...csRequisiteData, ...genEdRequisiteData]) {
     try {
+      const courseData = {
+        name: course.name,
+        courseSubject: course.courseSubject,
+        courseNumber: course.courseNumber,
+        description: course.description,
+        creditHours:
+          typeof course.creditHours === "string" ?
+            parseInt(course.creditHours)
+          : course.creditHours,
+        department: {
+          connectOrCreate: {
+            where: {
+              code_universityId: {
+                code: course.courseSubject,
+                universityId: uniId
+              }
+            },
+            create: {
+              name: course.courseSubject,
+              code: course.courseSubject,
+              university: {
+                connect: {
+                  id: uniId
+                }
+              }
+            }
+          }
+        }
+      }
+
       let courseInDb = await db.course.upsert({
         where: {
           courseIdentifier: {
@@ -117,59 +147,8 @@ export async function updatePrerequisites() {
             courseNumber: course.courseNumber
           }
         },
-        create: {
-          name: course.name,
-          courseSubject: course.courseSubject,
-          courseNumber: course.courseNumber,
-          description: course.description,
-          creditHours:
-            typeof course.creditHours === "string" ?
-              parseInt(course.creditHours)
-            : course.creditHours,
-          department: {
-            connectOrCreate: {
-              where: {
-                code_universityId: {
-                  code: course.courseSubject,
-                  universityId: uniId
-                }
-              },
-              create: {
-                name: course.courseSubject,
-                code: course.courseSubject,
-                university: {
-                  connect: {
-                    id: uniId
-                  }
-                }
-              }
-            }
-          }
-        },
-        update: {
-          name: course.name,
-          courseSubject: course.courseSubject,
-          courseNumber: course.courseNumber,
-          department: {
-            connectOrCreate: {
-              where: {
-                code_universityId: {
-                  code: course.courseSubject,
-                  universityId: uniId
-                }
-              },
-              create: {
-                name: course.courseSubject,
-                code: course.courseSubject,
-                university: {
-                  connect: {
-                    id: uniId
-                  }
-                }
-              }
-            }
-          }
-        },
+        create: courseData,
+        update: courseData,
         include: {
           conditions: {
             include: {
