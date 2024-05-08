@@ -1,6 +1,6 @@
 import { addCourseToGraph, CourseGraph, CoursePayload } from "@graph/course"
 import { buildSemesters } from "@graph/graph"
-import { scheduleCourses } from "@graph/profile"
+import { scheduleCourses } from "@graph/schedule"
 import { computeNodeStats } from "@graph/stats"
 import { RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
