@@ -58,10 +58,6 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
       if (reqA.nonOverlapping === reqB.nonOverlapping) return 0
       return reqA.nonOverlapping ? -1 : 1
     })
-    console.log(
-      "sortedReqs",
-      sortedReqs.filter(req => req.id === "c895cd6b-0df7-4fc2-8778-f3d0c12c2420")[0]
-    )
     for (const requirement of sortedReqs) {
       const requirementCourses = []
       let totalCreditHours = 0
