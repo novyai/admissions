@@ -121,7 +121,7 @@ model Course {
   courseSubject   String
   courseNumber    String
   name            String
-  description     String?         @db.Text
+  description     String?           @db.Text
   creditHours     Int
   departmentId    String
   universityId    String?
@@ -218,9 +218,39 @@ model Track {
   programId String
   program   Program @relation(fields: [programId], references: [id])
 
-  requirements Requirement[]
+  requirements        Requirement[]
+  requirementGroup    RequirementGroup[]
+  requirementSubgroup RequirementSubgroup[]
 
   @@index([programId])
+}
+
+model RequirementGroup {
+  id   String @id @default(uuid())
+  name String
+
+  requirementSubgroups RequirementSubgroup[]
+
+  trackId     String        
+  track       Track         @relation(fields: [trackId], references: [id])
+  requirements Requirement[]
+
+  @@index([trackId])
+}
+
+model RequirementSubgroup {
+  id   String @id @default(uuid())
+  name String
+
+  trackId      String
+  track        Track         @relation(fields: [trackId], references: [id])
+  requirements Requirement[]
+
+  requirementGroup   RequirementGroup @relation(fields: [requirementGroupId], references: [id])
+  requirementGroupId String
+
+  @@index([trackId])
+  @@index([requirementGroupId])
 }
 
 model Requirement {
@@ -228,12 +258,20 @@ model Requirement {
   trackId String
   track   Track  @relation(fields: [trackId], references: [id])
 
+  requirementGroup   RequirementGroup? @relation(fields: [requirementGroupId], references: [id])
+  requirementGroupId String?
+
+  requirementSubgroup   RequirementSubgroup? @relation(fields: [requirementSubgroupId], references: [id])
+  requirementSubgroupId String?
+
   courses Course[]
 
   creditHoursNeeded Int
   nonOverlapping    Boolean
 
   @@index([trackId])
+  @@index([requirementGroupId])
+  @@index([requirementSubgroupId])
 }
 
 model UniversityGrade {
