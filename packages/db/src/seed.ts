@@ -1,11 +1,9 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-
 import Prisma, { db, type LogicalOperator, type RequirementType } from "@repo/db"
 
 import baseCourseData from "./data/usf/courses.json"
 import csRequisiteData from "./data/usf/cs/requisites.json"
 import csTrackData from "./data/usf/cs/tracks.json"
-import genEdRequirementData from "./data/usf/gen/requirements.json"
+// import genEdRequirementData from "./data/usf/gen/requirements.json"
 import genEdRequisiteData from "./data/usf/gen/requisites.json"
 
 const uniInformation = [
@@ -18,10 +16,11 @@ const uniInformation = [
 const DEFAULT_CREDIT_HOURS = 3
 
 async function insertCourses(uniId: string) {
+  console.log("inserting courses")
   try {
-    for (const course of baseCourseData) {
-      try {
-        await db.course.upsert({
+    await db.$transaction(
+      baseCourseData.map(course => {
+        return db.course.upsert({
           where: {
             courseIdentifier: {
               courseSubject: course.courseSubject,
@@ -85,20 +84,14 @@ async function insertCourses(uniId: string) {
             creditHours: DEFAULT_CREDIT_HOURS
           }
         })
-        console.log("processed course: ", course.courseSubject, course.courseNumber)
-      } catch (error) {
-        if (error instanceof PrismaClientKnownRequestError) {
-          console.log(error.message)
-        }
-        console.log(error)
-        console.log("failure on course: ", course.courseSubject, course.courseNumber)
-      }
-    }
+      })
+    )
   } catch (error) {
     console.error("Error inserting courses:", error)
   } finally {
     await db.$disconnect()
   }
+  console.log("inserted courses")
 }
 export async function updatePrerequisites() {
   const uni = await db.university.findFirst({
@@ -380,25 +373,43 @@ async function main() {
             }
           })
 
-          for (const req of track.requirements) {
-            await db.requirement.create({
-              data: {
-                trackId: trackInDb.id,
-                courses: req.courses,
-                creditHoursNeeded: req.creditHoursNeeded,
-                nonOverlapping: req.nonOverlapping
-              }
-            })
-          }
-          for (const req of genEdRequirementData) {
-            await db.requirement.create({
-              data: {
-                trackId: trackInDb.id,
-                courses: req.courses,
-                creditHoursNeeded: req.creditHoursNeeded,
-                nonOverlapping: req.nonOverlapping
-              }
-            })
+          for (const group of track.requirementGroup) {
+            try {
+              await db.requirementGroup.create({
+                data: {
+                  name: group.name,
+                  track: {
+                    connect: {
+                      id: trackInDb.id
+                    }
+                  },
+                  requirementSubgroups: {
+                    create: group.requirementSubgroup.map(subgroup => ({
+                      name: subgroup.name,
+                      track: {
+                        connect: {
+                          id: trackInDb.id
+                        }
+                      },
+                      requirements: {
+                        create: subgroup.requirements.map(req => ({
+                          creditHoursNeeded: req.creditHoursNeeded,
+                          nonOverlapping: req.nonOverlapping,
+                          courses: req.courses,
+                          track: {
+                            connect: {
+                              id: trackInDb.id
+                            }
+                          }
+                        }))
+                      }
+                    }))
+                  }
+                }
+              })
+            } catch (error) {
+              console.error("Error creating requirement group", group, error)
+            }
           }
         }
       }
