@@ -10,6 +10,9 @@ import {
   AccordionTrigger
 } from "@ui/components/ui/accordion"
 import { cn } from "@ui/lib/utils"
+import { CalendarCheckIcon, CheckIcon, Ellipsis, TriangleAlert } from "lucide-react"
+
+import { getSemesterCode } from "@/lib/schedule/utils"
 
 const TRACK_QUERY = {
   include: {
@@ -37,6 +40,8 @@ const TRACK_QUERY = {
 type RequirementGroupsQuery = Prisma.TrackGetPayload<typeof TRACK_QUERY>
 
 type GroupData = RequirementGroupsQuery["requirementGroup"][number]["requirementSubgroups"][number]
+
+type Status = "not_planned" | "completed" | "in_progress" | "planned"
 
 export default async function Page({
   params: { scheduleId }
@@ -99,8 +104,8 @@ export default async function Page({
         </p>
       </div>
       <div className="space-y-4">
-        {trackData.requirementGroup.map(requirementGroup => (
-          <>
+        {trackData.requirementGroup.map((requirementGroup, i) => (
+          <div key={i}>
             {requirementGroup.requirementSubgroups.length > 0 && (
               <>
                 <h2 className="text-2xl font-bold">{requirementGroup.name}</h2>
@@ -108,17 +113,18 @@ export default async function Page({
                   {requirementGroup.requirementSubgroups.map((group, i) => (
                     <AccordionItem key={i} value={group.id}>
                       <AccordionTrigger>
-                        <div className="flex items-center justify-between py-2">
+                        <div className="flex w-full h-full items-center justify-between py-2">
                           <h2 className="text-xl font-bold">{group.name}</h2>
                         </div>
                       </AccordionTrigger>
                       <AccordionContent>
-                        <div className="flex flex-col gap-8">
+                        <div className="flex w-full h-full flex-col gap-8">
                           {group.requirements.map((requirement, i) => (
                             <RequirementRow
                               key={i}
                               requirement={requirement}
                               graph={graph}
+                              startDate={profile.startDate}
                               currentSemester={profile.currentSemester}
                             />
                           ))}
@@ -129,25 +135,33 @@ export default async function Page({
                 </Accordion>
               </>
             )}
-          </>
+          </div>
         ))}
       </div>
-
-      {/* <ProgressSection /> */}
-
-      {/* <pre>{JSON.stringify(trackData, null, 2)}</pre> */}
     </div>
   )
 }
 
-const STATUS_COLOR = {
-  not_planned: "gray-500",
-  planned: "blue-500",
-  in_progress: "yellow-500",
-  completed: "green-500"
+const STATUS_INFORMATION = {
+  not_planned: {
+    bgColor: "bg-gray-500" as const,
+    icon: TriangleAlert
+  },
+  planned: {
+    bgColor: "bg-blue-500" as const,
+    icon: CalendarCheckIcon
+  },
+  in_progress: {
+    bgColor: "bg-yellow-500" as const,
+    icon: Ellipsis
+  },
+  completed: {
+    bgColor: "bg-green-500" as const,
+    icon: CheckIcon
+  }
 }
 
-function getStatusForCourse(course: CourseAttributes, currentSemester: number) {
+function getStatusForCourse(course: CourseAttributes, currentSemester: number): Status {
   if (!course.semester) {
     return "not_planned"
   }
@@ -164,7 +178,7 @@ function getStatusForRequirement(
   requirement: GroupData["requirements"][number],
   graph: CourseGraph,
   currentSemester: number
-) {
+): Status {
   const statuses = requirement.courses.map(course =>
     getStatusForCourse(graph.getNodeAttributes(course.id), currentSemester)
   )
@@ -180,40 +194,88 @@ function getStatusForRequirement(
   return "completed"
 }
 
+function StatusIcon({ status }: { status: Status }) {
+  const info = STATUS_INFORMATION[status]
+  return (
+    <div className={cn("flex items-center justify-center  w-8 h-8 rounded-full", info.bgColor)}>
+      <info.icon className="w-5 h-5 text-white" />
+    </div>
+  )
+}
+
 function RequirementRow({
   requirement,
   graph,
-  currentSemester
+  currentSemester,
+  startDate
 }: {
+  startDate: string
   requirement: GroupData["requirements"][number]
   graph: CourseGraph
   currentSemester: number
 }) {
   const status = getStatusForRequirement(requirement, graph, currentSemester)
 
-  const statusColor = STATUS_COLOR[status]
-
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex gap-2 items-center">
-        <div className={cn("h-4 w-4 rounded-full", `bg-${statusColor}`)} />
-        <h4 className="font-medium text-md">
-          Pick {requirement.creditHoursNeeded} credits worth of the following courses
-        </h4>
+    <div className="flex flex-col">
+      <div className="flex gap-2 p-2 items-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        <div className="flex gap-2 items-center">
+          <StatusIcon status={status} />
+          <h4 className="font-medium text-md">
+            Pick {requirement.creditHoursNeeded} credits worth of the following courses
+          </h4>
+        </div>
       </div>
       <div className="space-y-3">
-        {requirement.courses.map((course, i) => {
-          const courseData = graph.getNodeAttributes(course.id)
+        {requirement.courses.map((course, i) => (
+          <CourseRow
+            key={i}
+            course={course}
+            graph={graph}
+            currentSemester={currentSemester}
+            startDate={startDate}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
 
-          const status = getStatusForCourse(courseData, currentSemester)
+function CourseRow({
+  course,
+  graph,
+  currentSemester,
+  startDate
+}: {
+  course: GroupData["requirements"][number]["courses"][number]
+  graph: CourseGraph
+  currentSemester: number
+  startDate: string
+}) {
+  const courseData = graph.getNodeAttributes(course.id)
 
-          return (
-            <div key={i} className="pl-8">
-              {courseData.name} - Status: {status} - semester:{" "}
-              {courseData.semester ?? "no semester"}
-            </div>
-          )
-        })}
+  const status = getStatusForCourse(courseData, currentSemester)
+  const semesterCode =
+    courseData.semester ?
+      getSemesterCode(courseData.semester, startDate)
+    : {
+        semester: "No",
+        year: "semester"
+      }
+  return (
+    <div className="pl-8 flex gap-2 items-center hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-md">
+      <StatusIcon status={status} />
+      <div>
+        <h5 className="font-medium text-md">{courseData.name}</h5>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {status === "not_planned" ?
+            "Not planned"
+          : <>
+              {status === "completed" ? "Completed" : "Planned"} in {semesterCode.semester}{" "}
+              {semesterCode.year}
+            </>
+          }
+        </p>
       </div>
     </div>
   )
