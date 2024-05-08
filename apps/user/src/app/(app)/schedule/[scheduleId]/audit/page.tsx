@@ -9,8 +9,17 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@ui/components/ui/accordion"
+import { Button } from "@ui/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from "@ui/components/ui/dropdown-menu"
 import { cn } from "@ui/lib/utils"
-import { CalendarCheckIcon, CheckIcon, Ellipsis, TriangleAlert } from "lucide-react"
+import { CalendarCheckIcon, CheckIcon, Ellipsis, MoreHorizontal, TriangleAlert } from "lucide-react"
 
 import { getSemesterCode } from "@/lib/schedule/utils"
 
@@ -144,19 +153,19 @@ export default async function Page({
 
 const STATUS_INFORMATION = {
   not_planned: {
-    bgColor: "bg-gray-500" as const,
+    bgColor: "bg-red-400" as const,
     icon: TriangleAlert
   },
   planned: {
-    bgColor: "bg-blue-500" as const,
+    bgColor: "bg-blue-400" as const,
     icon: CalendarCheckIcon
   },
   in_progress: {
-    bgColor: "bg-yellow-500" as const,
+    bgColor: "bg-yellow-400" as const,
     icon: Ellipsis
   },
   completed: {
-    bgColor: "bg-green-500" as const,
+    bgColor: "bg-green-400" as const,
     icon: CheckIcon
   }
 }
@@ -263,7 +272,7 @@ function CourseRow({
         year: "semester"
       }
   return (
-    <div className="pl-8 flex gap-2 items-center hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-md">
+    <div className="pl-8 flex gap-2 items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
       <StatusIcon status={status} />
       <div>
         <h5 className="font-medium text-md">{courseData.name}</h5>
@@ -276,6 +285,23 @@ function CourseRow({
             </>
           }
         </p>
+      </div>
+      <div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Select this course</DropdownMenuItem>
+            <DropdownMenuItem>View course information</DropdownMenuItem>
+            <DropdownMenuItem>Replace this course</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )
