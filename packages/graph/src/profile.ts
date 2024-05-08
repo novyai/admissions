@@ -48,6 +48,27 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     courseToTrack.get(courseId)!.add(trackId)
   }
 
+  function createCourseToNumReqs() {
+    const courseToNumReqs = new Map<string, number>()
+    for (const track of tracks) {
+      if (track === null) continue
+      for (const requirement of track.requirements) {
+        if (requirement.nonOverlapping) continue
+        for (const course of requirement.courses) {
+          if (!courseToNumReqs.has(course.id)) {
+            courseToNumReqs.set(course.id, 0)
+          }
+          const numReqs = courseToNumReqs.get(course.id)!
+          courseToNumReqs.set(course.id, numReqs + 1)
+        }
+      }
+    }
+    return courseToNumReqs
+  }
+
+  // course IDs to the num reqs they fulfill (excluding nonOverlapping reqs)
+  const courseToNumReqs: Map<string, number> = createCourseToNumReqs()
+
   for (const track of tracks) {
     if (track === null) {
       continue
@@ -61,14 +82,22 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     for (const requirement of sortedReqs) {
       const requirementCourses = []
       let totalCreditHours = 0
-      let courseIndex = 0
       const validCourseOptions =
         requirement.nonOverlapping ?
           requirement.courses.filter(c => !requiredCoursesSet.has(c.id))
         : requirement.courses
 
+      validCourseOptions.sort((courseA, courseB) => {
+        const numReqsA = courseToNumReqs.get(courseA.id)!
+        const numReqsB = courseToNumReqs.get(courseB.id)!
+        return numReqsA - numReqsB
+      })
+
+      const validCourseOptionsInitialLength = validCourseOptions.length
+
       while (totalCreditHours < requirement.creditHoursNeeded) {
-        if (courseIndex === validCourseOptions.length) {
+        const course = validCourseOptions.pop()
+        if (course === undefined) {
           console.log(
             `requirement.courses (length ${requirement.courses.length})`,
             requirement.courses.map(c => ({
@@ -76,15 +105,13 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
               creditHours: c.creditHours
             }))
           )
-          console.log("validCourseOptions", validCourseOptions.length)
+          console.log("validCourseOptions", validCourseOptionsInitialLength)
           throw Error(
             `validCourseOptions was not enough to fulfill requirement ${requirement.id} needing ${requirement.creditHoursNeeded} credit hours`
           )
         }
-        const course = validCourseOptions[courseIndex]
         requirementCourses.push(course)
         totalCreditHours += course.creditHours
-        courseIndex += 1
       }
 
       for (const c of requirementCourses) {
