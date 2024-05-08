@@ -28,7 +28,7 @@
     "@types/bun": "^1.0.1",
     "husky": "^9.0.11",
     "prettier": "^3.2.4",
-    "prisma": "^5.11.0",
+    "prisma": "^5.13.0",
     "turbo": "latest"
   },
   "engines": {
