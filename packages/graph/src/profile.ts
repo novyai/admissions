@@ -27,6 +27,98 @@ import {
 } from "./types"
 import { isSubsetOf as isSubset } from "./utils"
 
+function getCoursesToRemove(
+  graph: CourseGraph,
+  courses: Array<{ id: string; creditHours: number; requirements: Array<{ id: string }> }>,
+  requiredCoursesSet: Set<string>,
+  reqToCourses: Map<
+    string,
+    Array<{ courseId: string; creditHours: number; requirements: string[] }>
+  >,
+  reqToCreditHours: Map<string, { actual: number; needed: number }>
+) {
+  interface Course {
+    dependents: Set<string>
+    courseId: string
+    creditHours: number
+    requirements: string[]
+  }
+  const requiredCoursesRemoveCandidates: Array<{
+    courseId: string
+    creditHours: number
+    requirements: string[]
+  }> = []
+  const requiredCoursesRemoveCandidatesSet = new Set<string>()
+  for (const [reqId, courses] of reqToCourses.entries()) {
+    for (const course of courses) {
+      if (requiredCoursesRemoveCandidatesSet.has(course.courseId)) {
+        continue
+      }
+      const { needed, actual } = reqToCreditHours.get(reqId)!
+      if (course.creditHours !== 0 && actual - course.creditHours >= needed) {
+        requiredCoursesRemoveCandidates.push(course)
+        requiredCoursesRemoveCandidatesSet.add(course.courseId)
+      }
+    }
+  }
+
+  // remove unnecessary courses (non-required prereqs whose dependents are already fully covered by another course)
+  const nonRequirementPrereqs = courses
+    .filter(
+      course =>
+        !requiredCoursesSet.has(course.id) && !requiredCoursesRemoveCandidatesSet.has(course.id)
+    )
+    .map(c => ({
+      courseId: c.id,
+      creditHours: c.creditHours,
+      requirements: []
+    }))
+
+  const removeCourseCandidates = [...nonRequirementPrereqs, ...requiredCoursesRemoveCandidates].map(
+    course => ({
+      ...course,
+      dependents: new Set(_getAllDependents(course.courseId, graph))
+    })
+  )
+
+  removeCourseCandidates.sort(
+    ({ dependents: depsA }, { dependents: depsB }) => depsB.size - depsA.size
+  )
+
+  const canRemoveCourse = (course: Course) => {
+    for (const reqId of course.requirements) {
+      const { needed, actual } = reqToCreditHours.get(reqId)!
+      if (actual - course.creditHours < needed) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const coursesToRemove = new Set<string>()
+  while (removeCourseCandidates.length > 0) {
+    const course = removeCourseCandidates.pop()!
+
+    if (!canRemoveCourse(course)) {
+      continue
+    }
+    for (const otherCourse of removeCourseCandidates) {
+      if (coursesToRemove.has(course.courseId)) {
+        break
+      }
+      if (isSubset(course.dependents, otherCourse.dependents)) {
+        coursesToRemove.add(course.courseId)
+        for (const reqId of course.requirements) {
+          const { needed, actual } = reqToCreditHours.get(reqId)!
+          reqToCreditHours.set(reqId, { needed: needed, actual: actual - course.creditHours })
+        }
+      }
+    }
+  }
+  console.log("COURSES TO REMOVE", coursesToRemove)
+  return coursesToRemove
+}
+
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
   const trackIds = [...profile.tracks, "GEN"]
@@ -150,6 +242,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     string,
     Array<{ courseId: string; creditHours: number; requirements: string[] }>
   >()
+
   for (const course of hydratedCourses) {
     courseMap.set(course.id, {
       ...course,
@@ -179,91 +272,19 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     })
   }
 
-  const requiredCoursesRemoveCandidates: Array<{
-    courseId: string
-    creditHours: number
-    requirements: string[]
-  }> = []
-  const requiredCoursesRemoveCandidatesSet = new Set<string>()
-  for (const [reqId, courses] of reqToCourses.entries()) {
-    for (const course of courses) {
-      if (requiredCoursesRemoveCandidatesSet.has(course.courseId)) {
-        continue
-      }
-      const { needed, actual } = reqToCreditHours.get(reqId)!
-      if (course.creditHours !== 0 && actual - course.creditHours >= needed) {
-        requiredCoursesRemoveCandidates.push(course)
-        requiredCoursesRemoveCandidatesSet.add(course.courseId)
-      }
-    }
-  }
-
-  // remove unnecessary courses (non-required prereqs whose dependents are already fully covered by another course)
-  const nonRequirementPrereqs = hydratedCourses
-    .filter(
-      course =>
-        !requiredCoursesSet.has(course.id) && !requiredCoursesRemoveCandidatesSet.has(course.id)
-    )
-    .map(c => ({
-      courseId: c.id,
-      creditHours: c.creditHours,
-      requirements: []
-    }))
-
-  const removeCourseCandidates = [...nonRequirementPrereqs, ...requiredCoursesRemoveCandidates].map(
-    course => ({
-      ...course,
-      dependents: new Set(_getAllDependents(course.courseId, graph))
-    })
-  )
-
-  removeCourseCandidates.sort(
-    ({ dependents: depsA }, { dependents: depsB }) => depsB.size - depsA.size
-  )
-  console.log("removeCourseCandidates", removeCourseCandidates)
-  const canRemoveCourse = (course: {
-    dependents: Set<string>
-    courseId: string
-    creditHours: number
-    requirements: string[]
-  }) => {
-    for (const reqId of course.requirements) {
-      const { needed, actual } = reqToCreditHours.get(reqId)!
-      if (actual - course.creditHours < needed) {
-        return false
-      }
-    }
-    return true
-  }
-
-  const coursesToRemove = new Set<string>()
-  while (removeCourseCandidates.length > 0) {
-    const course = removeCourseCandidates.pop()!
-    if (course.courseId === "b3eaaab0-acc6-4e69-9b7d-472f92038266") {
-      console.log(course.courseId, canRemoveCourse(course))
-    }
-
-    if (!canRemoveCourse(course)) {
-      continue
-    }
-    for (const otherCourse of removeCourseCandidates) {
-      if (isSubset(course.dependents, otherCourse.dependents)) {
-        console.log("adding", course.courseId)
-        coursesToRemove.add(course.courseId)
-        for (const reqId of course.requirements) {
-          const { needed, actual } = reqToCreditHours.get(reqId)!
-          reqToCreditHours.set(reqId, { needed: needed, actual: actual - course.creditHours })
-        }
-      }
-    }
-  }
-
-  console.log("COURSES TO REMOVE", coursesToRemove)
   for (const [i, sem] of profile.semesters.entries()) {
     for (const courseId of sem) {
       graph.setNodeAttribute(courseId, "semester", i)
     }
   }
+
+  const coursesToRemove = getCoursesToRemove(
+    graph,
+    hydratedCourses,
+    requiredCoursesSet,
+    reqToCourses,
+    reqToCreditHours
+  )
 
   for (const course of coursesToRemove) {
     graph.dropNode(course)
