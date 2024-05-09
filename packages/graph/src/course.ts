@@ -62,6 +62,10 @@ export const COURSE_PAYLOAD_QUERY = {
   select: {
     name: true,
     id: true,
+    creditHours: true,
+    requirements: {
+      select: { id: true }
+    },
     conditions: {
       select: {
         logicalOperator: true,
