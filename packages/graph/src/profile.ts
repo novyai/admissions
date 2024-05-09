@@ -25,6 +25,7 @@ import {
   PositiveScheduleConstraint,
   StudentProfile
 } from "./types"
+import { isSubsetOf as isSubset } from "./utils"
 
 export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
   const graph: CourseGraph = new Graph()
@@ -40,6 +41,8 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
   const coursesToHydrateSet = new Set<string>()
   // WE SHOULD PROBABLY START COLORING BY REQUIREMENT
   const courseToTrack = new Map<string, Set<string>>()
+
+  const reqToCreditHours = new Map<string, { needed: number; actual: number }>()
 
   function addToCoursesTrackMap(courseId: string, trackId: string) {
     if (!courseToTrack.has(courseId)) {
@@ -80,6 +83,7 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
       return reqA.nonOverlapping ? -1 : 1
     })
     for (const requirement of sortedReqs) {
+      reqToCreditHours.set(requirement.id, { needed: requirement.creditHoursNeeded, actual: 0 })
       const requirementCourses = []
       let totalCreditHours = 0
       const validCourseOptions =
@@ -90,7 +94,11 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
       validCourseOptions.sort((courseA, courseB) => {
         const numReqsA = courseToNumReqs.get(courseA.id)!
         const numReqsB = courseToNumReqs.get(courseB.id)!
-        return numReqsA - numReqsB
+
+        /* 
+        if the requirement is nonOverlapping, we actually want to pick the courses that fulfill the least amount of other requirements first so we don't steal double-counting opportunity
+        */
+        return requirement.nonOverlapping ? numReqsB - numReqsA : numReqsA - numReqsB
       })
 
       const validCourseOptionsInitialLength = validCourseOptions.length
@@ -138,11 +146,28 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     ...COURSE_PAYLOAD_QUERY
   })
 
+  const reqToCourses = new Map<
+    string,
+    Array<{ courseId: string; creditHours: number; requirements: string[] }>
+  >()
   for (const course of hydratedCourses) {
     courseMap.set(course.id, {
       ...course,
       tracks: [...(courseToTrack.get(course.id) ?? new Set<string>())]
     })
+
+    for (const req of course.requirements) {
+      const { needed, actual } = reqToCreditHours.get(req.id)!
+      reqToCreditHours.set(req.id, { needed: needed, actual: actual + course.creditHours })
+      if (!reqToCourses.has(req.id)) {
+        reqToCourses.set(req.id, [])
+      }
+      reqToCourses.get(req.id)?.push({
+        courseId: course.id,
+        creditHours: course.creditHours,
+        requirements: course.requirements.map(({ id }) => id)
+      })
+    }
   }
 
   for (const courseId of courseMap.keys()) {
@@ -154,10 +179,94 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     })
   }
 
+  const requiredCoursesRemoveCandidates: Array<{
+    courseId: string
+    creditHours: number
+    requirements: string[]
+  }> = []
+  const requiredCoursesRemoveCandidatesSet = new Set<string>()
+  for (const [reqId, courses] of reqToCourses.entries()) {
+    for (const course of courses) {
+      if (requiredCoursesRemoveCandidatesSet.has(course.courseId)) {
+        continue
+      }
+      const { needed, actual } = reqToCreditHours.get(reqId)!
+      if (course.creditHours !== 0 && actual - course.creditHours >= needed) {
+        requiredCoursesRemoveCandidates.push(course)
+        requiredCoursesRemoveCandidatesSet.add(course.courseId)
+      }
+    }
+  }
+
+  // remove unnecessary courses (non-required prereqs whose dependents are already fully covered by another course)
+  const nonRequirementPrereqs = hydratedCourses
+    .filter(
+      course =>
+        !requiredCoursesSet.has(course.id) && !requiredCoursesRemoveCandidatesSet.has(course.id)
+    )
+    .map(c => ({
+      courseId: c.id,
+      creditHours: c.creditHours,
+      requirements: []
+    }))
+
+  const removeCourseCandidates = [...nonRequirementPrereqs, ...requiredCoursesRemoveCandidates].map(
+    course => ({
+      ...course,
+      dependents: new Set(_getAllDependents(course.courseId, graph))
+    })
+  )
+
+  removeCourseCandidates.sort(
+    ({ dependents: depsA }, { dependents: depsB }) => depsB.size - depsA.size
+  )
+  console.log("removeCourseCandidates", removeCourseCandidates)
+  const canRemoveCourse = (course: {
+    dependents: Set<string>
+    courseId: string
+    creditHours: number
+    requirements: string[]
+  }) => {
+    for (const reqId of course.requirements) {
+      const { needed, actual } = reqToCreditHours.get(reqId)!
+      if (actual - course.creditHours < needed) {
+        return false
+      }
+    }
+    return true
+  }
+
+  const coursesToRemove = new Set<string>()
+  while (removeCourseCandidates.length > 0) {
+    const course = removeCourseCandidates.pop()!
+    if (course.courseId === "b3eaaab0-acc6-4e69-9b7d-472f92038266") {
+      console.log(course.courseId, canRemoveCourse(course))
+    }
+
+    if (!canRemoveCourse(course)) {
+      continue
+    }
+    for (const otherCourse of removeCourseCandidates) {
+      if (isSubset(course.dependents, otherCourse.dependents)) {
+        console.log("adding", course.courseId)
+        coursesToRemove.add(course.courseId)
+        for (const reqId of course.requirements) {
+          const { needed, actual } = reqToCreditHours.get(reqId)!
+          reqToCreditHours.set(reqId, { needed: needed, actual: actual - course.creditHours })
+        }
+      }
+    }
+  }
+
+  console.log("COURSES TO REMOVE", coursesToRemove)
   for (const [i, sem] of profile.semesters.entries()) {
     for (const courseId of sem) {
       graph.setNodeAttribute(courseId, "semester", i)
     }
+  }
+
+  for (const course of coursesToRemove) {
+    graph.dropNode(course)
   }
 
   return graph
