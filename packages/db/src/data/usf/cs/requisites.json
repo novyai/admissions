@@ -1345,7 +1345,7 @@
   {
     "courseSubject": "CEN",
     "courseNumber": "4072",
-    "name": "SOFTWARE TESTING",
+    "name": "Software Testing",
     "creditHours": "3",
     "description": "The course provides the fundamental principles and tools for testing and validating large-scale software systems. The course is open to majors as well as non-majors.",
     "conditions": [
