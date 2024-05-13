@@ -191,7 +191,7 @@ function getAttributes(graph: CourseGraph, courseId: string) {
 }
 
 function getStatusForCourse(course: CourseAttributes, currentSemester: number): Status {
-  if (!course.semester) {
+  if (course.semester === undefined) {
     return "not_planned"
   }
   if (course.semester < currentSemester) {
@@ -287,6 +287,7 @@ function RequirementRow({
   if (status === "completed") {
     courses = courses.filter(course => {
       const attributes = getAttributes(graph, course.id)
+
       if (!attributes) {
         return false
       }
