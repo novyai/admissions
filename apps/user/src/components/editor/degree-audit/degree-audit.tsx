@@ -45,7 +45,7 @@ export default function DegreeAudit({
   const graph = studentProfileToGraph(profile)
 
   return (
-    <div className="w-full max-h-full h-[50vh] p-4 max-w-[1200px] mx-auto overflow-scroll">
+    <div className="w-full h-full p-4 max-w-[1200px] mx-auto overflow-scroll">
       <h1 className="text-3xl font-bold sr-only">Degree Audit</h1>
       <p className="text-gray-500 dark:text-gray-400">
         Review your progress towards your degree requirements.

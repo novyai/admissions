@@ -243,8 +243,8 @@ export function Editor({
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <div className="h-full flex flex-col">
-          <Tabs defaultValue="schedule" className="h-full">
-            <TabsList className="w-full flex">
+          <Tabs defaultValue="schedule" className="h-[55vh]">
+            <TabsList className="w-full flex h-[2.5rem]">
               <TabsTrigger value="schedule" className="flex-grow">
                 Schedule
               </TabsTrigger>
@@ -252,7 +252,7 @@ export function Editor({
                 Degree Audit
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="schedule" className="relative h-full w-full">
+            <TabsContent value="schedule" className="h-[calc(55vh-3rem)] relative">
               <SemesterDAG
                 resetNodePlacement={resetNodePlacement}
                 profile={profile}
@@ -265,11 +265,11 @@ export function Editor({
                 onEdgesChange={onEdgesChange}
               />
             </TabsContent>
-            <TabsContent value="audit" className="h-full w-full">
+            <TabsContent value="audit" className="h-[calc(55vh-3rem)] w-full">
               <DegreeAudit profile={profile} trackData={trackData} />
             </TabsContent>
           </Tabs>
-          <div className="grow max-h-[35%] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
+          <div className="h-[30vh] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
             <div className="h-full">
               <div className="sticky">
                 <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
