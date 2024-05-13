@@ -231,7 +231,7 @@ function RequirementRow({
   }
 
   // if status is planned we need to show courses that are completed and in progress, and planned. Then show other courses
-  if (status === "planned") {
+  if (status === "planned" || status === "in_progress") {
     courses = courses.filter(course => {
       const attributes = getAttributes(graph, course.id)
       if (!attributes) {
@@ -254,7 +254,7 @@ function RequirementRow({
       if (!attributes) {
         return true
       }
-      return !(getStatusForCourse(attributes, currentSemester) !== "not_planned")
+      return getStatusForCourse(attributes, currentSemester) === "not_planned"
     })
   }
 
