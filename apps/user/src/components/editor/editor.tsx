@@ -237,13 +237,13 @@ export function Editor({
   })
 
   return (
-    <div className="w-full h-full rounded-xl border">
+    <div className="w-full h-fit rounded-xl border">
       {!profile ?
         <div className="h-full flex flex-grow items-center justify-center">
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <div className="h-full flex flex-col">
-          <Tabs defaultValue="schedule" className="h-[55vh]">
+          <Tabs defaultValue="schedule" className="h-[52vh]">
             <TabsList className="w-full flex h-[2.5rem]">
               <TabsTrigger value="schedule" className="flex-grow">
                 Schedule
@@ -252,7 +252,7 @@ export function Editor({
                 Degree Audit
               </TabsTrigger>
             </TabsList>
-            <TabsContent value="schedule" className="h-[calc(55vh-3rem)] relative">
+            <TabsContent value="schedule" className="h-[calc(52vh-3rem)] relative">
               <SemesterDAG
                 resetNodePlacement={resetNodePlacement}
                 profile={profile}
@@ -265,7 +265,7 @@ export function Editor({
                 onEdgesChange={onEdgesChange}
               />
             </TabsContent>
-            <TabsContent value="audit" className="h-[calc(55vh-3rem)] w-full">
+            <TabsContent value="audit" className="h-[calc(52vh-3rem)] w-full">
               <DegreeAudit profile={profile} trackData={trackData} />
             </TabsContent>
           </Tabs>
