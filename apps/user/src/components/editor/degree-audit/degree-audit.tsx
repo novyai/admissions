@@ -1,8 +1,7 @@
-import Prisma, { db } from "@db/client"
-import { parseBlob } from "@graph/blob"
+import { TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { CourseAttributes, CourseGraph } from "@graph/course"
-import { graphToHydratedStudentProfile } from "@graph/graph"
-import { createGraph } from "@graph/profile"
+import { studentProfileToGraph } from "@graph/graph"
+import { HydratedStudentProfile } from "@graph/types"
 import {
   Accordion,
   AccordionContent,
@@ -25,137 +24,72 @@ import { CalendarCheckIcon, CheckIcon, Ellipsis, MoreHorizontal, TriangleAlert }
 
 import { getSemesterCode } from "@/lib/schedule/utils"
 
-const TRACK_QUERY = {
-  include: {
-    requirementGroup: {
-      include: {
-        requirementSubgroups: {
-          include: {
-            requirements: {
-              include: {
-                courses: true
-              }
-            }
-          }
-        },
-        requirements: {
-          include: {
-            courses: true
-          }
-        }
-      }
-    }
-  }
-} satisfies Prisma.TrackDefaultArgs
-
-type RequirementGroupsQuery = Prisma.TrackGetPayload<typeof TRACK_QUERY>
-
-type GroupData = RequirementGroupsQuery["requirementGroup"][number]["requirementSubgroups"][number]
+type GroupData = TrackDataPayload["requirementGroup"][number]["requirementSubgroups"][number]
 
 type Status = "not_planned" | "completed" | "in_progress" | "planned"
 
-export default async function Page({
-  params: { scheduleId }
+export default function DegreeAudit({
+  profile,
+  trackData
 }: {
-  params: {
-    scheduleId: string
-  }
+  profile: HydratedStudentProfile
+  trackData: TrackDataPayload | null
 }) {
-  const schedule = await db.schedule.findUnique({
-    where: {
-      id: scheduleId
-    },
-    include: {
-      versions: {
-        select: {
-          // scheduleId: true,
-          blob: true,
-          // createdAt: true,
-          id: true
-        },
-        orderBy: {
-          createdAt: "asc"
-        },
-        take: 1
-      }
-    }
-  })
-
-  if (!schedule || !schedule.versions[0]) {
-    return <div>Not found</div>
+  if (!trackData) {
+    return <div>Track not found</div>
   }
-
-  const baseProfile = parseBlob(schedule.versions[0].blob)
-
-  const graph = await createGraph(baseProfile)
-
-  const profile = graphToHydratedStudentProfile(graph, baseProfile)
-
   if (profile.tracks.length > 1) {
     return <div>Multiple tracks not supported on our audit page for now</div>
   }
 
-  const trackData = await db.track.findUnique({
-    where: {
-      id: profile.tracks[0]
-    },
-    ...TRACK_QUERY
-  })
-
-  if (!trackData) {
-    return <div>Track not found</div>
-  }
+  const graph = studentProfileToGraph(profile)
 
   return (
-    <div className="flex w-full h-full flex-col gap-8 max-w-[1200px] mx-auto">
-      <div className="space-y-4">
-        <h1 className="text-3xl font-bold">Degree Audit</h1>
-        <p className="text-gray-500 dark:text-gray-400">
-          Review your progress towards your degree requirements.
-        </p>
-      </div>
-      <div className="space-y-4">
-        {trackData.requirementGroup.map((requirementGroup, i) => (
-          <div key={i}>
-            {requirementGroup.requirementSubgroups.length > 0 && (
-              <>
-                <h2 className="text-2xl font-bold">{requirementGroup.name}</h2>
-                <Accordion type="single" collapsible>
-                  {requirementGroup.requirementSubgroups.map((group, i) => (
-                    <AccordionItem key={i} value={group.id}>
-                      <AccordionTrigger>
-                        <div className="flex w-full h-full items-center gap-4">
-                          <StatusIcon
-                            status={handleStatusList(
-                              group.requirements.map(requirement =>
-                                getStatusForRequirement(requirement, graph, profile.currentSemester)
-                              )
-                            )}
+    <div className="w-full max-h-full h-[50vh] p-4 max-w-[1200px] mx-auto overflow-scroll">
+      <h1 className="text-3xl font-bold sr-only">Degree Audit</h1>
+      <p className="text-gray-500 dark:text-gray-400">
+        Review your progress towards your degree requirements.
+      </p>
+      {trackData.requirementGroup.map((requirementGroup, i) => (
+        <div key={i} className="mt-4">
+          {requirementGroup.requirementSubgroups.length > 0 && (
+            <>
+              <h2 className="text-lg font-bold">{requirementGroup.name}</h2>
+              <Accordion type="single" collapsible>
+                {requirementGroup.requirementSubgroups.map((group, i) => (
+                  <AccordionItem key={i} value={group.id}>
+                    <AccordionTrigger>
+                      <div className="flex w-full h-full items-center gap-2">
+                        <StatusIcon
+                          status={handleStatusList(
+                            group.requirements.map(requirement =>
+                              getStatusForRequirement(requirement, graph, profile.currentSemester)
+                            )
+                          )}
+                        />
+                        <h2 className="text-[1rem]">{group.name}</h2>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="flex w-full h-full flex-col gap-8">
+                        {group.requirements.map((requirement, i) => (
+                          <RequirementRow
+                            key={i}
+                            requirement={requirement}
+                            graph={graph}
+                            startDate={profile.startDate}
+                            currentSemester={profile.currentSemester}
                           />
-                          <h2 className="text-xl font-bold">{group.name}</h2>
-                        </div>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <div className="flex w-full h-full flex-col gap-8">
-                          {group.requirements.map((requirement, i) => (
-                            <RequirementRow
-                              key={i}
-                              requirement={requirement}
-                              graph={graph}
-                              startDate={profile.startDate}
-                              currentSemester={profile.currentSemester}
-                            />
-                          ))}
-                        </div>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </>
-            )}
-          </div>
-        ))}
-      </div>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
@@ -305,6 +239,15 @@ function RequirementRow({
       }
       return getStatusForCourse(attributes, currentSemester) !== "not_planned"
     })
+    courses.sort((courseA, courseB) => {
+      const semesterA = getAttributes(graph, courseA.id)?.semester
+      const semesterB = getAttributes(graph, courseB.id)?.semester
+
+      if (semesterA === undefined && semesterB === undefined) return 0
+      if (semesterA === undefined) return 1
+      if (semesterB === undefined) return -1
+      return semesterA - semesterB
+    })
     extraCourses = requirement.courses.filter(course => {
       const attributes = getAttributes(graph, course.id)
 
@@ -339,21 +282,24 @@ function RequirementRow({
           <>
             <Separator />
 
-            <div className="flex gap-2 flex-col p-2 rounded-md">
+            <div className="flex gap-2 flex-col p-1 rounded-md">
               <h4 className="font-semibold text-md">Other courses to consider</h4>
-              <div className="max-h-[36ex] p-1 overflow-scroll shadow-inner rounded-lg">
+              <div className="max-h-[36ex] w-[36rem] max-w-full p-1 overflow-scroll shadow-inner rounded-lg">
                 {extraCourses.map((course, i) => (
                   <div
                     key={i}
-                    className="flex gap-2 items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-md"
+                    className="flex gap-2 items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-md"
                   >
                     <div>
-                      <h5 className="font-medium text-md">
-                        {course.courseSubject} {course.courseNumber}
-                      </h5>
+                      <div className="flex gap-2 items-center">
+                        <h5 className="font-medium text-md">
+                          {course.courseSubject} {course.courseNumber}
+                        </h5>
+                        <Badge variant="outline">{course.creditHours} credits</Badge>
+                      </div>
+
                       <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
                     </div>
-                    <Badge variant="outline">{course.creditHours} credits</Badge>
                     <CourseDropdown />
                   </div>
                 ))}
@@ -397,23 +343,31 @@ function CourseRow({
 
   const statusInfo = STATUS_INFORMATION[status]
   return (
-    <div className="flex gap-2 items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
-      <StatusIcon status={status} />
-      <div>
-        <h5 className="font-medium text-md">
-          {course.courseSubject} {course.courseNumber}
-        </h5>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
-      </div>
-      <div className="flex gap-1">
-        <Badge variant={"outline"}>{course.creditHours} credits</Badge>
-        <Badge variant={"outline"}>
-          {" "}
+    <div className="flex gap-2 w-[36rem] max-w-full items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
+      <div className="flex justify-between items-center gap-8 w-full">
+        <div className="flex gap-2 items-center">
+          <StatusIcon status={status} />
+          <div>
+            <div className="flex gap-2 items-center">
+              <h5 className="font-medium text-md">
+                {course.courseSubject} {course.courseNumber}
+              </h5>
+              <Badge variant={"outline"}>{course.creditHours} credits</Badge>
+            </div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
+          </div>
+        </div>
+        <div className="text-sm text-right">
           {status === "not_planned" ?
             "Not planned"
-          : `${statusInfo.content} in ${semesterCode.semester} ${semesterCode.year}`}
-        </Badge>
+          : <>
+              <span className="block font-semibold">{`${semesterCode.semester} ${semesterCode.year}`}</span>
+              <span className="block">{statusInfo.content}</span>
+            </>
+          }
+        </div>
       </div>
+
       <CourseDropdown />
     </div>
   )

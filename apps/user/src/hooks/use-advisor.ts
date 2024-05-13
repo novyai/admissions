@@ -4,7 +4,7 @@ import { Message, MessageRole } from "@repo/db"
 import { toast } from "sonner"
 
 import { useSocket } from "@/hooks/use-socket"
-import { VersionWithoutBlob } from "@/components/dag/editor"
+import { VersionWithoutBlob } from "@/components/editor/editor"
 
 const NO_RESPONSE_TIMEOUT = 10000
 
