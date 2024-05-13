@@ -341,7 +341,7 @@ function RequirementRow({
 
             <div className="flex gap-2 flex-col p-2 rounded-md">
               <h4 className="font-semibold text-md">Other courses to consider</h4>
-              <div>
+              <div className="max-h-[36ex] p-1 overflow-scroll shadow-inner rounded-lg">
                 {extraCourses.map((course, i) => (
                   <div
                     key={i}
@@ -390,7 +390,7 @@ function CourseRow({
 
   if (courseData) {
     status = getStatusForCourse(courseData, currentSemester)
-    if (courseData.semester) {
+    if (courseData.semester !== undefined) {
       semesterCode = getSemesterCode(courseData.semester, startDate)
     }
   }
@@ -405,7 +405,7 @@ function CourseRow({
         </h5>
         <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
       </div>
-      <div>
+      <div className="flex gap-1">
         <Badge variant={"outline"}>{course.creditHours} credits</Badge>
         <Badge variant={"outline"}>
           {" "}
