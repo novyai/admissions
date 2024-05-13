@@ -19,6 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@ui/components/ui/dropdown-menu"
+import { Separator } from "@ui/components/ui/separator"
 import { cn } from "@ui/lib/utils"
 import { CalendarCheckIcon, CheckIcon, Ellipsis, MoreHorizontal, TriangleAlert } from "lucide-react"
 
@@ -123,7 +124,14 @@ export default async function Page({
                   {requirementGroup.requirementSubgroups.map((group, i) => (
                     <AccordionItem key={i} value={group.id}>
                       <AccordionTrigger>
-                        <div className="flex w-full h-full items-center justify-between py-2">
+                        <div className="flex w-full h-full items-center gap-4">
+                          <StatusIcon
+                            status={handleStatusList(
+                              group.requirements.map(requirement =>
+                                getStatusForRequirement(requirement, graph, profile.currentSemester)
+                              )
+                            )}
+                          />
                           <h2 className="text-xl font-bold">{group.name}</h2>
                         </div>
                       </AccordionTrigger>
@@ -155,19 +163,23 @@ export default async function Page({
 const STATUS_INFORMATION = {
   not_planned: {
     bgColor: "bg-red-400" as const,
-    icon: TriangleAlert
+    icon: TriangleAlert,
+    content: "Not planned"
   },
   planned: {
     bgColor: "bg-blue-400" as const,
-    icon: CalendarCheckIcon
+    icon: CalendarCheckIcon,
+    content: "Planned"
   },
   in_progress: {
     bgColor: "bg-yellow-400" as const,
-    icon: Ellipsis
+    icon: Ellipsis,
+    content: "In progress"
   },
   completed: {
     bgColor: "bg-green-400" as const,
-    icon: CheckIcon
+    icon: CheckIcon,
+    content: "Completed"
   }
 }
 
@@ -191,18 +203,7 @@ function getStatusForCourse(course: CourseAttributes, currentSemester: number): 
   return "planned" as const
 }
 
-function getStatusForRequirement(
-  requirement: GroupData["requirements"][number],
-  graph: CourseGraph,
-  currentSemester: number
-): Status {
-  const statuses = requirement.courses.map(course => {
-    const attributes = getAttributes(graph, course.id)
-    if (!attributes) {
-      return "not_planned"
-    }
-    return getStatusForCourse(attributes, currentSemester)
-  })
+function handleStatusList(statuses: Status[]): Status {
   if (statuses.includes("not_planned")) {
     return "not_planned"
   }
@@ -224,6 +225,49 @@ function StatusIcon({ status }: { status: Status }) {
   )
 }
 
+function getStatusForRequirement(
+  requirement: GroupData["requirements"][number],
+  graph: CourseGraph,
+  currentSemester: number
+): Status {
+  const statuses = requirement.courses.map(course => {
+    const attributes = getAttributes(graph, course.id)
+    if (!attributes) {
+      return { status: "not_planned", creditHours: course.creditHours }
+    }
+    return {
+      status: getStatusForCourse(attributes, currentSemester),
+      creditHours: course.creditHours
+    }
+  })
+
+  const creditHoursTaken = statuses
+    .filter(status => status.status === "completed")
+    .reduce((acc, status) => acc + status.creditHours, 0)
+
+  if (creditHoursTaken >= requirement.creditHoursNeeded) {
+    return "completed"
+  }
+  const creditHoursInProgress = statuses
+    .filter(status => status.status === "in_progress")
+    .reduce((acc, status) => acc + status.creditHours, 0)
+  if (creditHoursTaken + creditHoursInProgress >= requirement.creditHoursNeeded) {
+    return "in_progress"
+  }
+
+  const creditHoursPlanned = statuses
+    .filter(status => status.status === "planned")
+    .reduce((acc, status) => acc + status.creditHours, 0)
+  if (
+    creditHoursTaken + creditHoursInProgress + creditHoursPlanned >=
+    requirement.creditHoursNeeded
+  ) {
+    return "planned"
+  }
+
+  return "not_planned"
+}
+
 function RequirementRow({
   requirement,
   graph,
@@ -237,6 +281,39 @@ function RequirementRow({
 }) {
   const status = getStatusForRequirement(requirement, graph, currentSemester)
 
+  let courses = requirement.courses
+  let extraCourses: GroupData["requirements"][number]["courses"] = []
+  // if status is completed we just need to show completed courses
+  if (status === "completed") {
+    courses = courses.filter(course => {
+      const attributes = getAttributes(graph, course.id)
+      if (!attributes) {
+        return false
+      }
+      const status = getStatusForCourse(attributes, currentSemester)
+      return status === "completed"
+    })
+  }
+
+  // if status is planned we need to show courses that are completed and in progress, and planned. Then show other courses
+  if (status === "planned") {
+    courses = courses.filter(course => {
+      const attributes = getAttributes(graph, course.id)
+      if (!attributes) {
+        return false
+      }
+      return getStatusForCourse(attributes, currentSemester) !== "not_planned"
+    })
+    extraCourses = requirement.courses.filter(course => {
+      const attributes = getAttributes(graph, course.id)
+
+      if (!attributes) {
+        return true
+      }
+      return !(getStatusForCourse(attributes, currentSemester) !== "not_planned")
+    })
+  }
+
   return (
     <div className="flex flex-col">
       <div className="flex gap-2 p-2 items-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
@@ -247,8 +324,8 @@ function RequirementRow({
           </h4>
         </div>
       </div>
-      <div className="space-y-3">
-        {requirement.courses.map((course, i) => (
+      <div className="space-y-3 ml-8">
+        {courses.map((course, i) => (
           <CourseRow
             key={i}
             course={course}
@@ -257,6 +334,32 @@ function RequirementRow({
             startDate={startDate}
           />
         ))}
+        {extraCourses.length > 0 && (
+          <>
+            <Separator />
+
+            <div className="flex gap-2 flex-col p-2 rounded-md">
+              <h4 className="font-semibold text-md">Other courses to consider</h4>
+              <div>
+                {extraCourses.map((course, i) => (
+                  <div
+                    key={i}
+                    className="flex gap-2 items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-900 rounded-md"
+                  >
+                    <div>
+                      <h5 className="font-medium text-md">
+                        {course.courseSubject} {course.courseNumber}
+                      </h5>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
+                    </div>
+                    <Badge variant="outline">{course.creditHours} credits</Badge>
+                    <CourseDropdown />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -290,41 +393,47 @@ function CourseRow({
       semesterCode = getSemesterCode(courseData.semester, startDate)
     }
   }
+
+  const statusInfo = STATUS_INFORMATION[status]
   return (
-    <div className="pl-8 flex gap-2 items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
+    <div className="flex gap-2 items-center hover:bg-gray-50 dark:hover:bg-gray-900 p-2 rounded-md">
       <StatusIcon status={status} />
       <div>
-        <h5 className="font-medium text-md">{course?.name}</h5>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {status === "not_planned" ?
-            "Not planned"
-          : <>
-              {status === "completed" ? "Completed" : "Planned"} in {semesterCode.semester}{" "}
-              {semesterCode.year}
-            </>
-          }
-        </p>
+        <h5 className="font-medium text-md">
+          {course.courseSubject} {course.courseNumber}
+        </h5>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{course?.name}</p>
       </div>
       <div>
         <Badge variant={"outline"}>{course.creditHours} credits</Badge>
+        <Badge variant={"outline"}>
+          {" "}
+          {status === "not_planned" ?
+            "Not planned"
+          : `${statusInfo.content} in ${semesterCode.semester} ${semesterCode.year}`}
+        </Badge>
       </div>
-      <div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Select this course</DropdownMenuItem>
-            <DropdownMenuItem>View course information</DropdownMenuItem>
-            <DropdownMenuItem>Replace this course</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <CourseDropdown />
     </div>
+  )
+}
+
+function CourseDropdown() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="h-8 w-8 p-0">
+          <span className="sr-only">Open menu</span>
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem>Select this course</DropdownMenuItem>
+        <DropdownMenuItem>View course information</DropdownMenuItem>
+        <DropdownMenuItem>Replace this course</DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   )
 }
