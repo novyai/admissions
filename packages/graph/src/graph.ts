@@ -166,3 +166,6 @@ export function _getAllDependents(courseId: string, graph: CourseGraph): string[
   const prereqs = graph.outNeighbors(courseId)
   return [...prereqs, ...prereqs.flatMap(p => _getAllDependents(p, graph))]
 }
+
+export const _hasDependents = (courseId: string, graph: CourseGraph): boolean =>
+  graph.outNeighbors(courseId).length > 0

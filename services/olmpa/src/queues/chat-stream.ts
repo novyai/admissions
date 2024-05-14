@@ -1,7 +1,8 @@
 import { createBlob, parseBlob } from "@graph/blob"
 import { CourseGraph, getCourseAndSemesterIndexFromIdNameCode } from "@graph/course"
-import { graphToHydratedStudentProfile } from "@graph/graph"
+import { _hasDependents, graphToHydratedStudentProfile } from "@graph/graph"
 import { createGraph, rescheduleCourse } from "@graph/profile"
+import { getRequirementNamesFulfilledByCourse } from "@graph/requirement"
 import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
@@ -198,7 +199,7 @@ createWorker(async job => {
       params: z.infer<typeof giveRequirementsFulfilledByCourse>
     ) => {
       logger.info({
-        message: "giving alternative courses",
+        message: "giving requirements fulfilled by course",
         conversationId: jobData.conversationId,
         userId: jobData.userId,
         data: params
@@ -206,7 +207,7 @@ createWorker(async job => {
       if (!jobData.versionId) {
         throw new Error("No versionId found")
       }
-      const { profile } = await hydrateSchedule.run({
+      const { profile, graph } = await hydrateSchedule.run({
         versionId: jobData.versionId
       })
 
@@ -229,10 +230,16 @@ createWorker(async job => {
         return `Course ${params.courseName} not found. Please check the course name and try again.`
       }
       const { course } = courseSem
-      if (!profile.courseToReqList.has(course.id)) {
-        return `Course ${params.courseName} does not fulfill any requirements.`
+      if (profile.courseToReqList.has(course.id)) {
+        const requirementNames = getRequirementNamesFulfilledByCourse(course.id, profile)
+        return `Course ${params.courseName} fulfills the following requirements: ${requirementNames}`
+      } else if (_hasDependents(course.id, graph)) {
+        const directDependents = [...graph.outNeighborEntries(course.id)].map(
+          node => node.attributes.name
+        )
+        return `Course ${params.courseName} is not a direct requirement in the program, but it is a prerequisite for ${directDependents}`
       } else {
-        return `Course ${params.courseName} fulfills the following requirements: ${profile.courseToReqList.get(course.id)!}`
+        return `Course ${params.courseName} is not a requirement in the program.`
       }
     },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
