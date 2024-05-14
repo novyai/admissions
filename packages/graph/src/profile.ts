@@ -116,7 +116,6 @@ function getCoursesToRemove(
       }
     }
   }
-  console.log("COURSES TO REMOVE", coursesToRemove)
   return coursesToRemove
 }
 

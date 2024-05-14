@@ -266,13 +266,6 @@ export function scheduleCourses(
   distributeCoursesEvenly: boolean = true
 ) {
   computeNodeStats(graph, profile)
-  console.log(
-    "test",
-    graph.mapNodes((c, attr) => ({
-      c,
-      attr
-    }))
-  )
   const positiveConstrainedCourseIDs = constraints.positive.flatMap(c => c.courseIDs)
   schedulePositiveConstraints(graph, profile, constraints.positive)
   // fixed semesters are semesters we shouldn't add any more courses to
@@ -397,7 +390,6 @@ export function scheduleCourses(
       numCoursesInCurrentSemester >= profile.coursePerSemester ||
       course["id"] === firstDeferredCourseId
     ) {
-      // console.log(`Semester ${currentSemester} complete`)
       currentSemester += 1
       while (fixedSemesters.includes(currentSemester)) {
         currentSemester += 1
@@ -421,29 +413,31 @@ export function scheduleCourses(
       .map(prereqId => graph.getNodeAttribute(prereqId, "semester"))
       .every(semester => semester! < currentSemester)
 
-    const corequisites = getCorequisites(graph, course.id)
+    const unscheduledCoreqs = getCorequisites(graph, course.id).filter(
+      c => c.semester === undefined
+    )
 
     const tooManyCourses =
       course.tracks ?
-        !course.tracks.some(program => tooManyTrackCourses(program, distributeProgramCoursesEvenly))
+        course.tracks.some(program => tooManyTrackCourses(program, distributeProgramCoursesEvenly))
       : false
     if (
       !isCourseNegativelyConstrained(course.id, currentSemester) &&
       allPrereqsCompleted &&
-      tooManyCourses &&
-      corequisites.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
+      !tooManyCourses &&
+      unscheduledCoreqs.length + numCoursesInCurrentSemester + 1 <= profile.coursePerSemester
     ) {
       // if all of the prereqs were completed in previous semesters and there aren't too many courses from one program, we can add this course to the current one
       // console.log(`Adding ${course["name"]} to schedule in semester ${currentSemester}`)
       addCourseToSemester(course)
 
       // add all corequisites to the schedule
-      for (const corequisite of corequisites) {
+      for (const corequisite of unscheduledCoreqs) {
         addCourseToSemester(corequisite)
       }
     } else {
       // otherwise we need to defer this course
-      // console.log(`Deferring ${course["name"]} to schedule in semester ${currentSemester}`)
+
       if (firstDeferredCourseId === null) {
         firstDeferredCourseId = course["id"]
       }
