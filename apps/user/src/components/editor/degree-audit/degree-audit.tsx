@@ -145,11 +145,11 @@ function handleStatusList(statuses: Status[]): Status {
   if (statuses.includes("not_planned")) {
     return "not_planned"
   }
-  if (statuses.includes("planned")) {
-    return "planned"
-  }
   if (statuses.includes("in_progress")) {
     return "in_progress"
+  }
+  if (statuses.includes("planned")) {
+    return "planned"
   }
   return "completed"
 }
@@ -186,10 +186,12 @@ function getStatusForRequirement(
   if (creditHoursTaken >= requirement.creditHoursNeeded) {
     return "completed"
   }
+
   const creditHoursInProgress = statuses
     .filter(status => status.status === "in_progress")
     .reduce((acc, status) => acc + status.creditHours, 0)
-  if (creditHoursTaken + creditHoursInProgress >= requirement.creditHoursNeeded) {
+
+  if (creditHoursInProgress + creditHoursTaken > 0) {
     return "in_progress"
   }
 
