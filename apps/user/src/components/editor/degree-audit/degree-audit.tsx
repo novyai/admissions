@@ -44,6 +44,10 @@ export default function DegreeAudit({
 
   const graph = studentProfileToGraph(profile)
 
+  trackData.requirementGroup.sort((reqGroupA, reqGroupB) =>
+    reqGroupA.name.localeCompare(reqGroupB.name)
+  )
+
   return (
     <div className="w-full h-full p-4 max-w-[1200px] mx-auto overflow-scroll">
       <h1 className="text-3xl font-bold sr-only">Degree Audit</h1>
