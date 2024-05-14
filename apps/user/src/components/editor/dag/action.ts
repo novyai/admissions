@@ -10,7 +10,7 @@ import {
   getSemesterNodesAndEdges,
   getTransferNodesAndEdges,
   getUnassignedNodesAndEdges
-} from "@/components/semester-dag/graph-to-node-utils"
+} from "@/components/editor/dag/semester-dag/graph-to-node-utils"
 
 export const createVersion = async (profile: HydratedStudentProfile, scheduleId: string) => {
   const blob = createBlob(profile)

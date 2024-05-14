@@ -35,7 +35,7 @@ export function PromptComposer({
   onSubmit,
   onCancel,
   loading = false,
-  animatedLoading = true,
+  animatedLoading = false,
   inputProps = {},
   jumbo = false,
   disabled = false

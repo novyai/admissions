@@ -24,8 +24,8 @@ import { HydratedStudentProfile } from "@graph/types"
 import { RequirementType } from "@prisma/client"
 import { cn } from "@ui/lib/utils"
 
-import { EdgeSwitch } from "../dag/edge-switch"
-import ScheduleChangeToast from "../dag/schedule-change-toast"
+import { EdgeSwitch } from "../edge-switch"
+import ScheduleChangeToast from "../schedule-change-toast"
 import { isCourseNode, isGhostCourseNode, isSemesterNode } from "./graph-to-node-utils"
 import {
   CourseNode,
@@ -290,7 +290,7 @@ function SemesterDAGInternal({
   }
 
   return (
-    <div className="relative w-full h-[60vh] flex flex-col items-center justify-center">
+    <div className="relative w-full h-full flex flex-col items-center justify-center">
       <ScheduleChangeToast
         open={scheduleToastOpen}
         cannotMoveReason={scheduleToastReason}

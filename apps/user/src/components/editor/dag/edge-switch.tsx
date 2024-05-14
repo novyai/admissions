@@ -7,7 +7,7 @@ interface EdgeSwitchProps {
 
 export function EdgeSwitch({ checked, toggleSwitch }: EdgeSwitchProps) {
   return (
-    <form className="absolute z-10 top-2 left-2 w-[20rem] bg-red">
+    <form className="absolute z-10 top-0 left-2 w-[20rem] bg-red">
       <div className="flex items-center gap-1">
         <label className="text-sm font-medium text-slate-600" htmlFor="airplane-mode">
           Course Lines
