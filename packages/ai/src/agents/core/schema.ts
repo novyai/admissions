@@ -12,6 +12,11 @@ export const forceRescheduleCourseParams = z.object({
   courseName: z.string().describe("The course to reschedule.")
 })
 
+export const giveRequirementsFulfilledByCourse = z.object({
+  action: z.literal(CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE),
+  courseName: z.string().describe("The course to give requirements for.")
+})
+
 export const doThingParams = z.object({
   action: z.literal(CORE_AGENT_ACTIONS.DO_THING),
   thing: z.string().describe("Do the thing")
@@ -28,7 +33,8 @@ export const showAppointmentParams = z.object({
 
 export const ActionPayload = z.discriminatedUnion("action", [
   rescheduleCourseParams,
-  showAppointmentParams
+  showAppointmentParams,
+  giveRequirementsFulfilledByCourse
 ])
 
 export const coreAgentSchema = z.object({

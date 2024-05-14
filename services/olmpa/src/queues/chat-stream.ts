@@ -12,6 +12,7 @@ import {
   coreAgentSchema,
   doThingParams,
   forceRescheduleCourseParams,
+  giveRequirementsFulfilledByCourse,
   rescheduleCourseParams,
   showAppointmentParams
 } from "@repo/ai/agents/core/schema"
@@ -156,12 +157,12 @@ createWorker(async job => {
 
     const profile = parseBlob(version.blob)
 
-    const graph = await createGraph(profile)
+    const { graph, courseToReqList } = await createGraph(profile)
 
-    const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
+    const hydratedProfile = graphToHydratedStudentProfile(graph, courseToReqList, profile)
 
     complete({
-      graph,
+      graph: graph,
       profile: hydratedProfile,
       scheduleId: version.scheduleId
     })
@@ -193,20 +194,47 @@ createWorker(async job => {
       })
       return
     },
-    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
-    //   params: z.infer<typeof bookAppointmentParams>
-    // ) => {
-    //   logger.info({
-    //     message: "booking appointment",
-    //     conversationId: jobData.conversationId,
-    //     userId: jobData.userId,
-    //     data: params
-    //   })
-    //   return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
+    [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: async (
+      params: z.infer<typeof giveRequirementsFulfilledByCourse>
+    ) => {
+      logger.info({
+        message: "giving alternative courses",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { profile } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
 
-    //   Remember: you are not going to meet with the student, a human advisor is.
-    //   `
-    // },
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
+      try {
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { course } = courseSem
+      if (!profile.courseToReqList.has(course.id)) {
+        return `Course ${params.courseName} does not fulfill any requirements.`
+      } else {
+        return `Course ${params.courseName} fulfills the following requirements: ${profile.courseToReqList.get(course.id)!}`
+      }
+    },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -248,8 +276,11 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = rescheduleCourse(graph, profile, course.id)
-      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+      const {
+        graph: newGraph,
+        changes,
+        profile: newProfile
+      } = rescheduleCourse(graph, profile, course.id)
 
       const currentTimeToGraduate = profile.semesters.length
       const newTimeToGraduate = changes.reduce(
@@ -363,8 +394,11 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = rescheduleCourse(graph, profile, course.id)
-      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+      const {
+        graph: newGraph,
+        changes,
+        profile: newProfile
+      } = rescheduleCourse(graph, profile, course.id)
 
       const { id } = await db.version.create({
         data: {

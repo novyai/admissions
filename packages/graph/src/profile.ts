@@ -21,6 +21,7 @@ import { computeNodeStats } from "./stats"
 import {
   BaseStudentProfile,
   CourseNode,
+  HydratedStudentProfile,
   NegativeScheduleConstraint,
   PositiveScheduleConstraint,
   StudentProfile
@@ -119,7 +120,9 @@ function getCoursesToRemove(
   return coursesToRemove
 }
 
-export async function createGraph(profile: StudentProfile): Promise<CourseGraph> {
+export async function createGraph(
+  profile: StudentProfile
+): Promise<{ graph: CourseGraph; courseToReqList: Map<string, string[]> }> {
   const graph: CourseGraph = new Graph()
   const trackIds = [...profile.tracks, "GEN"]
   const tracks = await Promise.all(trackIds.map(async t => getTrack(t)))
@@ -143,26 +146,32 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     courseToTrack.get(courseId)!.add(trackId)
   }
 
-  function createCourseToNumReqs() {
+  function createCourseToReqMaps() {
     const courseToNumReqs = new Map<string, number>()
+    const courseToReqList = new Map<string, string[]>()
     for (const track of tracks) {
       if (track === null) continue
       for (const requirement of track.requirements) {
-        if (requirement.nonOverlapping) continue
         for (const course of requirement.courses) {
-          if (!courseToNumReqs.has(course.id)) {
-            courseToNumReqs.set(course.id, 0)
+          if (!requirement.nonOverlapping) {
+            if (!courseToNumReqs.has(course.id)) {
+              courseToNumReqs.set(course.id, 0)
+            }
+            const numReqs = courseToNumReqs.get(course.id)!
+            courseToNumReqs.set(course.id, numReqs + 1)
           }
-          const numReqs = courseToNumReqs.get(course.id)!
-          courseToNumReqs.set(course.id, numReqs + 1)
+          if (!courseToReqList.has(course.id)) {
+            courseToReqList.set(course.id, [])
+          }
+          courseToReqList.get(course.id)!.push(requirement.id)
         }
       }
     }
-    return courseToNumReqs
+    return { courseToNumReqs, courseToReqList }
   }
 
   // course IDs to the num reqs they fulfill (excluding nonOverlapping reqs)
-  const courseToNumReqs: Map<string, number> = createCourseToNumReqs()
+  const { courseToNumReqs, courseToReqList } = createCourseToReqMaps()
 
   for (const track of tracks) {
     if (track === null) {
@@ -286,11 +295,12 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
     reqToCreditHours
   )
 
-  for (const course of coursesToRemove) {
-    graph.dropNode(course)
+  for (const courseId of coursesToRemove) {
+    graph.dropNode(courseId)
+    courseToReqList.delete(courseId)
   }
 
-  return graph
+  return { graph, courseToReqList }
 }
 
 /**
@@ -298,9 +308,9 @@ export async function createGraph(profile: StudentProfile): Promise<CourseGraph>
  * @param profile the basic information about the student's profile
  */
 export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
-  const graph = await createGraph({ ...profile, semesters: [] })
+  const { graph, courseToReqList } = await createGraph({ ...profile, semesters: [] })
   scheduleCourses(graph, profile)
-  return graphToHydratedStudentProfile(graph, profile)
+  return graphToHydratedStudentProfile(graph, courseToReqList, profile)
 }
 
 export function toCourseNode(
@@ -337,9 +347,9 @@ export function toCourseNode(
 
 export function rescheduleCourse(
   graph: CourseGraph,
-  profile: BaseStudentProfile,
+  profile: HydratedStudentProfile,
   courseId: string
-): { graph: CourseGraph; changes: Change[] } {
+): { graph: CourseGraph; changes: Change[]; profile: HydratedStudentProfile } {
   const oldGraph = graph.copy()
 
   const fromSemester = graph.getNodeAttribute(courseId, "semester")
@@ -364,7 +374,8 @@ export function rescheduleCourse(
   if (latestChangeSemester < currentTimeToGraduate) {
     return {
       graph: pushedGraph,
-      changes: pushedChanges
+      changes: pushedChanges,
+      profile: graphToHydratedStudentProfile(graph, profile.courseToReqList, profile)
     }
   }
 
@@ -410,6 +421,7 @@ export function rescheduleCourse(
 
   return {
     graph,
+    profile: graphToHydratedStudentProfile(graph, profile.courseToReqList, profile),
     changes
   }
 }

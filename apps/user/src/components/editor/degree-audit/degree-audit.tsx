@@ -284,7 +284,7 @@ function RequirementRow({
 
             <div className="flex gap-2 flex-col p-1 rounded-md">
               <h4 className="font-semibold text-md">Other courses to consider</h4>
-              <div className="max-h-[36ex] w-[36rem] max-w-full p-1 overflow-scroll shadow-inner rounded-lg">
+              <div className="max-h-[36ex] w-[36rem] max-w-full p-1 overflow-y-scroll shadow-inner rounded-lg">
                 {extraCourses.map((course, i) => (
                   <div
                     key={i}

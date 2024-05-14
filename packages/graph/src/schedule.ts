@@ -147,7 +147,7 @@ export function moveCourse(courseId: string, toSemester: number, profile: Hydrat
   const canMove = _canMoveCourse(courseId, toSemester, profile, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)
-    return graphToHydratedStudentProfile(graph, profile)
+    return graphToHydratedStudentProfile(graph, profile.courseToReqList, profile)
   }
   return profile
 }

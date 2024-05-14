@@ -94,6 +94,7 @@ export function hydratedProfileToBaseStudentProfile(
 
 export function graphToHydratedStudentProfile(
   graph: CourseGraph,
+  courseToReqList: Map<string, string[]>,
   profile: StudentProfile
 ): HydratedStudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
@@ -103,6 +104,7 @@ export function graphToHydratedStudentProfile(
   return {
     ...profile,
     // allCourses: allCourses,
+    courseToReqList: courseToReqList,
     graph: allCourses.reduce(
       (acc, course) => acc.set(course.id, course),
       new Map<string, CourseNode>()
@@ -133,6 +135,10 @@ export function buildSemesters(graph: CourseGraph) {
     }, [])
   return semesters
 }
+
+// export const getUnusedCourses = () => {
+
+// }
 
 export const getAllPrereqs = (courseId: string, profile: HydratedStudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
