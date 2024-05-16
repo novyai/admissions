@@ -28,6 +28,13 @@ import {
 } from "./types"
 import { isSubsetOf as isSubset } from "./utils"
 
+export function doesProfileContainCourse(
+  profile: HydratedStudentProfile,
+  courseId: string
+): boolean {
+  return profile.semesters.some(semester => semester.some(course => course.id === courseId))
+}
+
 function getCoursesToRemove(
   graph: CourseGraph,
   courses: Array<{ id: string; creditHours: number; requirements: Array<{ id: string }> }>,

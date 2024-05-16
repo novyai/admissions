@@ -7,6 +7,7 @@ export const CORE_AGENT_ACTIONS = {
   FORCE_RESCHEDULE_COURSE: "FORCE_RESCHEDULE_COURSE",
   // BOOK_APPOINTMENT: "BOOK_APPOINTMENT",
   GIVE_REQUIREMENTS_FULFILLED_BY_COURSE: "GIVE_REQUIREMENTS_FULFILLED_BY_COURSE",
+  GIVE_COURSE_ALTERNATIVES: "GIVE_COURSE_ALTERNATIVES",
   SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
   DO_THING: "DO_THING"
 }
@@ -147,6 +148,12 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
   [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: {
     actionType: CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE,
     description: "Gives the requirements that are fulfilled by a course",
+    narrative: "",
+    sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES]: {
+    actionType: CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES,
+    description: "Gives courses that the student can take as alternative to the given course.",
     narrative: "",
     sideEffect: false
   }

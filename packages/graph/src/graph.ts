@@ -169,3 +169,7 @@ export function _getAllDependents(courseId: string, graph: CourseGraph): string[
 
 export const _hasDependents = (courseId: string, graph: CourseGraph): boolean =>
   graph.outNeighbors(courseId).length > 0
+
+export const getAllCourseIdsInSchedule = (profile: HydratedStudentProfile): string[] => {
+  return profile.semesters.flatMap(sem => sem.map(courseNode => courseNode.id))
+}

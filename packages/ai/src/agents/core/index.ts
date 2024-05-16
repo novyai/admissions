@@ -25,17 +25,20 @@ ALWAYS extract 1 action ONLY. Your correct actions are as follows:
 -**FORCE_RESCHEDULE_COURSE**: Reschedules a course to a different semester, regardless of the severity of the change. ONLY extract this action if you ask a student to confirm rescheduling a course and they say yes. 
 - **SHOW_APPOINTMENT**: Show available appointments with the student's advisor. ONLY extract this action if the student asks whether they can book or reschedule an appointment WITHOUT giving an exact date and time.
 - **GIVE_REQUIREMENTS_FULFILLED_BY_COURSE**: Gives the requirements fulfilled by a course. Respond by telling the student you're checking which requirements are fulfilled.
+- **GIVE_COURSE_ALTERNATIVES**: Gives the courses that the student can take in place of an existing course in their schedule. Respond by telling the student you're checking which other courses they can take.
+
 
 Current date: ${new Date().toISOString()}. Use this to keep interactions timely and context-aware.
 
 # Common Scenarios
 - If a student asks what will happen if they fail a course, reschedule the course. 
 - If a student asks to book an appointment and gives an exact date and time, ALWAYS assume you have the functionality to confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
+- Instead of asking a student to confirm a course name, just try to extract it first.
 `
 
 export const coreAgent = createAgent({
   config: {
-    model: "gpt-4-32k",
+    model: "gpt-4o",
     max_tokens: 650,
     temperature: 0.6,
     messages: [

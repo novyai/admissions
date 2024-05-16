@@ -2,7 +2,7 @@ import { createBlob, parseBlob } from "@graph/blob"
 import { CourseGraph, getCourseAndSemesterIndexFromIdNameCode } from "@graph/course"
 import { _hasDependents, graphToHydratedStudentProfile } from "@graph/graph"
 import { createGraph, rescheduleCourse } from "@graph/profile"
-import { getRequirementsFulfilledByCourse } from "@graph/requirement"
+import { getAlternativeCourseInfo, getRequirementsFulfilledByCourse } from "@graph/requirement"
 import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
@@ -13,6 +13,7 @@ import {
   coreAgentSchema,
   doThingParams,
   forceRescheduleCourseParams,
+  giveCourseAlternatives,
   giveRequirementsFulfilledByCourse,
   rescheduleCourseParams,
   showAppointmentParams
@@ -195,6 +196,72 @@ createWorker(async job => {
       })
       return
     },
+    [CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES]: async (
+      params: z.infer<typeof giveCourseAlternatives>
+    ) => {
+      logger.info({
+        message: "giving alternatives to course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { profile } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
+
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
+      try {
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { course } = courseSem
+      const { courseToReplace, alternativeCourses } = await getAlternativeCourseInfo(
+        course.id,
+        profile
+      )
+
+      let message = `
+      # Metadata for the Course to Replace
+      \`${JSON.stringify(courseToReplace)}\`
+
+      # Metadata for the Alternative Courses
+      \`${JSON.stringify(alternativeCourses)}\`
+
+      `
+
+      if (alternativeCourses.length === 0) {
+        message += `Let the student know there are no alternative courses and provide context about which requirements the course fulfills.`
+      } else {
+        message += `If there are many alternatives, choose up the best alternatives by taking into account: 
+         1) Whether the alternative course has the exact same credit hours as and fulfills the same requirements as the course to replace.
+         2) Whether the prerequisites for the alternative course are already planned in the student's schedule.
+ 
+        Start your message by summarizing your findings in 1-3 sentences. 
+
+        As you list each alternative, instead of describing the course's topic, explain why it was chosen based on the criteria above, making sure to mention specific prerequisites.
+
+        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}). 
+        
+        Let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
+      }
+      return message
+    },
     [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: async (
       params: z.infer<typeof giveRequirementsFulfilledByCourse>
     ) => {
@@ -234,9 +301,9 @@ createWorker(async job => {
         const requirements = await getRequirementsFulfilledByCourse(course.id, profile)
         await publish({
           type: SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT,
-          data: { requirementGroupOrSubgroupId: requirements[0]!.id }
+          data: { requirementGroupOrSubgroupId: requirements[0]!.requirementGroupOrSubgroup.id }
         })
-        return `Course ${params.courseName} fulfills ${requirements.length} requirements: ${requirements.map(r => r.name)}`
+        return `Course ${params.courseName} fulfills ${requirements.length} requirements: ${requirements.map(r => r.requirementGroupOrSubgroup.name)}`
       } else if (_hasDependents(course.id, graph)) {
         const directDependents = [...graph.outNeighborEntries(course.id)].map(
           node => node.attributes.name

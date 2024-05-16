@@ -17,6 +17,11 @@ export const giveRequirementsFulfilledByCourse = z.object({
   courseName: z.string().describe("The course to give requirements for.")
 })
 
+export const giveCourseAlternatives = z.object({
+  action: z.literal(CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES),
+  courseName: z.string().describe("The course to give alternatives for.")
+})
+
 export const doThingParams = z.object({
   action: z.literal(CORE_AGENT_ACTIONS.DO_THING),
   thing: z.string().describe("Do the thing")

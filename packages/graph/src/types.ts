@@ -56,3 +56,30 @@ export type ScheduleConstraints = {
   positive: PositiveScheduleConstraint[]
   negative: NegativeScheduleConstraint[]
 }
+
+export interface CourseWithNameCode {
+  id: string
+  name: string
+  courseSubject: string
+  courseNumber: string
+  creditHours: number
+}
+
+export interface RequirementInfo {
+  id: string
+  requirementGroupOrSubgroup: {
+    id: string
+    name: string
+  }
+}
+
+export interface PrequisiteInfo {
+  planned: boolean
+  id: string
+  name: string
+}
+
+export interface DetailedCourseInfo extends CourseWithNameCode {
+  prerequisites: PrequisiteInfo[]
+  requirements: RequirementInfo[]
+}
