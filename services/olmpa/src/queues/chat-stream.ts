@@ -2,7 +2,7 @@ import { createBlob, parseBlob } from "@graph/blob"
 import { CourseGraph, getCourseAndSemesterIndexFromIdNameCode } from "@graph/course"
 import { _hasDependents, graphToHydratedStudentProfile } from "@graph/graph"
 import { createGraph, rescheduleCourse } from "@graph/profile"
-import { getRequirementNamesFulfilledByCourse } from "@graph/requirement"
+import { getRequirementsFulfilledByCourse } from "@graph/requirement"
 import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
@@ -231,8 +231,12 @@ createWorker(async job => {
       }
       const { course } = courseSem
       if (profile.courseToReqList.has(course.id)) {
-        const requirementNames = getRequirementNamesFulfilledByCourse(course.id, profile)
-        return `Course ${params.courseName} fulfills the following requirements: ${requirementNames}`
+        const requirements = await getRequirementsFulfilledByCourse(course.id, profile)
+        await publish({
+          type: SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT,
+          data: { requirementGroupOrSubgroupId: requirements[0]!.id }
+        })
+        return `Course ${params.courseName} fulfills ${requirements.length} requirements: ${requirements.map(r => r.name)}`
       } else if (_hasDependents(course.id, graph)) {
         const directDependents = [...graph.outNeighborEntries(course.id)].map(
           node => node.attributes.name

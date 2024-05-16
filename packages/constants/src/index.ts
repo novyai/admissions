@@ -16,7 +16,9 @@ export const SOCKET_EVENTS = {
   START_CONVERSATION_STREAM: "START_CONVERSATION_STREAM",
   COMPLETE_CONVERSATION_STREAM: "COMPLETE_CONVERSATION_STREAM",
   NEW_VERSION: "NEW_VERSION",
-  SHOW_APPOINTMENT: "SHOW_APPOINTMENT"
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
+  SCROLL_TO_REQUIREMENT_IN_AUDIT: "SCROLL_TO_REQUIREMENT_IN_AUDIT",
+  SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS: "SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS"
 } as const
 
 export type ConversationStreamData = {
@@ -57,16 +59,37 @@ export type NewVersionData = {
   type: typeof SOCKET_EVENTS.NEW_VERSION
 }
 
+export type ScrollToRequirementData = {
+  data: {
+    requirementGroupOrSubgroupId: string
+  }
+  type: typeof SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT
+}
+
+export type SwitchBetweenScheduleAuditTabsData = {
+  data: {
+    tab: "schedule" | "audit"
+  }
+  type: typeof SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS
+}
+
 export type GenericListener = (data?: unknown) => void
 export type ConversationStreamListener = (data: ConversationStreamData["data"]) => void
 export type NewVersionListener = (data: NewVersionData["data"]) => void
 export type ShowAppointmentListener = (data: ShowAppointmentData["data"]) => void
+export type ScrollToRequirementListener = (data: ScrollToRequirementData["data"]) => void
+export type SwitchBetweenScheduleAuditTabsListener = (
+  data: SwitchBetweenScheduleAuditTabsData["data"]
+) => void
+
 export type SocketListeners = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]?: ConversationStreamListener
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.NEW_VERSION]?: NewVersionListener
   [SOCKET_EVENTS.SHOW_APPOINTMENT]?: ShowAppointmentListener
+  [SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT]?: ScrollToRequirementListener
+  [SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS]?: SwitchBetweenScheduleAuditTabsListener
 }
 
 export type EventDataTypes = {
@@ -75,6 +98,8 @@ export type EventDataTypes = {
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.NEW_VERSION]: NewVersionData["data"]
   [SOCKET_EVENTS.SHOW_APPOINTMENT]: ShowAppointmentData["data"]
+  [SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT]: ScrollToRequirementData["data"]
+  [SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS]: SwitchBetweenScheduleAuditTabsData["data"]
 }
 
 export interface SocketMsg<T extends keyof typeof SOCKET_EVENTS> {

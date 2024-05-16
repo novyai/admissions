@@ -1,3 +1,4 @@
+import { forwardRef, useEffect, useState } from "react"
 import { TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { CourseAttributes, CourseGraph } from "@graph/course"
 import { studentProfileToGraph } from "@graph/graph"
@@ -28,76 +29,124 @@ type GroupData = TrackDataPayload["requirementGroup"][number]["requirementSubgro
 
 type Status = "not_planned" | "completed" | "in_progress" | "planned"
 
-export default function DegreeAudit({
-  profile,
-  trackData
-}: {
+interface DegreeAuditProps {
   profile: HydratedStudentProfile
   trackData: TrackDataPayload | null
-}) {
-  if (!trackData) {
-    return <div>Track not found</div>
-  }
-  if (profile.tracks.length > 1) {
-    return <div>Multiple tracks not supported on our audit page for now</div>
-  }
-
-  const graph = studentProfileToGraph(profile)
-
-  trackData.requirementGroup.sort((reqGroupA, reqGroupB) =>
-    reqGroupA.name.localeCompare(reqGroupB.name)
-  )
-
-  return (
-    <div className="w-full h-full p-4 max-w-[1200px] mx-auto overflow-scroll">
-      <h1 className="text-3xl font-bold sr-only">Degree Audit</h1>
-      <p className="text-gray-500 dark:text-gray-400">
-        Review your progress towards your degree requirements.
-      </p>
-      {trackData.requirementGroup.map((requirementGroup, i) => (
-        <div key={i} className="mt-4">
-          {requirementGroup.requirementSubgroups.length > 0 && (
-            <>
-              <h2 className="text-lg font-bold">{requirementGroup.name}</h2>
-              <Accordion type="single" collapsible>
-                {requirementGroup.requirementSubgroups.map((group, i) => (
-                  <AccordionItem key={i} value={group.id}>
-                    <AccordionTrigger>
-                      <div className="flex w-full h-full items-center gap-2">
-                        <StatusIcon
-                          status={handleStatusList(
-                            group.requirements.map(requirement =>
-                              getStatusForRequirement(requirement, graph, profile.currentSemester)
-                            )
-                          )}
-                        />
-                        <h2 className="text-[1rem]">{group.name}</h2>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent>
-                      <div className="flex w-full h-full flex-col gap-8">
-                        {group.requirements.map((requirement, i) => (
-                          <RequirementRow
-                            key={i}
-                            requirement={requirement}
-                            graph={graph}
-                            startDate={profile.startDate}
-                            currentSemester={profile.currentSemester}
-                          />
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </>
-          )}
-        </div>
-      ))}
-    </div>
-  )
+  requirementToScrollTo: string | undefined
+  clearRequirementToScrollTo: () => void
 }
 
+const DegreeAudit = forwardRef<HTMLDivElement, DegreeAuditProps>(
+  ({ profile, trackData, requirementToScrollTo, clearRequirementToScrollTo }, ref) => {
+    const [accordionValue, setAccordionValue] = useState<string>()
+
+    useEffect(() => {
+      const scrollToRequirement = async () => {
+        if (requirementToScrollTo !== undefined) {
+          const requirementElt = document.querySelector(
+            `[data-requirement-group-id='${requirementToScrollTo}']`
+          )
+          if (requirementElt === null || !(requirementElt instanceof HTMLElement)) {
+            throw Error(
+              `No HTML element found matching [data-requirement-group-id='${requirementToScrollTo}']`
+            )
+          }
+          if (requirementElt.hasAttribute("data-accordion-item")) {
+            setAccordionValue(undefined)
+            requirementElt.scrollIntoView({ block: "nearest", inline: "start" })
+            const accordionTrigger = requirementElt.querySelector(
+              "button[data-accordion-trigger]"
+            ) as HTMLButtonElement | null
+            if (accordionTrigger === null) {
+              throw Error(
+                `No button element with the 'data-accordion-item' attribute found in the requirementElt ${requirementElt}`
+              )
+            }
+            requirementElt.scrollIntoView({ block: "nearest", inline: "start" })
+            setAccordionValue(requirementToScrollTo)
+          }
+          clearRequirementToScrollTo()
+        }
+      }
+      scrollToRequirement()
+    }, [requirementToScrollTo, clearRequirementToScrollTo])
+
+    if (!trackData) {
+      return <div>Track not found</div>
+    }
+    if (profile.tracks.length > 1) {
+      return <div>Multiple tracks not supported on our audit page for now</div>
+    }
+
+    const graph = studentProfileToGraph(profile)
+
+    trackData.requirementGroup.sort((reqGroupA, reqGroupB) =>
+      reqGroupA.name.localeCompare(reqGroupB.name)
+    )
+
+    return (
+      <div className="w-full h-full p-4 max-w-[1200px] mx-auto overflow-scroll" ref={ref}>
+        <h1 className="text-3xl font-bold sr-only">Degree Audit</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Review your progress towards your degree requirements.
+        </p>
+        {trackData.requirementGroup.map((requirementGroup, i) => (
+          <div key={i} className="mt-4">
+            {requirementGroup.requirementSubgroups.length > 0 && (
+              <>
+                <h2 className="text-lg font-bold" data-requirement-group-id={requirementGroup.id}>
+                  {requirementGroup.name}
+                </h2>
+                <Accordion
+                  type="single"
+                  value={accordionValue}
+                  onValueChange={value => setAccordionValue(value)}
+                  collapsible
+                >
+                  {requirementGroup.requirementSubgroups.map((group, i) => (
+                    <AccordionItem
+                      key={i}
+                      value={group.id}
+                      data-requirement-group-id={group.id}
+                      data-accordion-item
+                    >
+                      <AccordionTrigger data-accordion-trigger>
+                        <div className="flex w-full h-full items-center gap-2">
+                          <StatusIcon
+                            status={handleStatusList(
+                              group.requirements.map(requirement =>
+                                getStatusForRequirement(requirement, graph, profile.currentSemester)
+                              )
+                            )}
+                          />
+                          <h2 className="text-[1rem]">{group.name}</h2>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div className="flex w-full h-full flex-col gap-8">
+                          {group.requirements.map((requirement, i) => (
+                            <RequirementRow
+                              key={i}
+                              requirement={requirement}
+                              graph={graph}
+                              startDate={profile.startDate}
+                              currentSemester={profile.currentSemester}
+                            />
+                          ))}
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
+)
+DegreeAudit.displayName = "DegreeAudit"
 const STATUS_INFORMATION = {
   not_planned: {
     bgColor: "bg-red-400" as const,
@@ -398,3 +447,5 @@ function CourseDropdown() {
     </DropdownMenu>
   )
 }
+
+export default DegreeAudit

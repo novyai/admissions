@@ -36,6 +36,8 @@ import {
 import DegreeAudit from "./degree-audit/degree-audit"
 
 export type VersionWithoutBlob = { id: string }
+type TabOption = "schedule" | "audit"
+
 export function Editor({
   initialSchedule,
   trackData,
@@ -50,13 +52,18 @@ export function Editor({
   scheduleId: string
 }) {
   const [versions, setVersions] = useState<VersionWithoutBlob[]>(initialSchedule.versions)
-  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
   const [profile, setProfile] = useState<HydratedStudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
 
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([])
+
+  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
+
+  const [selectedTab, setSelectedTab] = useState<TabOption>("schedule")
+  const auditRef = useRef(null)
+  const [requirementToScrollTo, setRequirementToScrollTo] = useState<string>()
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -194,7 +201,13 @@ export function Editor({
       const newVersion = { id: versionId }
       setVersions(prevVersions => [...prevVersions, newVersion])
     },
-    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
+    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times),
+    handleScrollToRequirementInAudit: (requirementGroupOrSubgroupId: string) => {
+      if (selectedTab !== "audit") setSelectedTab("audit")
+      if (requirementToScrollTo !== requirementGroupOrSubgroupId) {
+        setRequirementToScrollTo(requirementGroupOrSubgroupId)
+      }
+    }
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
@@ -243,7 +256,12 @@ export function Editor({
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
       : <div className="h-full flex flex-col">
-          <Tabs defaultValue="schedule" className="h-[52vh]">
+          <Tabs
+            defaultValue="schedule"
+            className="h-[52vh]"
+            value={selectedTab}
+            onValueChange={value => setSelectedTab(value as TabOption)}
+          >
             <TabsList className="w-full flex h-[2.5rem]">
               <TabsTrigger value="schedule" className="flex-grow">
                 Schedule
@@ -266,7 +284,13 @@ export function Editor({
               />
             </TabsContent>
             <TabsContent value="audit" className="h-[calc(52vh-3rem)] w-full">
-              <DegreeAudit profile={profile} trackData={trackData} />
+              <DegreeAudit
+                profile={profile}
+                trackData={trackData}
+                ref={auditRef}
+                requirementToScrollTo={requirementToScrollTo}
+                clearRequirementToScrollTo={() => setRequirementToScrollTo(undefined)}
+              />
             </TabsContent>
           </Tabs>
           <div className="h-[30vh] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
