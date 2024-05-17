@@ -53,5 +53,5 @@ export function ChatScrollAnchor({ trackVisibility, scrollerRef }: ChatScrollAnc
     }
   }, [trackVisibility, scrollerRef, manualScroll, inView])
 
-  return <div ref={ref} className="h-8 w-full" />
+  return <div ref={ref} className="h-16 w-full" />
 }

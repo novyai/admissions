@@ -35,6 +35,16 @@ export function doesProfileContainCourse(
   return profile.semesters.some(semester => semester.some(course => course.id === courseId))
 }
 
+export function getCourseSemester(
+  profile: HydratedStudentProfile,
+  courseId: string
+): number | undefined {
+  const semesterIndex = profile.semesters.findIndex(semester =>
+    semester.some(course => course.id === courseId)
+  )
+  return semesterIndex === -1 ? undefined : semesterIndex
+}
+
 function getCoursesToRemove(
   graph: CourseGraph,
   courses: Array<{ id: string; creditHours: number; requirements: Array<{ id: string }> }>,

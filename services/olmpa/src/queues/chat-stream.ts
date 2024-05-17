@@ -241,25 +241,46 @@ createWorker(async job => {
       \`${JSON.stringify(courseToReplace)}\`
 
       # Metadata for the Alternative Courses
-      \`${JSON.stringify(alternativeCourses)}\`
+      \`${JSON.stringify(
+        alternativeCourses.map(course => {
+          const missingDependents = new Set(
+            [...courseToReplace.dependents].filter(
+              element => !new Set(course.dependents.map(dep => dep.id)).has(element.id)
+            )
+          )
 
-      `
+          return {
+            id: course.id,
+            name: course.name,
+            courseSubject: course.courseSubject,
+            courseNumber: course.courseNumber,
+            creditHours: course.creditHours,
+            prerequisites: course.prerequisites,
+            requirements: course.requirements,
+            missingDependents: [...missingDependents]
+          }
+        })
+      )}\``
 
       if (alternativeCourses.length === 0) {
-        message += `Let the student know there are no alternative courses and provide context about which requirements the course fulfills.`
+        message += `Tell the student which requirements the course fulfills and tell them there are no alternative courses you can find.`
       } else {
         message += `If there are many alternatives, choose up the best alternatives by taking into account: 
          1) Whether the alternative course has the exact same credit hours as and fulfills the same requirements as the course to replace.
          2) Whether the prerequisites for the alternative course are already planned in the student's schedule.
+         3) Whether the alternative course is missing any dependents.
  
         Start your message by summarizing your findings in 1-3 sentences. 
 
-        As you list each alternative, instead of describing the course's topic, explain why it was chosen based on the criteria above, making sure to mention specific prerequisites.
+        As you list each alternative, please follow these guidelines: 
+          - Instead of describing the course's topic, explain why it was chosen based on the criteria above, mentioning specific prerequisites and the semesters they are planned.
+          - Use the word "future courses" instead of dependents. Explain that: 
+            - For missing dependents where \`"planned": true\`, explain that they would have to alter their schedule because they would no longer satisfy the prerequisites necessary to take {planned missing dependents}.
+            - For missing dependents where \`"planned": false\`, explain that the alternative does not satisfy {unplanned missing dependents}, which gives them less optionality. 
 
-        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}). 
-        
-        Let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
+        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}), and let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
       }
+
       return message
     },
     [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: async (

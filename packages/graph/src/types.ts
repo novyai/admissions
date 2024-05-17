@@ -73,13 +73,15 @@ export interface RequirementInfo {
   }
 }
 
-export interface PrequisiteInfo {
+export interface PrereqDependentInfo {
   planned: boolean
+  semester?: number
   id: string
   name: string
 }
 
 export interface DetailedCourseInfo extends CourseWithNameCode {
-  prerequisites: PrequisiteInfo[]
+  prerequisites: PrereqDependentInfo[]
+  dependents: PrereqDependentInfo[]
   requirements: RequirementInfo[]
 }

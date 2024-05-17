@@ -2,11 +2,11 @@ import { db } from "@repo/db"
 
 import { getCourseWithPrereqs } from "./course"
 import { getAllCourseIdsInSchedule } from "./graph"
-import { doesProfileContainCourse } from "./profile"
+import { doesProfileContainCourse, getCourseSemester } from "./profile"
 import {
   DetailedCourseInfo,
   HydratedStudentProfile,
-  PrequisiteInfo,
+  PrereqDependentInfo,
   RequirementInfo
 } from "./types"
 
@@ -30,9 +30,8 @@ export const getAlternativeCourseInfo = async (
   courseToReplaceId: string,
   profile: HydratedStudentProfile
 ): Promise<{ courseToReplace: DetailedCourseInfo; alternativeCourses: DetailedCourseInfo[] }> => {
-  const allOtherScheduledCourseIds = getAllCourseIdsInSchedule(profile).filter(
-    id => id !== courseToReplaceId
-  )
+  const allCourseIdsInSchedule = getAllCourseIdsInSchedule(profile)
+  const allOtherScheduledCourseIds = allCourseIdsInSchedule.filter(id => id !== courseToReplaceId)
 
   const requirementIds = profile.courseToReqList.get(courseToReplaceId) ?? []
   const alternativeCoursesPayload = await db.course.findMany({
@@ -51,7 +50,6 @@ export const getAlternativeCourseInfo = async (
     }
   })
 
-  // console.log("alternativeCoursesPayload", alternativeCoursesPayload)
   const alternativeCourses: DetailedCourseInfo[] = []
 
   for (const course of alternativeCoursesPayload) {
@@ -63,11 +61,30 @@ export const getAlternativeCourseInfo = async (
       select: { id: true, name: true },
       where: { id: { in: prereqMap.get(course.id)! } }
     })
-    const prerequisites: PrequisiteInfo[] = prereqNames.map(prereq => ({
+    const prerequisites: PrereqDependentInfo[] = prereqNames.map(prereq => ({
       id: prereq.id,
       name: prereq.name,
-      planned: doesProfileContainCourse(profile, prereq.id)
+      planned: doesProfileContainCourse(profile, prereq.id),
+      semester: getCourseSemester(profile, prereq.id)
     }))
+
+    const dependentsPayload = await db.courseRequisites.findMany({
+      include: {
+        course: { select: { id: true, name: true } }
+      },
+      where: {
+        requisitesId: course.id,
+        courseId: { not: course.id }
+      }
+    })
+
+    const dependents = dependentsPayload.map(dep => ({
+      id: dep.courseId,
+      name: dep.course.name,
+      planned: doesProfileContainCourse(profile, dep.courseId),
+      semester: getCourseSemester(profile, dep.courseId)
+    }))
+
     alternativeCourses.push({
       id: course.id,
       name: course.name,
@@ -75,7 +92,8 @@ export const getAlternativeCourseInfo = async (
       courseNumber: course.courseNumber,
       creditHours: course.creditHours,
       requirements: requirements,
-      prerequisites: prerequisites
+      prerequisites: prerequisites,
+      dependents: dependents
     })
   }
 
