@@ -16,76 +16,89 @@ const uniInformation = [
 const DEFAULT_CREDIT_HOURS = 3
 
 async function insertCourses(uniId: string) {
-  console.log("inserting courses")
+  const courseDataChunks = []
+  const chunkSize = 50
+  for (let i = 0; i < baseCourseData.length; i += chunkSize) {
+    courseDataChunks.push(baseCourseData.slice(i, i + chunkSize))
+  }
+  console.log(`inserting ${baseCourseData.length} courses`)
+  let coursesInserted = 0
   try {
-    await db.$transaction(
-      baseCourseData.map(course => {
-        return db.course.upsert({
-          where: {
-            courseIdentifier: {
+    for (const courseDataChunk of courseDataChunks) {
+      await db.$transaction(
+        courseDataChunk.map(course => {
+          return db.course.upsert({
+            where: {
+              courseIdentifier: {
+                courseSubject: course.courseSubject,
+                courseNumber: course.courseNumber
+              }
+            },
+            update: {
+              university: {
+                connect: {
+                  id: uniId
+                }
+              },
+              department: {
+                connectOrCreate: {
+                  where: {
+                    code_universityId: {
+                      code: course.courseSubject,
+                      universityId: uniId
+                    }
+                  },
+                  create: {
+                    code: course.courseSubject,
+                    name: course.courseSubject,
+                    university: {
+                      connect: {
+                        id: uniId
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            create: {
+              department: {
+                connectOrCreate: {
+                  where: {
+                    code_universityId: {
+                      code: course.courseSubject,
+                      universityId: uniId
+                    }
+                  },
+                  create: {
+                    code: course.courseSubject,
+                    name: course.courseSubject,
+                    university: {
+                      connect: {
+                        id: uniId
+                      }
+                    }
+                  }
+                }
+              },
+              university: {
+                connect: {
+                  id: uniId
+                }
+              },
               courseSubject: course.courseSubject,
-              courseNumber: course.courseNumber
+              courseNumber: course.courseNumber,
+              name: course.courseTitle,
+              creditHours: DEFAULT_CREDIT_HOURS
             }
-          },
-          update: {
-            university: {
-              connect: {
-                id: uniId
-              }
-            },
-            department: {
-              connectOrCreate: {
-                where: {
-                  code_universityId: {
-                    code: course.courseSubject,
-                    universityId: uniId
-                  }
-                },
-                create: {
-                  code: course.courseSubject,
-                  name: course.courseSubject,
-                  university: {
-                    connect: {
-                      id: uniId
-                    }
-                  }
-                }
-              }
-            }
-          },
-          create: {
-            department: {
-              connectOrCreate: {
-                where: {
-                  code_universityId: {
-                    code: course.courseSubject,
-                    universityId: uniId
-                  }
-                },
-                create: {
-                  code: course.courseSubject,
-                  name: course.courseSubject,
-                  university: {
-                    connect: {
-                      id: uniId
-                    }
-                  }
-                }
-              }
-            },
-            university: {
-              connect: {
-                id: uniId
-              }
-            },
-            courseSubject: course.courseSubject,
-            courseNumber: course.courseNumber,
-            name: course.courseTitle,
-            creditHours: DEFAULT_CREDIT_HOURS
-          }
+          })
         })
-      })
-    )
+      )
+      coursesInserted += courseDataChunk.length
+      const percentInserted = (coursesInserted / baseCourseData.length) * 100
+      console.log(
+        `${coursesInserted}/${baseCourseData.length} inserted (${percentInserted.toFixed(2)}%)`
+      )
+    }
   } catch (error) {
     console.error("Error inserting courses:", error)
   } finally {
