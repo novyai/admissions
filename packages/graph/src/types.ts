@@ -37,6 +37,7 @@ export type StudentProfile = BaseStudentProfile & {
 export type HydratedStudentProfile = BaseStudentProfile & {
   semesters: CourseNode[][]
   graph: Map<string, CourseNode>
+  courseToReqList: Map<string, string[]>
   // allCourses: CourseNode[]
 }
 
@@ -54,4 +55,33 @@ export type NegativeScheduleConstraint = {
 export type ScheduleConstraints = {
   positive: PositiveScheduleConstraint[]
   negative: NegativeScheduleConstraint[]
+}
+
+export interface CourseWithNameCode {
+  id: string
+  name: string
+  courseSubject: string
+  courseNumber: string
+  creditHours: number
+}
+
+export interface RequirementInfo {
+  id: string
+  requirementGroupOrSubgroup: {
+    id: string
+    name: string
+  }
+}
+
+export interface PrereqDependentInfo {
+  planned: boolean
+  semester?: number
+  id: string
+  name: string
+}
+
+export interface DetailedCourseInfo extends CourseWithNameCode {
+  prerequisites: PrereqDependentInfo[]
+  dependents: PrereqDependentInfo[]
+  requirements: RequirementInfo[]
 }

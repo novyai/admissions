@@ -1,4 +1,4 @@
-import Prisma, { $Enums, RequirementType } from "@repo/db"
+import Prisma, { $Enums, db, RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
@@ -7,6 +7,72 @@ import {
   countRequiredCoursesInPrerequisiteTree
 } from "./conditions"
 import { HydratedStudentProfile } from "./types"
+
+export const getCourseWithPrereqs = async (courseId: string, queriedCourses: string[] = []) => {
+  // pull in current course
+  const course = await db.course.findUnique({
+    where: {
+      id: courseId
+    },
+    include: {
+      department: true,
+      conditions: {
+        include: {
+          conditions: {
+            include: {
+              prerequisites: true
+            }
+          }
+        }
+      }
+    }
+  })
+
+  if (!course) {
+    throw new Error("Course not found")
+  }
+
+  // dedup prereq courses
+  const prereqsCourses = new Set(
+    course.conditions.flatMap(c => c.conditions.flatMap(c => c.prerequisites.map(p => p.courseId)))
+  )
+
+  // remove circular dependencies from the query
+  const filteredPrereqsCourses = new Set(
+    [...prereqsCourses].filter(c => !queriedCourses.includes(c))
+  )
+
+  const prereqMap = new Map([[course.id, Array.from(filteredPrereqsCourses)]])
+  if (filteredPrereqsCourses.size === 0) {
+    return {
+      course,
+      prereqMap,
+      dependentMap: new Map<string, string[]>()
+    }
+  }
+
+  let newQueriedCourses = [...queriedCourses, course.id]
+  for (const courseId of filteredPrereqsCourses) {
+    newQueriedCourses = [...queriedCourses, courseId]
+    const { prereqMap: prereqPrereqMap } = await getCourseWithPrereqs(courseId, newQueriedCourses)
+    for (const [key, value] of prereqPrereqMap) {
+      prereqMap.set(key, value)
+    }
+  }
+
+  const dependentMap = new Map<string, string[]>()
+  for (const [key, value] of prereqMap) {
+    for (const course of value) {
+      dependentMap.set(course, Array.from(new Set([...(dependentMap.get(course) || []), key])))
+    }
+  }
+
+  return {
+    course,
+    prereqMap,
+    dependentMap
+  }
+}
 
 export const getCourseAndSemesterIndexFromIdNameCode = (
   profile: HydratedStudentProfile,
@@ -263,3 +329,39 @@ function pickAndCondition(
     }
   }
 }
+
+// export async function getCourseIdToPrequisitesMap(
+//   courseIds: string[],
+//   profile: HydratedStudentProfile
+// ): Promise<Map<string, PrequisiteInfo[]>> {
+//   const coursesWithPrerequisites = await db.course.findMany({
+//     select: {
+//       id: true,
+//       prerequisites: {
+//         select: {
+//           condition: { select: { type: true } },
+//           course: {
+//             select: {
+//               id: true,
+//               name: true,
+//               courseNumber: true,
+//               courseSubject: true
+//             }
+//           }
+//         }
+//       }
+//     },
+//     where: { id: { in: courseIds } }
+//   })
+
+//   const courseIdToPrerequisites = new Map<string, PrequisiteInfo[]>()
+//   for (const course of coursesWithPrerequisites) {
+//     const prerequisites: PrequisiteInfo[] = course.prerequisites.map(prereq => ({
+//       ...prereq.course,
+//       type: prereq.condition.type,
+//       planned: doesProfileContainCourse(profile, prereq.course.id)
+//     }))
+//     courseIdToPrerequisites.set(course.id, prerequisites)
+//   }
+//   return courseIdToPrerequisites
+// }

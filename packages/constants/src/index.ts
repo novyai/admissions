@@ -6,6 +6,8 @@ export const CORE_AGENT_ACTIONS = {
   RESCHEDULE_COURSE: "RESCHEDULE_COURSE",
   FORCE_RESCHEDULE_COURSE: "FORCE_RESCHEDULE_COURSE",
   // BOOK_APPOINTMENT: "BOOK_APPOINTMENT",
+  GIVE_REQUIREMENTS_FULFILLED_BY_COURSE: "GIVE_REQUIREMENTS_FULFILLED_BY_COURSE",
+  GIVE_COURSE_ALTERNATIVES: "GIVE_COURSE_ALTERNATIVES",
   SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
   DO_THING: "DO_THING"
 }
@@ -15,7 +17,9 @@ export const SOCKET_EVENTS = {
   START_CONVERSATION_STREAM: "START_CONVERSATION_STREAM",
   COMPLETE_CONVERSATION_STREAM: "COMPLETE_CONVERSATION_STREAM",
   NEW_VERSION: "NEW_VERSION",
-  SHOW_APPOINTMENT: "SHOW_APPOINTMENT"
+  SHOW_APPOINTMENT: "SHOW_APPOINTMENT",
+  SCROLL_TO_REQUIREMENT_IN_AUDIT: "SCROLL_TO_REQUIREMENT_IN_AUDIT",
+  SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS: "SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS"
 } as const
 
 export type ConversationStreamData = {
@@ -56,16 +60,37 @@ export type NewVersionData = {
   type: typeof SOCKET_EVENTS.NEW_VERSION
 }
 
+export type ScrollToRequirementData = {
+  data: {
+    requirementGroupOrSubgroupId: string
+  }
+  type: typeof SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT
+}
+
+export type SwitchBetweenScheduleAuditTabsData = {
+  data: {
+    tab: "schedule" | "audit"
+  }
+  type: typeof SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS
+}
+
 export type GenericListener = (data?: unknown) => void
 export type ConversationStreamListener = (data: ConversationStreamData["data"]) => void
 export type NewVersionListener = (data: NewVersionData["data"]) => void
 export type ShowAppointmentListener = (data: ShowAppointmentData["data"]) => void
+export type ScrollToRequirementListener = (data: ScrollToRequirementData["data"]) => void
+export type SwitchBetweenScheduleAuditTabsListener = (
+  data: SwitchBetweenScheduleAuditTabsData["data"]
+) => void
+
 export type SocketListeners = {
   [SOCKET_EVENTS.CONVERSATION_STREAM]?: ConversationStreamListener
   [SOCKET_EVENTS.START_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]?: GenericListener
   [SOCKET_EVENTS.NEW_VERSION]?: NewVersionListener
   [SOCKET_EVENTS.SHOW_APPOINTMENT]?: ShowAppointmentListener
+  [SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT]?: ScrollToRequirementListener
+  [SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS]?: SwitchBetweenScheduleAuditTabsListener
 }
 
 export type EventDataTypes = {
@@ -74,6 +99,8 @@ export type EventDataTypes = {
   [SOCKET_EVENTS.COMPLETE_CONVERSATION_STREAM]: undefined
   [SOCKET_EVENTS.NEW_VERSION]: NewVersionData["data"]
   [SOCKET_EVENTS.SHOW_APPOINTMENT]: ShowAppointmentData["data"]
+  [SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT]: ScrollToRequirementData["data"]
+  [SOCKET_EVENTS.SWITCH_BETWEEN_SCHEDULE_AUDIT_TABS]: SwitchBetweenScheduleAuditTabsData["data"]
 }
 
 export interface SocketMsg<T extends keyof typeof SOCKET_EVENTS> {
@@ -117,6 +144,18 @@ export const CORE_AGENT_ACTION_DEFINITIONS: ActionDefinitions = {
     description: "Show available advisor appointments.",
     narrative: "",
     sideEffect: true
+  },
+  [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: {
+    actionType: CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE,
+    description: "Gives the requirements that are fulfilled by a course",
+    narrative: "",
+    sideEffect: false
+  },
+  [CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES]: {
+    actionType: CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES,
+    description: "Gives courses that the student can take as alternative to the given course.",
+    narrative: "",
+    sideEffect: false
   }
   // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: {
   //   actionType: CORE_AGENT_ACTIONS.BOOK_APPOINTMENT,

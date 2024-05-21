@@ -19,7 +19,7 @@ const getReadableTime = (time: Date): string => {
 export function AppointmentScheduler({ times, handleBookAppointment }: AppointmentSchedulerProps) {
   return (
     <div className="absolute -top-[4.5rem] left-2">
-      <p className="p-1 text-sm text-muted-foreground font-semibold uppercase">
+      <p className="p-1 text-xs text-muted-foreground font-semibold uppercase">
         Book an appointment
       </p>
       <div className="flex gap-2">
