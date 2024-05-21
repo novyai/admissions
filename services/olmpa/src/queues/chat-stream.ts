@@ -249,6 +249,8 @@ createWorker(async job => {
             )
           )
 
+          console.log(`MISSING DEPENDENTS FOR ${course.name}:`, missingDependents)
+
           return {
             id: course.id,
             name: course.name,
@@ -274,11 +276,13 @@ createWorker(async job => {
 
         As you list each alternative, please follow these guidelines: 
           - Instead of describing the course's topic, explain why it was chosen based on the criteria above, mentioning specific prerequisites and the semesters they are planned.
-          - Use the word "future courses" instead of dependents. Explain that: 
+          - Missing dependents: 
+            - If there are no missing dependents, inform the student that switching to the alternative fufills the same prerequisites as the course to replace. 
+            - If there are missing dependents, instead of using the word dependents explain in terms of "course you would no longer satisfy satisfy the prerequisites for". Explain that: 
             - For missing dependents where \`"planned": true\`, explain that they would have to alter their schedule because they would no longer satisfy the prerequisites necessary to take {planned missing dependents}.
             - For missing dependents where \`"planned": false\`, explain that the alternative does not satisfy {unplanned missing dependents}, which gives them less optionality. 
 
-        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}), and let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
+        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}). ONLY if there is more alternatives than what you listed, let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
       }
 
       return message
