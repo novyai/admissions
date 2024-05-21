@@ -29,12 +29,12 @@ export const getAllNodesAndEdges = async ({
   graph,
   transferCredits,
   currentSemester,
-  startDate
+  startTerm
 }: HydratedStudentProfile) => {
   const { nodes: defaultNodes, edges: defaultEdges } = getSemesterNodesAndEdges(
     semesters,
     currentSemester,
-    startDate
+    startTerm
   )
   // if there are transfer credits, we want to render them and their edges
   if (transferCredits.length > 0) {

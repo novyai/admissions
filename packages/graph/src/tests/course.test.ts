@@ -2,18 +2,19 @@ import { addCourseToGraph, CourseGraph, CoursePayload } from "@graph/course"
 import { buildSemesters } from "@graph/graph"
 import { scheduleCourses } from "@graph/schedule"
 import { computeNodeStats } from "@graph/stats"
+import { BaseStudentProfile } from "@graph/types"
 import { RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
 import Graph from "graphology"
 
-const baseProfile = {
+const baseProfile: BaseStudentProfile = {
   requiredCourses: [],
   transferCredits: [],
   tracks: [],
   timeToGraduate: 0,
   currentSemester: 0,
   coursePerSemester: 5,
-  startDate: "Fall 2020"
+  startTerm: { semester: "FALL", year: 2020 }
 }
 
 describe("addCourseToGraph function", () => {
@@ -270,7 +271,7 @@ describe("addCourseToGraph function with corequisite conditions", () => {
     // Expect the graph to have nodes for the course and its corequisite
     expect(graph.hasNode(courseId)).toBe(true)
     expect(graph.hasNode(corequisiteId)).toBe(true)
-    const newProfile = { ...baseProfile }
+    const newProfile: BaseStudentProfile = { ...baseProfile }
     computeNodeStats(graph, newProfile)
     scheduleCourses(graph, newProfile)
 

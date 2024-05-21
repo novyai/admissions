@@ -3,7 +3,8 @@ import { auth } from "@clerk/nextjs/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/ui/card"
 
 import { getProgramsForAllUniversities } from "@/components/createNewSchedule/action"
-import { CreateNewScheduleForm } from "@/components/createNewSchedule/form"
+
+import CreateForms from "./create-forms"
 
 export default async function CreateSchedulePage() {
   const { userId } = auth()
@@ -13,6 +14,7 @@ export default async function CreateSchedulePage() {
   }
 
   const universityPrograms = await getProgramsForAllUniversities()
+
   return (
     <div className="flex items-center justify-center h-screen">
       <Card className="w-[500px]">
@@ -29,9 +31,7 @@ export default async function CreateSchedulePage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Let&apos;s get you started!</p>
-
-          <CreateNewScheduleForm userId={userId} universityPrograms={universityPrograms} />
+          <CreateForms userId={userId} universityPrograms={universityPrograms} />
         </CardContent>
       </Card>
     </div>

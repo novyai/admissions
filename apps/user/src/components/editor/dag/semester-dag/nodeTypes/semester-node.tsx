@@ -1,13 +1,14 @@
+import { SemesterYearType } from "@graph/types"
 import { Node, NodeProps } from "reactflow"
 
 import { getSemesterCode } from "@/lib/schedule/utils"
-import { cn } from "@/lib/utils"
+import { capitalize, cn } from "@/lib/utils"
 
 export type SemesterNodeData =
   | {
       semesterIndex: number
       currSemester: number
-      startDate: string
+      startTerm: SemesterYearType
     }
   | {
       transfer: true
@@ -38,9 +39,9 @@ export function SemesterNode({ data }: SemesterNodeProps) {
   if ("transfer" in data) {
     name = "Transfer Credits"
   } else {
-    const code = getSemesterCode(data.semesterIndex, data.startDate)
-    name = `${code.semester} ${code.year} ${
-      completed ? "(completed)"
+    const code = getSemesterCode(data.semesterIndex, data.startTerm)
+    name = `${capitalize(code.semester)} ${code.year} ${
+      completed ? "(Completed)"
       : isCurrSemester ? "(Current)"
       : ""
     }`
