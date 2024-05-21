@@ -41,7 +41,7 @@ export async function messageSummaryAgent({
       },
       ...messages
     ],
-    model: "gpt-4-turbo-preview"
+    model: "gpt-4o"
   })
 
   return summary

@@ -28,7 +28,8 @@ export function Assistant({
     userId: conversation.userId,
     versions: null,
     handleSelectedVersion: null,
-    handleAppointmentTimes: null
+    handleAppointmentTimes: null,
+    handleScrollToRequirementInAudit: null
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {

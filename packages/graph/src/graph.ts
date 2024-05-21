@@ -50,7 +50,7 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
     graph.addNode(courseNode.id, {
       id: courseNode.id,
       name: courseNode.name,
-      programs: courseNode.programs,
+      tracks: courseNode.tracks,
       hasAttributes: false,
       fanOut: undefined,
       earliestFinish: undefined,
@@ -84,7 +84,7 @@ export function hydratedProfileToBaseStudentProfile(
   return {
     requiredCourses: hydratedProfile.requiredCourses,
     transferCredits: hydratedProfile.transferCredits,
-    programs: hydratedProfile.programs,
+    tracks: hydratedProfile.tracks,
     timeToGraduate: hydratedProfile.timeToGraduate,
     currentSemester: hydratedProfile.currentSemester,
     coursePerSemester: hydratedProfile.coursePerSemester,
@@ -94,6 +94,7 @@ export function hydratedProfileToBaseStudentProfile(
 
 export function graphToHydratedStudentProfile(
   graph: CourseGraph,
+  courseToReqList: Map<string, string[]>,
   profile: StudentProfile
 ): HydratedStudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
@@ -103,6 +104,7 @@ export function graphToHydratedStudentProfile(
   return {
     ...profile,
     // allCourses: allCourses,
+    courseToReqList: courseToReqList,
     graph: allCourses.reduce(
       (acc, course) => acc.set(course.id, course),
       new Map<string, CourseNode>()
@@ -111,11 +113,11 @@ export function graphToHydratedStudentProfile(
   }
 }
 
-export function buildSemesters(graph: Graph) {
+export function buildSemesters(graph: CourseGraph) {
   const semesters = graph
     .mapNodes((courseId, course) => toCourseNode(graph, courseId, course))
     .reduce((acc: CourseNode[][], course: CourseNode) => {
-      const semesterIndex: number = graph.getNodeAttribute(course.id, "semester")
+      const semesterIndex = graph.getNodeAttribute(course.id, "semester")!
       if (semesterIndex in acc) {
         acc[semesterIndex].push(course)
         return acc
@@ -133,6 +135,10 @@ export function buildSemesters(graph: Graph) {
     }, [])
   return semesters
 }
+
+// export const getUnusedCourses = () => {
+
+// }
 
 export const getAllPrereqs = (courseId: string, profile: HydratedStudentProfile): CourseNode[] => {
   const graph = studentProfileToGraph(profile)
@@ -159,4 +165,11 @@ export const getAllDependents = (
 export function _getAllDependents(courseId: string, graph: CourseGraph): string[] {
   const prereqs = graph.outNeighbors(courseId)
   return [...prereqs, ...prereqs.flatMap(p => _getAllDependents(p, graph))]
+}
+
+export const _hasDependents = (courseId: string, graph: CourseGraph): boolean =>
+  graph.outNeighbors(courseId).length > 0
+
+export const getAllCourseIdsInSchedule = (profile: HydratedStudentProfile): string[] => {
+  return profile.semesters.flatMap(sem => sem.map(courseNode => courseNode.id))
 }

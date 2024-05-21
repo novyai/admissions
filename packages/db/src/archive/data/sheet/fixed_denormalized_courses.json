@@ -1,0 +1,2084 @@
+[
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3000",
+    "name": "Foundations of Engineering",
+    "creditHours": "0",
+    "description": "Introduction to the USF College of Engineering disciplines and the engineering profession. Course will provide you with knowledge of resources to help you succeed. Course topics include academic policies and procedures, study skills, and career planning",
+    "conditions": []
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3000L",
+    "name": "Foundations of Engineering Lab",
+    "creditHours": "3",
+    "description": "Introduction to Engineering and its disciplines incorporating examples of tools and techniques used in design and presentation. Laboratory exercises will include computer tools, engineering design, team projects, and oral and written communication skills.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "3100",
+    "creditHours": 3,
+    "name": "Intro to Discrete Structures",
+    "description": "Introduction to set algebra, propositional calculus and finite algebraic structures as they apply to computer systems.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "4400",
+    "name": "Analysis of Algorithms",
+    "creditHours": "3",
+    "description": "Design principles and analysis techniques applicable to various classes of computer algorithms frequently used in practice.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3103",
+    "name": "Computer Organization",
+    "creditHours": "3",
+    "description": "Introduction to computer hardware, logic elements and Boolean algebra, computer arithmetic, the central processing unit, assembly language programming, input/output, and memory.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2510"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4250",
+    "name": "Ethical Issues/Professional Conduct",
+    "creditHours": "3",
+    "description": "This course introduces students to ethical issues and professional responsibilities arising in the computer sciences. Students will develop ethical solutions to real-world problems and present them.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "CEN",
+    "courseNumber": "4020",
+    "name": "Software Engineering",
+    "creditHours": "3",
+    "description": "An overview of software engineering techniques for producing high quality software. Student will participate in a software development team.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4530",
+    "name": "Data Structures",
+    "creditHours": "3",
+    "description": "Understand and implement fundamentals of concise data structure and organization for program efficiency, clarity and simplification. Implementation of different data types and structures. Understanding of current data structures. Functional programming concepts will be covered.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3103"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "3514",
+    "name": "Program Design",
+    "creditHours": "3",
+    "description": "The class extends students’ programming knowledge by systematically considering the concepts involved in program design and creation. Students will also build upon their previous programming experience by learning to use the C programming language in a networked environment.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2510"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "2510",
+    "name": "Programming Concepts",
+    "creditHours": "3",
+    "description": "An examination of a modern programming language emphasizing programming concepts and design methodology.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CNT",
+    "courseNumber": "4419",
+    "name": "Secure Coding",
+    "creditHours": "3",
+    "description": "Principles and practices for secure computing and writing secure software, including software for performing information management and networking and communications.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "4450",
+    "name": "Introduction to Linear Systems",
+    "creditHours": "2",
+    "description": "Study and application of matrix algebra, differential equations and calculus of finite differences.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4205",
+    "name": "Computer Architecture",
+    "creditHours": "3",
+    "description": "Principles of the design of computer systems, processors, memories, and switches. Consideration of the register transfer representation of a computer, ALU’s and their implementation, control units, memory and I/O, and the hardware support of operation systems.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "4205L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4205L",
+    "name": "Computer Architecture Lab",
+    "creditHours": "1",
+    "description": "Laboratory component of the Computer Architecture class.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3201",
+    "name": "Computer Logic and Design",
+    "creditHours": "3",
+    "description": "Advanced coverage of Boolean Algebra, introduction to minimization of combinational logic circuits, analysis and synthesis of sequential circuits, testing of logic circuits and programmable logic devices.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3103"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "3201L",
+    "name": "Computer Logic and Design Lab",
+    "creditHours": "1",
+    "description": "Laboratory component of the Computer Logic and Design class.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4600",
+    "name": "Operating Systems",
+    "creditHours": "3",
+    "description": "Introduction to systems programming. Design of operating systems. Concurrent processing, synchronization, and storage management policies.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4034",
+    "name": "Computer Animation Fundamentals",
+    "creditHours": "3",
+    "description": "An introductory course to computer animation. Topics include storyboarding, camera control, hierarchical character modeling, inverse kinematics, keyframing, motion capture, dynamic simulation, and facial animation.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4103",
+    "name": "Mobile Biometrics",
+    "creditHours": "3",
+    "description": "Topics include foundations of biometric systems, mobile biometric modalities and features, and adversary attacks.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "ENC",
+    "courseNumber": "1101",
+    "name": "Composition I",
+    "creditHours": "3",
+    "description": "This course helps prepare students for academic work by emphasizing expository writing, the basics of library research, and the conventions of academic discourse.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "NC",
+    "courseNumber": "1102",
+    "name": "Composition II",
+    "creditHours": "3",
+    "description": "This course emphasizes argument, research, and style. As students engage in creative and critical thinking, they learn to support assertions based on audience and purpose; students apply library research, strategies for revision, and peer response.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "ENC",
+                "courseNumber": "1101"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2281",
+    "name": "Engineering Calculus I",
+    "creditHours": "4",
+    "description": "Differentiation, limits, differentials, extremes, indefinite integral. No credit for mathematics majors.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "1147"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2282",
+    "name": "Engineering Calculus II",
+    "creditHours": 4,
+    "description": "Definite integral, trigonometric functions, log, exponential, series, applications.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2312",
+    "name": "Calculus II",
+    "creditHours": "4",
+    "description": "Antiderivatives, the definite integral, applications, series, log, exponential and trig functions.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "2513",
+    "creditHours": 3,
+    "name": "IT Object Oriented Programming",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2512"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "PHY",
+    "courseNumber": "2048",
+    "name": "General Physics I",
+    "creditHours": "3",
+    "description": "First semester of a two-semester sequence of calculus-based General Physics which includes a study of mechanics, wave motion, sound, thermodynamics, geometrical and physical optics, electricity and magnetism for students majoring in Physics, Chemistry and Engineering.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2048"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "PHY",
+    "courseNumber": "2048",
+    "name": "General Physics I Laboratory",
+    "creditHours": "1",
+    "description": "First semester of a two-semester sequence of calculus-based General Physics which includes a study of mechanics, wave motion, sound, thermodynamics, geometrical and physical optics, electricity and magnetism for students majoring in Physics, Chemistry and Engineering.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2311"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2281"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "PHY",
+    "courseNumber": "2049",
+    "name": "General Physics II",
+    "creditHours": "3",
+    "description": "PHY 2048 Second semester of calculus based general physics. Topics studied include wave mechanics, electricity and magnetism, and optics.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2048"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2048"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2060"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2060"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2049L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "PHY",
+    "courseNumber": "2049L",
+    "name": "General Physics II Laboratory",
+    "creditHours": "1",
+    "description": "PHY 2048 Second semester of calculus based general physics. Topics studied include wave mechanics, electricity and magnetism, and optics.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2048"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2048"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2060"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "PHY",
+                "courseNumber": "2060"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "ENC",
+    "courseNumber": "3246",
+    "name": "Communication for Engineers",
+    "creditHours": "3",
+    "description": "Focuses on writing concerns of engineers. Deals with the content, organization, format, and style of specific types of engineering documents. Provides opportunity to improve oral presentations.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "ENC",
+                "courseNumber": "1102"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2316",
+    "name": "Calculus III",
+    "creditHours": "4",
+    "description": "Vector algebra, vector-valued functions, and analytic geometry in space. Polar, cylindrical, and spherical coordinate systems. Quadric surfaces and functions of several variables, partial derivatives, and optimization problems. Multiple integrals and applications to engineering and the sciences. Line Integrals if time permits.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "MAC",
+    "courseNumber": "2311",
+    "name": "Calculus I",
+    "creditHours": "4",
+    "description": "Differentiation, limits, differentials, extremes, indefinite integral.",
+    "conditions": [
+      {
+        "logicalOperator": "OR",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "1147"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "EGN",
+    "courseNumber": "3443",
+    "name": "Probability and Statistics for Engineers",
+    "creditHours": "3",
+    "description": "An introduction to concepts of probability and statistical analysis with special emphasis on critical interpretation of data, comparing and contrasting claims, critical thinking, problem solving, and writing.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2282"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4111",
+    "name": "Introduction to Augmented and Virtual Reality",
+    "creditHours": "3",
+    "description": "This course introduces students to computer graphics techniques, computer vision techniques, and hardware designs that make augmented and virtual reality systems immersive.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4160",
+    "name": "Brain-Computer Interfaces",
+    "creditHours": "3",
+    "description": "This course involves the exploration of new forms of Human-Computer Interaction (HCI) based on a passive measurement of neurophysiological states (cognitive and affective). These include measuring cognitive workload and affective engagement. Students will read research papers in several related disciplines (i.e. Neuroscience, Cognitive Psychology, Cognitive Science, Medical BCI, Computational Neuroscience, and others) and present and discuss them in the course. We will explore the uses of non-invasive ubiquitous electroencephalographic (EEG) brain technologies. Also, students will learn the basics of other brain imaging technologies such as near-infrared spectroscopy (fNIRS) and Functional Magnetic Resonance Imaging (fMRI) and how they relate to the field of computing. We will also explore ways to use such measurements as a form of machine control.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4401",
+    "name": "Image Processing Fundamentals",
+    "creditHours": "3",
+    "description": "Practical introduction to a range of fundamental image processing algorithms. Extensive programming, with emphasis on image analysis and transformation techniques. Image transformation and manipulation.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4410",
+    "name": "Computer Vision",
+    "creditHours": "3",
+    "description": "Introduction to topics such as image formation, segmentation, feature extraction, matching, shape recovery, texture analysis, object recognition, and dynamic scene analysis.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4621",
+    "name": "Introduction to Artificial Intelligence",
+    "creditHours": "3",
+    "description": "Introduction to Artificial Intelligence covers basic concepts, tools, and techniques used to produce artificial intelligence. Basic machine learning concepts. Use of different software tools for searching, reasoning and learning.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4621",
+    "name": "Introduction to Artificial Intelligence",
+    "creditHours": "3",
+    "description": "Introduction to Artificial Intelligence covers basic concepts, tools, and techniques used to produce artificial intelligence. Basic machine learning concepts. Use of different software tools for searching, reasoning and learning.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4628",
+    "name": "Affective Computing",
+    "creditHours": "3",
+    "description": "The study of systems that can recognize, interpret, process, and simulate human affect. Topics may include physiology of emotion, lie detection, wearable devices, music, gaming, and ethical concerns associated with affective computing.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4641",
+    "name": "Natural Language Processing",
+    "creditHours": "3",
+    "description": "The concepts and principles of computer processing of natural language, including linguistic phenomena, formal methods, and applications.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4662",
+    "name": "Introduction to Robotics",
+    "creditHours": "3",
+    "description": "An introduction to the fundamentals of robotics. Students will learn the fundamentals of robotics including kinematics, inverse kinematics, Jacobian, velocity, configuration space, motion planning, and path planning algorithms.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              },
+              {
+                "courseSubject": "EGN",
+                "courseNumber": "4450"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4744",
+    "name": "Interactive Data Visualization",
+    "creditHours": "3",
+    "description": "This course introduces the techniques used for developing effective visual analysis tools. The course covers principles from perception and design, and the algorithms used in visualizing a broad range of data types.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4621",
+    "name": "Control of Mobile Robots",
+    "creditHours": "3",
+    "description": "Mobile Robotic Control Systems design and implementation. Includes microcontroller, sensor, and actuator control processes for localization and navigation. Team project development of software interface for robot control.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CEN",
+    "courseNumber": "4072",
+    "name": "SOFTWARE TESTING",
+    "creditHours": "3",
+    "description": "The course provides the fundamental principles and tools for testing and validating large-scale software systems. The course is open to majors as well as non-majors.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "2510"
+              },
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4345",
+    "name": "Big Data Storage and Analysis with Hadoop",
+    "creditHours": "3",
+    "description": "This is an introductory course for big data storage and analysis in Hadoop cluster. Topics include Hadoop file system, Hadoop cluster architectures, Hadoop ecosystems, and big data processing frameworks MapReduce, Spark, Pig and Hive.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CNT",
+    "courseNumber": "4004",
+    "name": "Computer Networks I",
+    "creditHours": "3",
+    "description": "An introduction to the design and analysis of computer communication networks. Topics include application layer protocols, Internet protocols, network interfaces, local and wide area networks, wireless networks, bridging and routing, and current topics.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "3514"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CNT",
+    "courseNumber": "4411",
+    "name": "Computing and Network Security",
+    "creditHours": "3",
+    "description": "The course is a study of fundamental concepts and principles of computing and network security. The course covers basic security topics, including symmetric and public key cryptography, digital signatures, hash functions, and network security protocols.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          },
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4020",
+    "name": "Programming Languages",
+    "creditHours": "3",
+    "description": "An introduction to the specification, design, and analysis of programming languages. Topics include syntax, operational semantics, type systems, type safety, lambda calculus, functional programming, polymorphism, side effects, and objects.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4365",
+    "name": "Software System Development",
+    "creditHours": "3",
+    "description": "Analysis, design, and development of software systems using objective methodology with object oriented programming and advanced software development tools (such as integrated development environments).",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4520",
+    "name": "Computing in Massively Parallel Systems",
+    "creditHours": "3",
+    "description": "This course will cover basics in large-scale parallel computing and CUDA programming, and advanced techniques for parallel code optimization and domain-specific case studies.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4620",
+    "name": "Compilers",
+    "creditHours": "3",
+    "description": "Introduction to techniques for compiling software; lexical, syntactic, and semantic analyses; abstract syntax trees; symbol tables; code generation and optimization.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COP",
+    "courseNumber": "4710",
+    "name": "Database Design",
+    "creditHours": "3",
+    "description": "This course covers the fundamentals and applications of database management systems, including data models, relational database design, query languages, and web-based database applications.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CAP",
+    "courseNumber": "4637",
+    "name": "Automated Reasoning and Theorem Proving",
+    "creditHours": "3",
+    "description": "This course covers the principles of automated reasoning/mechanical theorem proving. Topics to be covered include propositional logic, predicate logic, skolem standard forms, various resolution principles and methods, and non-classical logics.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4203",
+    "name": "Computer System Design",
+    "creditHours": "3",
+    "description": "Design Methods, Top-Down design, Building Blocks, Instruction and addressing models, minicomputer design, interfacing.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4203L",
+    "name": "Computer System Design Lab",
+    "creditHours": "1",
+    "description": "This lab introduces the student to the concept of system design. Several projects are given including building timing circuits, memory-based and communication circuits, and microcomputer-based designs.",
+    "conditions": []
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4213",
+    "name": "CMOS-VLSI Design",
+    "creditHours": "3",
+    "description": "Covers analysis and design of CMOS processing technology, CMOS logic and circuit design, layout timing and delay, and power and thermal issues. CMOS transistor theory. VLSI system design, case studies and rapid prototype chip design.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4213L",
+    "name": "CMOS-VLSI Design Lab",
+    "creditHours": "1",
+    "description": "Scalable CMOS layout design, circuit extraction, transistor-level and lay-out level simulation, SPICE parameters/modeling, transistor sizing, standard and macro-cell based layout, static/dynamic CMOS, combinational/sequential block layout, memory I/O design.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              },
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+         
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4253",
+    "name": "Field Programmable Gate Array System Design and Analysis",
+    "creditHours": "3",
+    "description": "Covers analysis and design of digital systems using VHDL simulation. Provides experience with field programmable logic gates and gate arrays. Introduces the requirements for field programmable systems; testing of circuitry, and analysis of system design.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4321",
+    "name": "Cryptographic Hardware and Embedded Systems",
+    "creditHours": "3",
+    "description": "Efficient hardware implementation of cryptographic algorithms is presented to meet the performance and cost requirements of computing platforms from handheld to server-level computers. Cryptographic implementation attacks and countermeasures are covered.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4322",
+    "name": "Principles of Secure Hardware Design",
+    "creditHours": "3",
+    "description": "This course introduces the fundamentals of hardware security for integrated circuits, intellectual property, and reconfigurable devices, including hardware security primitives, Trojans, physical and side-channel attacks, and emerging countermeasures.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CDA",
+    "courseNumber": "4323",
+    "name": "Practical Hardware Security",
+    "creditHours": "3",
+    "description": "This course introduces practical aspects of hardware security for integrated circuits and reconfigurable hardware, with hands-on assignments introducing physical, side channel, and system-level attacks and countermeasures.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201L"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4212",
+    "name": "Privacy-Preserving and Trustworthy Cyber-Infrastructures",
+    "creditHours": "3",
+    "description": "This course will explore emerging cyber-security technologies addressing security issues of cyber-infrastructures. It will cover privacy-enhancing and trustworthy techniques for cloud computing and internet of thing systems.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "COREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4900",
+    "name": "Independent Study in Computer Science",
+    "creditHours": "1-5",
+    "description": "Specialized independent study determined by the needs and interests of the student.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              },
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4910",
+    "name": "Computer Science and Engineering Project",
+    "creditHours": "3",
+    "description": "Offers a focused team-based design experience incorporating appropriate engineering standards and multiple realistic constraints. Projects are proposed by industry and/or other partners and are completed within a defined development process.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4915",
+    "name": "Supervised Research in Computer Science",
+    "creditHours": "1",
+    "description": "Supervised research determined by the needs and interests of the student.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              },
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4930",
+    "name": "Special Topics in Computer Science I",
+    "creditHours": "1",
+    "description": "Special topics in computer science and computer engineering.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              },
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "CIS",
+    "courseNumber": "4940",
+    "name": "Industry Internship",
+    "creditHours": "0-6",
+    "description": "Individual study as practical computer science and/or computer engineering work under industrial supervision with a faculty approved outline and end-of-semester report.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              },
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3201"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "4210",
+    "name": "Automata Theory and Formal Languages",
+    "creditHours": "3",
+    "description": "Introduction to the theory and application of various types of computing devices and the languages they recognize.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "3100"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "4521",
+    "name": "Computational Geometry",
+    "creditHours": "3",
+    "description": "Computational geometry is the study of efficient algorithms to solve geometric problems. Topics covered include Polygonal Triangulations, Polygon Partitioning, Convex Hulls, Voronoi Diagrams, Arrangements, Search and Intersection, and Motion Planning.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "prerequisites": [
+              {
+                "courseSubject": "COT",
+                "courseNumber": "4400"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseSubject": "COT",
+    "courseNumber": "4601",
+    "name": "Quantum Computing and Quantum Algorithms",
+    "creditHours": "3",
+    "description": "Introduction to and survey of quantum computing. Theory of qubits and quantum computation are studied including entanglement, superdense coding, quantum teleportation, and current topics. Students will also program simulated and real quantum computers.",
+    "conditions": [
+      {
+        "logicalOperator": "AND",
+        "conditions": [
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "B",
+            "prerequisites": [
+              {
+                "courseSubject": "CDA",
+                "courseNumber": "3103"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C-",
+            "prerequisites": [
+              {
+                "courseSubject": "COP",
+                "courseNumber": "4530"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "EGN",
+                "courseNumber": "4450"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

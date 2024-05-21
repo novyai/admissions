@@ -1,4 +1,5 @@
-import { getCourses, getCourseWithPrereqs } from "@/db/courses"
+import { getCourses } from "@/db/courses"
+import { getCourseWithPrereqs } from "@graph/course"
 
 export default async function Page({
   params: { courseId }

@@ -1,6 +1,6 @@
 import { addCourseToGraph, CourseGraph, CoursePayload } from "@graph/course"
 import { buildSemesters } from "@graph/graph"
-import { scheduleCourses } from "@graph/profile"
+import { scheduleCourses } from "@graph/schedule"
 import { computeNodeStats } from "@graph/stats"
 import { RequirementType } from "@repo/db"
 import { describe, expect, test } from "bun:test"
@@ -9,7 +9,7 @@ import Graph from "graphology"
 const baseProfile = {
   requiredCourses: [],
   transferCredits: [],
-  programs: [],
+  tracks: [],
   timeToGraduate: 0,
   currentSemester: 0,
   coursePerSemester: 5,
@@ -26,7 +26,7 @@ describe("addCourseToGraph function", () => {
       id: courseId,
       name: courseName,
       conditions: [],
-      programs: []
+      tracks: []
     })
 
     addCourseToGraph({
@@ -47,7 +47,7 @@ describe("addCourseToGraph function", () => {
       latestFinish: undefined,
       slack: undefined,
       semester: undefined,
-      programs: []
+      tracks: []
     })
   })
 
@@ -65,7 +65,7 @@ describe("addCourseToGraph function", () => {
       latestFinish: undefined,
       slack: undefined,
       semester: undefined,
-      programs: []
+      tracks: []
     })
     const initialNodeCount = graph.order
 
@@ -127,7 +127,7 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with OR Condition",
-      programs: [],
+      tracks: [],
       conditions: [
         {
           logicalOperator: "OR",
@@ -139,13 +139,13 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
       id: prerequisiteId1,
       name: "Prerequisite 1",
       conditions: [],
-      programs: []
+      tracks: []
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
       conditions: [],
-      programs: []
+      tracks: []
     })
 
     addCourseToGraph({
@@ -186,19 +186,19 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
           conditions: prerequisiteConditions
         }
       ],
-      programs: []
+      tracks: []
     })
     courseMap.set(prerequisiteId1, {
       id: prerequisiteId1,
       name: "Prerequisite 1",
       conditions: [],
-      programs: []
+      tracks: []
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
       conditions: [],
-      programs: []
+      tracks: []
     })
 
     addCourseToGraph({
@@ -234,7 +234,7 @@ describe("addCourseToGraph function with corequisite conditions", () => {
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with Corequisite",
-      programs: [],
+      tracks: [],
       conditions: [
         {
           logicalOperator: "OR",
@@ -257,7 +257,7 @@ describe("addCourseToGraph function with corequisite conditions", () => {
       id: corequisiteId,
       name: "Corequisite 1",
       conditions: [],
-      programs: []
+      tracks: []
     })
 
     addCourseToGraph({

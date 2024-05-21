@@ -10,7 +10,7 @@ import {
   getSemesterNodesAndEdges,
   getTransferNodesAndEdges,
   getUnassignedNodesAndEdges
-} from "@/components/semester-dag/graph-to-node-utils"
+} from "@/components/editor/dag/semester-dag/graph-to-node-utils"
 
 export const createVersion = async (profile: HydratedStudentProfile, scheduleId: string) => {
   const blob = createBlob(profile)
@@ -80,9 +80,9 @@ export async function hydratedProfileAndNodesByVersion(versionId: string) {
 
   const profile = parseBlob(version.blob)
 
-  const graph = await createGraph(profile)
+  const { graph, courseToReqList } = await createGraph(profile)
 
-  const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
+  const hydratedProfile = graphToHydratedStudentProfile(graph, courseToReqList, profile)
   const { defaultNodes, defaultEdges } = await getAllNodesAndEdges(hydratedProfile)
 
   return { profile: hydratedProfile, defaultNodes, defaultEdges }

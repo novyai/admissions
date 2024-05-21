@@ -8,9 +8,9 @@ import {
 } from "@ui/components/ui/toast"
 import { Node } from "reactflow"
 
-import { GetNode } from "../semester-dag"
-import { isCourseNode } from "../semester-dag/graph-to-node-utils"
-import { CourseNodeData } from "../semester-dag/nodeTypes/course-node"
+import { GetNode } from "./semester-dag"
+import { isCourseNode } from "./semester-dag/graph-to-node-utils"
+import { CourseNodeData } from "./semester-dag/nodeTypes/course-node"
 
 type ScheduleChangeToastProps = {
   open: boolean

@@ -1,10 +1,9 @@
 "use client"
 
-import { Program, ProgramOption } from "@graph/defaultCourses"
 import { CourseNode as CourseNodeGraphType } from "@repo/graph/types"
 import { cn } from "@ui/lib/utils"
 import { motion } from "framer-motion"
-import { Handle, Node, NodeProps, Position } from "reactflow"
+import { Handle, Node, NodeProps, Position, useUpdateNodeInternals } from "reactflow"
 
 export type CourseNodeData = {
   semesterIndex: number
@@ -19,31 +18,24 @@ export const defaultCourseNode: Partial<Node> = {
   // extent: 'parent'
 }
 
-type KEYS = Program | "EXTRA"
-const colorsForPrograms: { [key in KEYS]?: string } = {
-  [ProgramOption.CS]: "bg-sky-200",
-  [ProgramOption.GEN]: "bg-purple-200",
-  ["EXTRA"]: "bg-green-200"
-}
-
 export function CourseNode({ id, data, selected, dragging }: NodeProps<CourseNodeData>) {
+  const updateNodeInternals = useUpdateNodeInternals()
+
   return (
     <motion.div
       className={cn(
-        "border rounded-lg px-2 py-1 -1",
+        "max-w-[275px] border rounded-lg px-2 py-1 -1",
         (selected || dragging) && "border-ring z-20",
         data.taken ? "bg-muted border-2 border-muted-foreground-75 text-muted-foreground" : "",
-        data.programs && data.programs[0] ?
-          colorsForPrograms[data.programs[0]]
-        : colorsForPrograms["EXTRA"]
+        data.tracks && data.tracks[0] ? "bg-sky-200" : "bg-green-200"
       )}
       layout={!dragging}
       // create new component when animated changes, see issue workaround https://github.com/framer/motion/issues/2238#issue-1809290539
       key={id}
-      // onAnimationIteration={useUpdateNodeInternals}
+      onLayoutAnimationComplete={() => updateNodeInternals(id)}
     >
       <Handle type="target" position={Position.Left} />
-      <p className="text-ellipsis text-center">{data.name}</p>
+      <p className="text-ellipsis text-center text-nowrap overflow-hidden">{data.name}</p>
       <Handle type="source" position={Position.Right} />
     </motion.div>
   )

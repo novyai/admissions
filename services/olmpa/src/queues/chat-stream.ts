@@ -1,7 +1,8 @@
 import { createBlob, parseBlob } from "@graph/blob"
 import { CourseGraph, getCourseAndSemesterIndexFromIdNameCode } from "@graph/course"
-import { graphToHydratedStudentProfile } from "@graph/graph"
+import { _hasDependents, graphToHydratedStudentProfile } from "@graph/graph"
 import { createGraph, rescheduleCourse } from "@graph/profile"
+import { getAlternativeCourseInfo, getRequirementsFulfilledByCourse } from "@graph/requirement"
 import { CourseNode, HydratedStudentProfile } from "@graph/types"
 import { UnrecoverableError } from "bullmq"
 import OpenAI from "openai"
@@ -12,6 +13,8 @@ import {
   coreAgentSchema,
   doThingParams,
   forceRescheduleCourseParams,
+  giveCourseAlternatives,
+  giveRequirementsFulfilledByCourse,
   rescheduleCourseParams,
   showAppointmentParams
 } from "@repo/ai/agents/core/schema"
@@ -156,12 +159,12 @@ createWorker(async job => {
 
     const profile = parseBlob(version.blob)
 
-    const graph = await createGraph(profile)
+    const { graph, courseToReqList } = await createGraph(profile)
 
-    const hydratedProfile = graphToHydratedStudentProfile(graph, profile)
+    const hydratedProfile = graphToHydratedStudentProfile(graph, courseToReqList, profile)
 
     complete({
-      graph,
+      graph: graph,
       profile: hydratedProfile,
       scheduleId: version.scheduleId
     })
@@ -193,20 +196,148 @@ createWorker(async job => {
       })
       return
     },
-    // [CORE_AGENT_ACTIONS.BOOK_APPOINTMENT]: async (
-    //   params: z.infer<typeof bookAppointmentParams>
-    // ) => {
-    //   logger.info({
-    //     message: "booking appointment",
-    //     conversationId: jobData.conversationId,
-    //     userId: jobData.userId,
-    //     data: params
-    //   })
-    //   return `Confirm that the appointment has been booked successfully with the student's human advisor. Remind them what they might want to prepare or discuss based on your conversation so far.
+    [CORE_AGENT_ACTIONS.GIVE_COURSE_ALTERNATIVES]: async (
+      params: z.infer<typeof giveCourseAlternatives>
+    ) => {
+      logger.info({
+        message: "giving alternatives to course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { profile } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
 
-    //   Remember: you are not going to meet with the student, a human advisor is.
-    //   `
-    // },
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
+      try {
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { course } = courseSem
+      const { courseToReplace, alternativeCourses } = await getAlternativeCourseInfo(
+        course.id,
+        profile
+      )
+
+      let message = `
+      # Metadata for the Course to Replace
+      \`${JSON.stringify(courseToReplace)}\`
+
+      # Metadata for the Alternative Courses
+      \`${JSON.stringify(
+        alternativeCourses.map(course => {
+          const missingDependents = new Set(
+            [...courseToReplace.dependents].filter(
+              element => !new Set(course.dependents.map(dep => dep.id)).has(element.id)
+            )
+          )
+
+          console.log(`MISSING DEPENDENTS FOR ${course.name}:`, missingDependents)
+
+          return {
+            id: course.id,
+            name: course.name,
+            courseSubject: course.courseSubject,
+            courseNumber: course.courseNumber,
+            creditHours: course.creditHours,
+            prerequisites: course.prerequisites,
+            requirements: course.requirements,
+            missingDependents: [...missingDependents]
+          }
+        })
+      )}\``
+
+      if (alternativeCourses.length === 0) {
+        message += `Tell the student which requirements the course fulfills and tell them there are no alternative courses you can find.`
+      } else {
+        message += `If there are many alternatives, choose up the best alternatives by taking into account: 
+         1) Whether the alternative course has the exact same credit hours as and fulfills the same requirements as the course to replace.
+         2) Whether the prerequisites for the alternative course are already planned in the student's schedule.
+         3) Whether the alternative course is missing any dependents.
+ 
+        Start your message by summarizing your findings in 1-3 sentences. 
+
+        As you list each alternative, please follow these guidelines: 
+          - Instead of describing the course's topic, explain why it was chosen based on the criteria above, mentioning specific prerequisites and the semesters they are planned.
+          - Missing dependents: 
+            - If there are no missing dependents, inform the student that switching to the alternative fufills the same prerequisites as the course to replace. 
+            - If there are missing dependents, instead of using the word dependents explain in terms of "course you would no longer satisfy satisfy the prerequisites for". Explain that: 
+            - For missing dependents where \`"planned": true\`, explain that they would have to alter their schedule because they would no longer satisfy the prerequisites necessary to take {planned missing dependents}.
+            - For missing dependents where \`"planned": false\`, explain that the alternative does not satisfy {unplanned missing dependents}, which gives them less optionality. 
+
+        If there are more alternatives than what you listed, tell the student the total number of alternatives (${alternativeCourses.length}). ONLY if there is more alternatives than what you listed, let them know that they can find a full list of courses that fulfill the requirements (list the specific ones) on the degree audit page by expanding a requirement and looking for the "Other courses to consider" section.`
+      }
+
+      return message
+    },
+    [CORE_AGENT_ACTIONS.GIVE_REQUIREMENTS_FULFILLED_BY_COURSE]: async (
+      params: z.infer<typeof giveRequirementsFulfilledByCourse>
+    ) => {
+      logger.info({
+        message: "giving requirements fulfilled by course",
+        conversationId: jobData.conversationId,
+        userId: jobData.userId,
+        data: params
+      })
+      if (!jobData.versionId) {
+        throw new Error("No versionId found")
+      }
+      const { profile, graph } = await hydrateSchedule.run({
+        versionId: jobData.versionId
+      })
+
+      let courseSem: {
+        course: CourseNode
+        semesterIndex: number
+      }
+      try {
+        courseSem = getCourseAndSemesterIndexFromIdNameCode(profile, params.courseName)
+      } catch (error) {
+        // Handle the case where the course is not found
+        logger.error({
+          message: "Course not found",
+          error,
+          conversationId: jobData.conversationId,
+          userId: jobData.userId,
+          courseQuery: params.courseName
+        })
+        // Return a custom message or handle as needed
+        return `Course ${params.courseName} not found. Please check the course name and try again.`
+      }
+      const { course } = courseSem
+      if (profile.courseToReqList.has(course.id)) {
+        const requirements = await getRequirementsFulfilledByCourse(course.id, profile)
+        await publish({
+          type: SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT,
+          data: { requirementGroupOrSubgroupId: requirements[0]!.requirementGroupOrSubgroup.id }
+        })
+        return `Course ${params.courseName} fulfills ${requirements.length} requirements: ${requirements.map(r => r.requirementGroupOrSubgroup.name)}`
+      } else if (_hasDependents(course.id, graph)) {
+        const directDependents = [...graph.outNeighborEntries(course.id)].map(
+          node => node.attributes.name
+        )
+        return `Course ${params.courseName} is not a direct requirement in the program, but it is a prerequisite for ${directDependents}`
+      } else {
+        return `Course ${params.courseName} is not a requirement in the program.`
+      }
+    },
     [CORE_AGENT_ACTIONS.RESCHEDULE_COURSE]: async (
       params: z.infer<typeof rescheduleCourseParams>
     ) => {
@@ -248,8 +379,11 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = rescheduleCourse(graph, profile, course.id)
-      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+      const {
+        graph: newGraph,
+        changes,
+        profile: newProfile
+      } = rescheduleCourse(graph, profile, course.id)
 
       const currentTimeToGraduate = profile.semesters.length
       const newTimeToGraduate = changes.reduce(
@@ -363,8 +497,11 @@ createWorker(async job => {
         return `Inform the student that they cannot reschedule the course because they already took it in their ${semesterIndex + 1}th semester. `
       }
 
-      const { graph: newGraph, changes } = rescheduleCourse(graph, profile, course.id)
-      const newProfile = graphToHydratedStudentProfile(newGraph, profile)
+      const {
+        graph: newGraph,
+        changes,
+        profile: newProfile
+      } = rescheduleCourse(graph, profile, course.id)
 
       const { id } = await db.version.create({
         data: {

@@ -4,7 +4,7 @@ import { Message, MessageRole } from "@repo/db"
 import { toast } from "sonner"
 
 import { useSocket } from "@/hooks/use-socket"
-import { VersionWithoutBlob } from "@/components/dag/editor"
+import { VersionWithoutBlob } from "@/components/editor/editor"
 
 const NO_RESPONSE_TIMEOUT = 10000
 
@@ -14,7 +14,8 @@ export function useAdvisor({
   userId,
   versions,
   handleSelectedVersion,
-  handleAppointmentTimes
+  handleAppointmentTimes,
+  handleScrollToRequirementInAudit
 }: {
   initialMessages?: Message[]
   conversationId: string
@@ -23,6 +24,7 @@ export function useAdvisor({
   versions: VersionWithoutBlob[] | null
   handleSelectedVersion: ((versionId: string) => void) | null
   handleAppointmentTimes: ((times: Date[]) => void) | null
+  handleScrollToRequirementInAudit: ((requirementGroupOrSubgroupId: string) => void) | null
 }) {
   const [messages, setMessages] = useState<Partial<Message>[]>(initialMessages ?? [])
 
@@ -59,6 +61,11 @@ export function useAdvisor({
             new Date(1714143600000),
             new Date(1714411800000)
           ])
+        }
+      },
+      [SOCKET_EVENTS.SCROLL_TO_REQUIREMENT_IN_AUDIT]: ({ requirementGroupOrSubgroupId }) => {
+        if (handleScrollToRequirementInAudit) {
+          handleScrollToRequirementInAudit(requirementGroupOrSubgroupId)
         }
       },
       [SOCKET_EVENTS.CONVERSATION_STREAM]: ({

@@ -1,54 +1,69 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { ScheduleDataPayload, TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
 import { PromptComposer } from "@ui/components/prompt-composer"
 import { SuggestedPrompts } from "@ui/components/suggested-prompts"
 import { ScrollArea } from "@ui/components/ui/scroll-area"
 import { Separator } from "@ui/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@ui/components/ui/tabs"
 import { Loader2 } from "lucide-react"
 import { applyEdgeChanges, applyNodeChanges, Edge, EdgeChange, Node, NodeChange } from "reactflow"
 
 import { useAdvisor } from "@/hooks/use-advisor"
-import { COREQ_EDGE_COLOR, PREREQ_EDGE_COLOR, SemesterDAG } from "@/components/semester-dag"
+import {
+  COREQ_EDGE_COLOR,
+  PREREQ_EDGE_COLOR,
+  SemesterDAG
+} from "@/components/editor/dag/semester-dag"
 
 import { AssistantChat } from "../assistant-chat"
 import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { MdxContent } from "../mdxContent"
-import { isCourseNode } from "../semester-dag/graph-to-node-utils"
-import { CourseNodeType } from "../semester-dag/nodeTypes/course-node"
-import { SemesterNodeType } from "../semester-dag/nodeTypes/semester-node"
+import { createVersion, hydratedProfileAndNodesByVersion } from "./dag/action"
+import { AppointmentScheduler } from "./dag/appointment-scheduler"
+import { isCourseNode } from "./dag/semester-dag/graph-to-node-utils"
+import { CourseNodeType } from "./dag/semester-dag/nodeTypes/course-node"
+import { SemesterNodeType } from "./dag/semester-dag/nodeTypes/semester-node"
 import {
   getChangedCourseNodeIDs,
   getGhostCourseNodesAndEdges,
   getModifiedEdges,
   getModifiedNodes
-} from "../semester-dag/utils"
-import { createVersion, hydratedProfileAndNodesByVersion } from "./action"
-import { AppointmentScheduler } from "./appointment-scheduler"
+} from "./dag/semester-dag/utils"
+import DegreeAudit from "./degree-audit/degree-audit"
 
 export type VersionWithoutBlob = { id: string }
+type TabOption = "schedule" | "audit"
 
 export function Editor({
-  versions: initialVersions,
+  initialSchedule,
+  trackData,
   conversation,
   scheduleId
 }: {
-  versions: VersionWithoutBlob[]
+  initialSchedule: ScheduleDataPayload
+  trackData: TrackDataPayload | null
   conversation: Conversation & {
     messages: Message[]
   }
   scheduleId: string
 }) {
-  const [versions, setVersions] = useState<VersionWithoutBlob[]>(initialVersions)
-  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
+  const [versions, setVersions] = useState<VersionWithoutBlob[]>(initialSchedule.versions)
   const [profile, setProfile] = useState<HydratedStudentProfile>()
 
   const [nodes, setNodes] = useState<Node[]>([])
   const [edges, setEdges] = useState<Edge[]>([])
 
   const [defaultNodes, setDefaultNodes] = useState<Node[]>([])
+
+  const [appointmentTimes, setAppointmentTimes] = useState<Date[]>([])
+
+  const [selectedTab, setSelectedTab] = useState<TabOption>("schedule")
+  const auditRef = useRef(null)
+  const [requirementToScrollTo, setRequirementToScrollTo] = useState<string>()
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -153,7 +168,7 @@ export function Editor({
   }
 
   useEffect(() => {
-    const initialLoad = versions === initialVersions
+    const initialLoad = versions === initialSchedule.versions
     if (versions.length == 0) return
     if (versions.length >= 1) {
       const versionsCopy = [...versions.map(v => ({ id: v.id }))]
@@ -172,7 +187,7 @@ export function Editor({
         )
       }
     }
-  }, [initialVersions, versions])
+  }, [initialSchedule.versions, versions])
 
   const [prompt, setPrompt] = useState("")
   const ChatScrollerRef = useRef<HTMLDivElement>(null)
@@ -186,7 +201,13 @@ export function Editor({
       const newVersion = { id: versionId }
       setVersions(prevVersions => [...prevVersions, newVersion])
     },
-    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times)
+    handleAppointmentTimes: (times: Date[]) => setAppointmentTimes(times),
+    handleScrollToRequirementInAudit: (requirementGroupOrSubgroupId: string) => {
+      if (selectedTab !== "audit") setSelectedTab("audit")
+      if (requirementToScrollTo !== requirementGroupOrSubgroupId) {
+        setRequirementToScrollTo(requirementGroupOrSubgroupId)
+      }
+    }
   })
 
   function scrollToEnd({ now = false }: { now?: boolean }) {
@@ -229,91 +250,115 @@ export function Editor({
   })
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-fit rounded-xl border">
       {!profile ?
         <div className="h-full flex flex-grow items-center justify-center">
           <Loader2 className="h-4 w-4 animate-spin" />
         </div>
-      : <>
-          <div className="flex flex-col relative h-full w-full rounded-xl border">
-            <SemesterDAG
-              resetNodePlacement={resetNodePlacement}
-              profile={profile}
-              saveVersion={saveVersion}
-              nodes={nodes}
-              edges={edges}
-              setNodes={setNodes}
-              setEdges={setEdges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-            />
-            <div className="grow max-h-[35%] h-[35%] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
-              <div className="h-full">
-                <div className="sticky">
-                  <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
-                    AI Advisor
-                  </h2>
-                  <Separator className="bg-slate-100 h-[0.1rem]" />
-                </div>
-
-                <ScrollArea ref={ChatScrollerRef} className="h-[80%]">
-                  <div className="mx-auto">
-                    <div className="px-1">
-                      {messages.length > 0 ?
-                        <AssistantChat
-                          messages={messages}
-                          disabled={!ready}
-                          submitMessage={submitMessage}
-                          loading={loading}
-                        />
-                      : <MdxContent
-                          className="py-2 px-2"
-                          content={
-                            "Hello! I'm the AI course advisor for USF's Computer Science program. I'm here to help you with course information, scheduling, and any other academic guidance you might need throughout your journey at USF. How can I assist you today?"
-                          }
-                        />
-                      }
-                    </div>
-                  </div>
-                  {ChatScrollerRef?.current && (
-                    <ChatScrollAnchor
-                      trackVisibility={waiting || loading}
-                      scrollerRef={ChatScrollerRef}
-                    />
-                  )}
-                </ScrollArea>
-              </div>
-            </div>
-            <div className="relative w-full h-[5%]">
-              {messages.length === 0 ?
-                <SuggestedPrompts
-                  handleClick={(prompt: string) => submitMessage(prompt, "user")}
-                  prompts={["What can you do?", "Reschedule Data Structures"]}
-                />
-              : <></>}
-              {appointmentTimes.length > 0 ?
-                <AppointmentScheduler
-                  times={appointmentTimes}
-                  handleBookAppointment={(readableTime: string) => {
-                    setAppointmentTimes([])
-                    submitMessage(`Let's book an appointment for ${readableTime.toLocaleString()}.`)
-                  }}
-                  closeAppointments={() => setAppointmentTimes([])}
-                />
-              : <></>}
-
-              <PromptComposer
-                disabled={!ready || !isConnected}
-                placeholder={"Ask me anything..."}
-                loading={loading}
-                onChange={handleInput}
-                onKeyDown={handleKeyDown}
-                onSubmit={submitMessage}
-                prompt={prompt}
+      : <div className="h-full flex flex-col">
+          <Tabs
+            defaultValue="schedule"
+            className="h-[52vh]"
+            value={selectedTab}
+            onValueChange={value => setSelectedTab(value as TabOption)}
+          >
+            <TabsList className="w-full flex h-[2.5rem]">
+              <TabsTrigger value="schedule" className="flex-grow">
+                Schedule
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="flex-grow">
+                Degree Audit
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="schedule" className="h-[calc(52vh-3rem)] relative">
+              <SemesterDAG
+                resetNodePlacement={resetNodePlacement}
+                profile={profile}
+                saveVersion={saveVersion}
+                nodes={nodes}
+                edges={edges}
+                setNodes={setNodes}
+                setEdges={setEdges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
               />
+            </TabsContent>
+            <TabsContent value="audit" className="h-[calc(52vh-3rem)] w-full">
+              <DegreeAudit
+                profile={profile}
+                trackData={trackData}
+                ref={auditRef}
+                requirementToScrollTo={requirementToScrollTo}
+                clearRequirementToScrollTo={() => setRequirementToScrollTo(undefined)}
+              />
+            </TabsContent>
+          </Tabs>
+          <div className="h-[30vh] w-full border-0 border-t rounded-xl border-slate-200 bg-background px-2">
+            <div className="h-full">
+              <div className="sticky">
+                <h2 className="px-2 py-2 spaced uppercase font-semibold tracking-wide text-slate-500">
+                  AI Advisor
+                </h2>
+                <Separator className="bg-slate-100 h-[0.1rem]" />
+              </div>
+
+              <ScrollArea ref={ChatScrollerRef} className="h-[80%]">
+                <div className="mx-auto">
+                  <div className="px-1">
+                    {messages.length > 0 ?
+                      <AssistantChat
+                        messages={messages}
+                        disabled={!ready}
+                        submitMessage={submitMessage}
+                        loading={loading}
+                      />
+                    : <MdxContent
+                        className="py-2 px-2"
+                        content={
+                          "Hello! I'm the AI course advisor for USF's Computer Science program. I'm here to help you with course information, scheduling, and any other academic guidance you might need throughout your journey at USF. How can I assist you today?"
+                        }
+                      />
+                    }
+                  </div>
+                </div>
+                {ChatScrollerRef?.current && (
+                  <ChatScrollAnchor
+                    trackVisibility={waiting || loading}
+                    scrollerRef={ChatScrollerRef}
+                  />
+                )}
+              </ScrollArea>
             </div>
           </div>
-        </>
+          <div className="relative w-full h-[5%]">
+            {messages.length === 0 ?
+              <SuggestedPrompts
+                handleClick={(prompt: string) => submitMessage(prompt, "user")}
+                prompts={["What can you do?", "Reschedule Data Structures"]}
+              />
+            : <></>}
+            {appointmentTimes.length > 0 ?
+              <AppointmentScheduler
+                times={appointmentTimes}
+                handleBookAppointment={(readableTime: string) => {
+                  setAppointmentTimes([])
+                  submitMessage(`Let's book an appointment for ${readableTime.toLocaleString()}.`)
+                }}
+                closeAppointments={() => setAppointmentTimes([])}
+              />
+            : <></>}
+
+            <PromptComposer
+              disabled={!ready || !isConnected}
+              placeholder={"Ask me anything..."}
+              loading={loading}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              onSubmit={submitMessage}
+              prompt={prompt}
+            />
+          </div>
+        </div>
       }
     </div>
   )

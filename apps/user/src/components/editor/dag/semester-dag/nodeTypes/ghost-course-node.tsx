@@ -16,9 +16,9 @@ export type GhostCourseNodeType = Node<GhostCourseNodeData>
 
 export function GhostCourseNode({ data }: NodeProps<CourseNodeData>) {
   return (
-    <div className={cn("border rounded-md px-2 py-1 bg-muted opacity-50")}>
+    <div className={cn("max-w-[275px] border rounded-md px-2 py-1 bg-muted opacity-50")}>
       <Handle type="target" position={Position.Left} />
-      <p className="text-ellipsis text-center">{data.name}</p>
+      <p className="text-ellipsis text-center text-nowrap overflow-hidden">{data.name}</p>
       <Handle type="source" position={Position.Right} />
     </div>
   )

@@ -11,16 +11,18 @@
     },
     "./queries/user": "./src/queries/user.ts",
     "./queries/conversation": "./src/queries/conversation.ts",
-    "./data/*": "./src/data/*.json"
+    "./queries/track": "./src/queries/track.ts",
+    "./archive/*": "./src/archive/*.json"
   },
   "scripts": {
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:seed": "tsx src/seed.ts",
+    "db:seed": "bun run src/seed.ts",
     "db:format": "prisma format",
-    "db:generate": "prisma generate --no-engine",
+    "db:generate": "prisma generate",
     "db:dev": "docker compose -f ./admissions/docker-compose.yml up -d",
+    "db:reset": "prisma migrate reset",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "lint": "eslint --max-warnings 0",
     "build": "prisma generate --no-engine",
@@ -30,13 +32,12 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
-    "@prisma/client": "5.12.1",
-    "@prisma/extension-accelerate": "^1.0.0"
+    "@prisma/client": "5.13.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "prisma": "^5.12.1",
+    "prisma": "5.13.0",
     "rimraf": "^5.0.5"
   }
 }
