@@ -282,6 +282,16 @@
                 "courseNumber": "2282"
               }
             ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312"
+              }
+            ]
           }
         ]
       }
@@ -1061,7 +1071,7 @@
     "description": "An introduction to concepts of probability and statistical analysis with special emphasis on critical interpretation of data, comparing and contrasting claims, critical thinking, problem solving, and writing.",
     "conditions": [
       {
-        "logicalOperator": "AND",
+        "logicalOperator": "OR",
         "conditions": [
           {
             "type": "PREREQUISITE",
@@ -1070,6 +1080,16 @@
               {
                 "courseSubject": "MAC",
                 "courseNumber": "2282"
+              }
+            ]
+          },
+          {
+            "type": "PREREQUISITE",
+            "minimumGrade": "C",
+            "prerequisites": [
+              {
+                "courseSubject": "MAC",
+                "courseNumber": "2312 "
               }
             ]
           }

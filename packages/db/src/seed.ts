@@ -293,6 +293,26 @@ async function main() {
   const unis = []
 
   try {
+    // clear existing data
+    await db.$transaction([
+      db.version.deleteMany({}),
+      // delete since IDs for courses, etc. will change
+      db.schedule.deleteMany({}),
+      db.courseRequisites.deleteMany({}),
+      db.prerequisite.deleteMany({}),
+      db.condition.deleteMany({}),
+      db.conditionGroup.deleteMany({}),
+      db.semestersOffered.deleteMany({}),
+      db.course.deleteMany({}),
+      db.requirementSubgroup.deleteMany({}),
+      db.requirementGroup.deleteMany({}),
+      db.requirement.deleteMany({}),
+      db.track.deleteMany({}),
+      db.program.deleteMany({}),
+      db.department.deleteMany({}),
+      db.university.deleteMany({})
+    ])
+
     for (const uni of uniInformation) {
       const uniInDb = await db.university.findFirst({
         where: {
