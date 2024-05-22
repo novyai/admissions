@@ -39,7 +39,6 @@ export default function CreateForms({
 
   const [selectedFormIndex, setSelectedFormIndex] = useState(0)
   const [studentInfo, setStudentInfo] = useState<StudentInfo>()
-  const [courseOptions, setCourseOptions] = useState<CourseIdName[]>([])
 
   const handleStudentInfoFormSubmit = async (studentInfo: StudentInfo) => {
     if (calculateNumSemestersFromTerm(studentInfo.start) < 1) {
@@ -50,7 +49,6 @@ export default function CreateForms({
 
     setSelectedFormIndex(selectedFormIndex + 1)
     setStudentInfo(studentInfo)
-    setCourseOptions([])
   }
 
   const handleCoursesFormSubmit = async (coursesInfo: CoursesInfo) => {
@@ -74,11 +72,7 @@ export default function CreateForms({
         handleSubmit={handleStudentInfoFormSubmit}
       />
     : selectedFormIndex === 1 ?
-      <StudentCoursesForm
-        studentInfo={studentInfo}
-        handleSubmit={handleCoursesFormSubmit}
-        courses={courseOptions}
-      />
+      <StudentCoursesForm studentInfo={studentInfo} handleSubmit={handleCoursesFormSubmit} />
     : <></>
   )
 }

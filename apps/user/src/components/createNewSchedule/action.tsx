@@ -109,4 +109,28 @@ export async function getProgramsForAllUniversities() {
   })
 }
 
+// export type SearchCoursesPayload =
+
+export async function searchCourses(query: string) {
+  if (query === "") {
+    return []
+  }
+  return await db.course.findMany({
+    select: {
+      name: true,
+      courseNumber: true,
+      courseSubject: true,
+      id: true
+    },
+    where: {
+      OR: [
+        { courseNumber: { contains: query } },
+        { courseSubject: { contains: query } },
+        { name: { contains: query } }
+      ]
+    },
+    take: 10
+  })
+}
+
 export type UniversityProgram = Awaited<ReturnType<typeof getProgramsForAllUniversities>>[number]

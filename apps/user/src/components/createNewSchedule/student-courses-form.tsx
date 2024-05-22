@@ -1,4 +1,4 @@
-import { CourseIdName, StudentInfo } from "@/app/(app)/create/create-forms"
+import { StudentInfo } from "@/app/(app)/create/create-forms"
 import { SemesterYearType } from "@graph/types"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { MultiSelect, Option } from "@repo/ui/components/multiselect"
@@ -10,6 +10,8 @@ import { z } from "zod"
 
 import { calculateSemesterDifference, getSemesterCode } from "@/lib/schedule/utils"
 import { capitalize } from "@/lib/utils"
+
+import CourseSearchCommand from "./course-search-command"
 
 export type CoursesInfo = { [semesterIndex: string]: Option[] }
 
@@ -26,21 +28,14 @@ const getSemesterLabels = (semesterYearStart: SemesterYearType) => {
 
 export default function StudentCoursesForm({
   studentInfo,
-  handleSubmit,
-  courses
+  handleSubmit
 }: {
   studentInfo?: StudentInfo
   handleSubmit: (courses: CoursesInfo) => void
-  courses: CourseIdName[]
 }) {
   if (studentInfo === undefined) {
     throw Error("studentInfo is undefined")
   }
-
-  const courseOptions: Option[] = courses.map(course => ({
-    value: course.id,
-    label: course.name
-  }))
 
   const semesterYearOptions = getSemesterLabels(studentInfo.start)
 
@@ -50,7 +45,9 @@ export default function StudentCoursesForm({
   }
 
   const formSchema = z.record(z.string(), z.array(z.custom<Option>()).min(1))
-  const { formState, getValues, trigger, setError, ...form } = useForm<z.infer<typeof formSchema>>({
+  const { formState, getValues, setValue, trigger, setError, ...form } = useForm<
+    z.infer<typeof formSchema>
+  >({
     resolver: zodResolver(formSchema),
     defaultValues: defaultFormValues
   })
@@ -68,6 +65,7 @@ export default function StudentCoursesForm({
 
   return (
     <Form
+      setValue={setValue}
       trigger={trigger}
       getValues={getValues}
       setError={setError}
@@ -87,9 +85,17 @@ export default function StudentCoursesForm({
                   name={field.name}
                   onChange={field.onChange}
                   value={field.value}
-                  options={courseOptions}
+                  options={[]}
                   trigger={trigger}
-                  placeholder="Select courses"
+                  placeholder={field.value.length === 0 ? "Courses" : ""}
+                />
+                <CourseSearchCommand
+                  handleSetValue={courseOption => {
+                    const currentValues = getValues()[field.name]
+                    if (!currentValues.map(option => option.value).includes(courseOption.value)) {
+                      setValue(field.name, [courseOption, ...currentValues])
+                    }
+                  }}
                 />
               </FormItem>
             )}
