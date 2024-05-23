@@ -16,7 +16,7 @@ const COLORS = [
   "bg-blue-400",
   "bg-indigo-400",
   "bg-purple-400",
-  "fuchsia-400",
+  "bg-fuchsia-400",
   "bg-pink-400",
   "bg-rose-400"
 ]
@@ -47,13 +47,14 @@ export function getColorMap(_level: COLOR_LEVEL, nodes: CourseNodeType[]): Map<s
 
   const groupToColor = new Map<string, string>()
 
-  let index = 0
   for (const groupId of allRequirements) {
-    const color = randomC[index]
+    const color = randomC.pop()
+    if (!color) {
+      throw new Error("Ran out of colors")
+    }
     if (!groupToColor.has(groupId)) {
       groupToColor.set(groupId, color)
     }
-    index++
   }
 
   return groupToColor
