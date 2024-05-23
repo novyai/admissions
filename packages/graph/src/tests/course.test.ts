@@ -26,7 +26,8 @@ describe("addCourseToGraph function", () => {
       id: courseId,
       name: courseName,
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
 
     addCourseToGraph({
@@ -47,7 +48,8 @@ describe("addCourseToGraph function", () => {
       latestFinish: undefined,
       slack: undefined,
       semester: undefined,
-      tracks: []
+      tracks: [],
+      requirements: []
     })
   })
 
@@ -65,7 +67,8 @@ describe("addCourseToGraph function", () => {
       latestFinish: undefined,
       slack: undefined,
       semester: undefined,
-      tracks: []
+      tracks: [],
+      requirements: []
     })
     const initialNodeCount = graph.order
 
@@ -127,7 +130,8 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with OR Condition",
-      tracks: [],
+      requirements: [],
+      creditHours: 3,
       conditions: [
         {
           logicalOperator: "OR",
@@ -139,13 +143,15 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
       id: prerequisiteId1,
       name: "Prerequisite 1",
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
 
     addCourseToGraph({
@@ -186,19 +192,22 @@ describe("addCourseToGraph function with AND and OR conditions", () => {
           conditions: prerequisiteConditions
         }
       ],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
     courseMap.set(prerequisiteId1, {
       id: prerequisiteId1,
       name: "Prerequisite 1",
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
     courseMap.set(prerequisiteId2, {
       id: prerequisiteId2,
       name: "Prerequisite 2",
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
 
     addCourseToGraph({
@@ -234,7 +243,8 @@ describe("addCourseToGraph function with corequisite conditions", () => {
     courseMap.set(courseId, {
       id: courseId,
       name: "Course with Corequisite",
-      tracks: [],
+      requirements: [],
+      creditHours: 3,
       conditions: [
         {
           logicalOperator: "OR",
@@ -257,7 +267,8 @@ describe("addCourseToGraph function with corequisite conditions", () => {
       id: corequisiteId,
       name: "Corequisite 1",
       conditions: [],
-      tracks: []
+      requirements: [],
+      creditHours: 3
     })
 
     addCourseToGraph({

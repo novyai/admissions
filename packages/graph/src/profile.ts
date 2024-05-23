@@ -269,10 +269,7 @@ export async function createGraph(
   >()
 
   for (const course of hydratedCourses) {
-    courseMap.set(course.id, {
-      ...course,
-      tracks: [...(courseToTrack.get(course.id) ?? new Set<string>())]
-    })
+    courseMap.set(course.id, course)
 
     for (const req of course.requirements) {
       const { needed, actual } = reqToCreditHours.get(req.id)!
@@ -341,6 +338,7 @@ export function toCourseNode(
     id: courseId,
     name: course.name,
     tracks: course.tracks,
+    requirements: course.requirements,
     earliestFinish: course.earliestFinish,
     latestFinish: course.latestFinish,
     fanOut: course.fanOut,

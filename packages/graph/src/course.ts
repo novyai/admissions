@@ -1,4 +1,4 @@
-import Prisma, { $Enums, db, RequirementType } from "@repo/db"
+import Prisma, { db, RequirementType } from "@repo/db"
 import Graph from "graphology"
 import { Attributes } from "graphology-types"
 
@@ -101,6 +101,7 @@ export type CourseAttributes = {
   id: string
   name: string
   tracks: string[] | undefined
+  requirements: string[] | undefined
 } & (
   | {
       hasAttributes: false
@@ -130,7 +131,14 @@ export const COURSE_PAYLOAD_QUERY = {
     id: true,
     creditHours: true,
     requirements: {
-      select: { id: true }
+      select: {
+        id: true,
+        track: {
+          select: {
+            id: true
+          }
+        }
+      }
     },
     conditions: {
       select: {
@@ -146,24 +154,7 @@ export const COURSE_PAYLOAD_QUERY = {
   }
 } satisfies Prisma.CourseDefaultArgs
 
-// export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
-
-export type CoursePayload = {
-  id: string
-  name: string
-  tracks: string[] | undefined
-  conditions: Array<{
-    conditions: Array<{
-      prerequisites: Array<{
-        id: string
-        conditionId: string
-        courseId: string
-      }>
-      type: $Enums.RequirementType
-    }>
-    logicalOperator: $Enums.LogicalOperator | null
-  }>
-}
+export type CoursePayload = Prisma.CourseGetPayload<typeof COURSE_PAYLOAD_QUERY>
 
 export const addCourseToGraph = ({
   courseId,
@@ -190,7 +181,8 @@ export const addCourseToGraph = ({
   graph.addNode(courseId, {
     id: course.id,
     name: course.name,
-    tracks: course.tracks,
+    tracks: course.requirements.map(r => r.track.id),
+    requirements: course.requirements.map(r => r.id),
     hasAttributes: false,
     fanOut: undefined,
     earliestFinish: undefined,
