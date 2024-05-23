@@ -4,6 +4,8 @@ export type CourseNode = {
   id: string
   name: string
   tracks: string[] | undefined
+  requirements: string[] | undefined
+
   dependents: string[]
   prerequisites: string[]
   corequisites: string[]

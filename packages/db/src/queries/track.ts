@@ -18,6 +18,23 @@ export async function getTrack(trackId: string) {
                   select: {
                     requisitesId: true
                   }
+                },
+                requirements: {
+                  select: {
+                    id: true,
+                    requirementGroup: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    },
+                    requirementSubgroup: {
+                      select: {
+                        id: true,
+                        name: true
+                      }
+                    }
+                  }
                 }
               }
             }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { createContext, useCallback, useEffect, useRef, useState } from "react"
 import { ScheduleDataPayload, TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { Conversation, Message, MessageRole } from "@repo/db"
 import { CourseNode, HydratedStudentProfile } from "@repo/graph/types"
@@ -24,6 +24,7 @@ import { ChatScrollAnchor } from "../chat-scroll-anchor"
 import { MdxContent } from "../mdxContent"
 import { createVersion, hydratedProfileAndNodesByVersion } from "./dag/action"
 import { AppointmentScheduler } from "./dag/appointment-scheduler"
+import { getColorMap } from "./dag/semester-dag/coloring"
 import { isCourseNode } from "./dag/semester-dag/graph-to-node-utils"
 import { CourseNodeType } from "./dag/semester-dag/nodeTypes/course-node"
 import { SemesterNodeType } from "./dag/semester-dag/nodeTypes/semester-node"
@@ -37,6 +38,12 @@ import DegreeAudit from "./degree-audit/degree-audit"
 
 export type VersionWithoutBlob = { id: string }
 type TabOption = "schedule" | "audit"
+
+export const CourseContext = createContext<{
+  colorMap: Map<string, string>
+}>({
+  colorMap: new Map()
+})
 
 export function Editor({
   initialSchedule,
@@ -64,6 +71,7 @@ export function Editor({
   const [selectedTab, setSelectedTab] = useState<TabOption>("schedule")
   const auditRef = useRef(null)
   const [requirementToScrollTo, setRequirementToScrollTo] = useState<string>()
+  const [colorMap, setColorMap] = useState<Map<string, string>>(new Map())
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     const changeTypes = new Set(changes.map(c => c.type))
@@ -125,6 +133,10 @@ export function Editor({
     if (lastVersion === undefined) {
       setNodes(newDefaultNodes)
       setEdges(newDefaultEdges)
+
+      setColorMap(
+        getColorMap("REQUIREMENT", newDefaultNodes.filter(n => isCourseNode(n)) as CourseNodeType[])
+      )
     } else {
       setNodes(newDefaultNodes)
       setEdges(newDefaultEdges)
@@ -271,17 +283,19 @@ export function Editor({
               </TabsTrigger>
             </TabsList>
             <TabsContent value="schedule" className="h-[calc(52vh-3rem)] relative">
-              <SemesterDAG
-                resetNodePlacement={resetNodePlacement}
-                profile={profile}
-                saveVersion={saveVersion}
-                nodes={nodes}
-                edges={edges}
-                setNodes={setNodes}
-                setEdges={setEdges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-              />
+              <CourseContext.Provider value={{ colorMap }}>
+                <SemesterDAG
+                  resetNodePlacement={resetNodePlacement}
+                  profile={profile}
+                  saveVersion={saveVersion}
+                  nodes={nodes}
+                  edges={edges}
+                  setNodes={setNodes}
+                  setEdges={setEdges}
+                  onNodesChange={onNodesChange}
+                  onEdgesChange={onEdgesChange}
+                />
+              </CourseContext.Provider>
             </TabsContent>
             <TabsContent value="audit" className="h-[calc(52vh-3rem)] w-full">
               <DegreeAudit

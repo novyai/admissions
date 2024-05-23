@@ -51,6 +51,7 @@ export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGr
       id: courseNode.id,
       name: courseNode.name,
       tracks: courseNode.tracks,
+      requirements: courseNode.requirements,
       hasAttributes: false,
       fanOut: undefined,
       earliestFinish: undefined,
