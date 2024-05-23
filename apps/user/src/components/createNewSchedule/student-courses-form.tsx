@@ -1,7 +1,7 @@
 import { StudentInfo } from "@/app/(app)/create/create-forms"
 import { SemesterYearType } from "@graph/types"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { MultiSelect, Option } from "@repo/ui/components/multiselect"
+import { Option } from "@repo/ui/components/multiselect"
 import { Button } from "@ui/components/ui/button"
 import { Form, FormField, FormItem, FormLabel } from "@ui/components/ui/form"
 import { Loader2 } from "lucide-react"
@@ -11,7 +11,7 @@ import { z } from "zod"
 import { calculateSemesterDifference, getSemesterCode } from "@/lib/schedule/utils"
 import { capitalize } from "@/lib/utils"
 
-import CourseSearchCommand from "./course-search-command"
+import { CourseSearchMultiSelect } from "./course-search-multiselect"
 
 export type CoursesInfo = { [semesterIndex: string]: Option[] }
 
@@ -81,20 +81,12 @@ export default function StudentCoursesForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>{`${capitalize(semester)} ${year}`}</FormLabel>
-                <MultiSelect
+                <CourseSearchMultiSelect
                   name={field.name}
-                  onChange={field.onChange}
                   value={field.value}
-                  options={[]}
-                  trigger={trigger}
-                  placeholder={field.value.length === 0 ? "Courses" : ""}
-                />
-                <CourseSearchCommand
+                  placeholder="Select courses"
                   handleSetValue={courseOption => {
-                    const currentValues = getValues()[field.name]
-                    if (!currentValues.map(option => option.value).includes(courseOption.value)) {
-                      setValue(field.name, [courseOption, ...currentValues])
-                    }
+                    setValue(field.name, courseOption, { shouldValidate: true })
                   }}
                 />
               </FormItem>

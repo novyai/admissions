@@ -109,7 +109,7 @@ export async function getProgramsForAllUniversities() {
   })
 }
 
-// export type SearchCoursesPayload =
+export type UniversityProgram = Awaited<ReturnType<typeof getProgramsForAllUniversities>>[number]
 
 export async function searchCourses(query: string) {
   if (query === "") {
@@ -132,5 +132,3 @@ export async function searchCourses(query: string) {
     take: 10
   })
 }
-
-export type UniversityProgram = Awaited<ReturnType<typeof getProgramsForAllUniversities>>[number]

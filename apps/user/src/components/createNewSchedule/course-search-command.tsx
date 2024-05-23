@@ -18,13 +18,9 @@ export default function CourseSearchCommand({
 }: {
   handleSetValue: (courseOption: Option) => void
 }) {
-  const [open, setOpen] = useState(false)
   const [courses, setCourses] = useState<Option[]>([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState("")
-  open
-
-  // const [commandValue, setCommandValue] = useState("")
 
   const getDebouncedCourses = useDebouncedCallback(async () => {
     setLoading(true)
@@ -44,8 +40,6 @@ export default function CourseSearchCommand({
   }, 500)
 
   useEffect(() => {
-    console.log("in useEffect")
-
     getDebouncedCourses()
   }, [search, getDebouncedCourses])
 
@@ -70,7 +64,6 @@ export default function CourseSearchCommand({
               key={course.value}
               value={course.label}
               onSelect={() => {
-                setOpen(false)
                 handleSetValue(course)
               }}
             >
