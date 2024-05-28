@@ -20,11 +20,12 @@ import { _canMoveCourse, scheduleCourses } from "./schedule"
 import { computeNodeStats } from "./stats"
 import {
   BaseStudentProfile,
+  BaseStudentProfileWithSemesters,
   CourseNode,
   HydratedStudentProfile,
   NegativeScheduleConstraint,
   PositiveScheduleConstraint,
-  StudentProfile
+  ScheduleConstraints
 } from "./types"
 import { isSubsetOf as isSubset } from "./utils"
 
@@ -53,7 +54,8 @@ function getCoursesToRemove(
     string,
     Array<{ courseId: string; creditHours: number; requirements: string[] }>
   >,
-  reqToCreditHours: Map<string, { actual: number; needed: number }>
+  reqToCreditHours: Map<string, { actual: number; needed: number }>,
+  takenCourseIds: string[]
 ) {
   interface Course {
     dependents: Set<string>
@@ -61,6 +63,7 @@ function getCoursesToRemove(
     creditHours: number
     requirements: string[]
   }
+  const takenCourseIdSet = new Set(takenCourseIds)
   const requiredCoursesRemoveCandidates: Array<{
     courseId: string
     creditHours: number
@@ -104,6 +107,9 @@ function getCoursesToRemove(
   )
 
   const canRemoveCourse = (course: Course) => {
+    if (takenCourseIdSet.has(course.courseId)) {
+      return false
+    }
     for (const reqId of course.requirements) {
       const { needed, actual } = reqToCreditHours.get(reqId)!
       if (actual - course.creditHours < needed) {
@@ -137,7 +143,7 @@ function getCoursesToRemove(
 }
 
 export async function createGraph(
-  profile: StudentProfile
+  profile: BaseStudentProfileWithSemesters
 ): Promise<{ graph: CourseGraph; courseToReqList: Map<string, string[]> }> {
   const graph: CourseGraph = new Graph()
   const trackIds = [...profile.tracks, "GEN"]
@@ -254,6 +260,36 @@ export async function createGraph(
     requiredCoursesSet.add(courseId)
   }
 
+  const takenRequiredCoursesIds = (
+    await db.course.findMany({
+      include: { requirements: { select: { trackId: true } } },
+      where: {
+        id: { in: profile.takenCourses },
+        requirements: { some: { trackId: { in: trackIds } } }
+      }
+    })
+  ).map(c => c.id)
+
+  const takenNonRequirementCourseIds = (
+    await db.course.findMany({
+      select: { id: true },
+      where: {
+        id: {
+          in: profile.takenCourses,
+          notIn: takenRequiredCoursesIds
+        }
+      }
+    })
+  ).map(c => c.id)
+
+  for (const courseId of takenRequiredCoursesIds) {
+    requiredCoursesSet.add(courseId)
+  }
+
+  for (const courseId of takenNonRequirementCourseIds) {
+    coursesToHydrateSet.add(courseId)
+  }
+
   const courseMap = new Map<string, CoursePayload>()
 
   const hydratedCourses = await db.course.findMany({
@@ -297,6 +333,8 @@ export async function createGraph(
     })
   }
 
+  console.log("profile in createGraph", profile.semesters)
+
   for (const [i, sem] of profile.semesters.entries()) {
     for (const courseId of sem) {
       graph.setNodeAttribute(courseId, "semester", i)
@@ -308,7 +346,8 @@ export async function createGraph(
     hydratedCourses,
     requiredCoursesSet,
     reqToCourses,
-    reqToCreditHours
+    reqToCreditHours,
+    profile.takenCourses
   )
 
   for (const courseId of coursesToRemove) {
@@ -317,16 +356,6 @@ export async function createGraph(
   }
 
   return { graph, courseToReqList }
-}
-
-/**
- * Load all courses into a student's profile and build their schedule
- * @param profile the basic information about the student's profile
- */
-export const getStudentProfileFromRequirements = async (profile: BaseStudentProfile) => {
-  const { graph, courseToReqList } = await createGraph({ ...profile, semesters: [] })
-  scheduleCourses(graph, profile)
-  return graphToHydratedStudentProfile(graph, courseToReqList, profile)
 }
 
 export function toCourseNode(
@@ -527,4 +556,17 @@ export function pushCourseAndDependents(
     console.log("ERROR IN pushCourseAndDependents", JSON.stringify(error))
     throw error
   }
+}
+
+/**
+ * Load all courses into a student's profile and build their schedule
+ * @param profile the basic information about the student's profile
+ */
+export const getStudentProfileFromRequirements = async (
+  profile: BaseStudentProfile,
+  constraints?: ScheduleConstraints
+) => {
+  const { graph, courseToReqList } = await createGraph({ ...profile, semesters: [] })
+  scheduleCourses(graph, profile, constraints)
+  return graphToHydratedStudentProfile(graph, courseToReqList, profile)
 }

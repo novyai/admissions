@@ -2,7 +2,7 @@ import {
   getCorequisites,
   getCoursesInSemester,
   graphToHydratedStudentProfile,
-  studentProfileToGraph
+  hydratedStudentProfileToGraph
 } from "@graph/graph"
 import {
   BaseStudentProfile,
@@ -50,7 +50,7 @@ export function canMoveCourse(
   profile: HydratedStudentProfile,
   ignoreGraduation: boolean = true
 ): CannotMoveReason | { canMove: true } {
-  const graph = studentProfileToGraph(profile)
+  const graph = hydratedStudentProfileToGraph(profile)
   return _canMoveCourse(courseId, toSemester, profile, graph, ignoreGraduation)
 }
 
@@ -143,7 +143,7 @@ function checkCorequisiteRequirements(
 }
 
 export function moveCourse(courseId: string, toSemester: number, profile: HydratedStudentProfile) {
-  const graph: CourseGraph = studentProfileToGraph(profile)
+  const graph: CourseGraph = hydratedStudentProfileToGraph(profile)
   const canMove = _canMoveCourse(courseId, toSemester, profile, graph)
   if (canMove) {
     graph.setNodeAttribute(courseId, "semester", toSemester)

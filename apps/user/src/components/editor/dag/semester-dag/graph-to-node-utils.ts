@@ -1,5 +1,5 @@
 import { getCourseWithPrereqs } from "@/db/courses"
-import { CourseNode } from "@repo/graph/types"
+import { CourseNode, SemesterYearType } from "@repo/graph/types"
 import { Edge, Node, XYPosition } from "reactflow"
 
 import { CourseNodeType, defaultCourseNode } from "./nodeTypes/course-node"
@@ -41,7 +41,7 @@ const getEdges = (course: CourseNode) => {
 export function getSemesterNodesAndEdges(
   semesters: CourseNode[][],
   currSemester: number,
-  startDate: string
+  startTerm: SemesterYearType
 ) {
   const nodes: Node[] = []
   const parentNodes: SemesterNodeType[] = semesters.map((_semester, index): SemesterNodeType => {
@@ -49,7 +49,7 @@ export function getSemesterNodesAndEdges(
       ...defaultSemesterNode,
       id: `semester-${index}`,
       position: { x: index * (SEMESTER_NODE_WIDTH + 25), y: 0 },
-      data: { semesterIndex: index, currSemester: currSemester, startDate: startDate }
+      data: { semesterIndex: index, currSemester: currSemester, startTerm: startTerm }
     }
   })
 

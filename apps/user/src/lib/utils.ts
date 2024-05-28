@@ -12,3 +12,7 @@ export function generateBrowserUUID(): string {
     return v.toString(16)
   })
 }
+
+export function capitalize(string: string) {
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+}

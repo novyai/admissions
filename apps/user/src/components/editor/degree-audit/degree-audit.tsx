@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useState } from "react"
 import { TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { CourseAttributes, CourseGraph } from "@graph/course"
-import { studentProfileToGraph } from "@graph/graph"
-import { HydratedStudentProfile } from "@graph/types"
+import { hydratedStudentProfileToGraph } from "@graph/graph"
+import { HydratedStudentProfile, SemesterYearType } from "@graph/types"
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +24,7 @@ import { cn } from "@ui/lib/utils"
 import { CalendarCheckIcon, CheckIcon, Ellipsis, MoreHorizontal, TriangleAlert } from "lucide-react"
 
 import { getSemesterCode } from "@/lib/schedule/utils"
+import { capitalize } from "@/lib/utils"
 
 type GroupData = TrackDataPayload["requirementGroup"][number]["requirementSubgroups"][number]
 
@@ -78,7 +79,7 @@ const DegreeAudit = forwardRef<HTMLDivElement, DegreeAuditProps>(
       return <div>Multiple tracks not supported on our audit page for now</div>
     }
 
-    const graph = studentProfileToGraph(profile)
+    const graph = hydratedStudentProfileToGraph(profile)
 
     trackData.requirementGroup.sort((reqGroupA, reqGroupB) =>
       reqGroupA.name.localeCompare(reqGroupB.name)
@@ -129,7 +130,7 @@ const DegreeAudit = forwardRef<HTMLDivElement, DegreeAuditProps>(
                               key={i}
                               requirement={requirement}
                               graph={graph}
-                              startDate={profile.startDate}
+                              startTerm={profile.startTerm}
                               currentSemester={profile.currentSemester}
                             />
                           ))}
@@ -261,9 +262,9 @@ function RequirementRow({
   requirement,
   graph,
   currentSemester,
-  startDate
+  startTerm
 }: {
-  startDate: string
+  startTerm: SemesterYearType
   requirement: GroupData["requirements"][number]
   graph: CourseGraph
   currentSemester: number
@@ -330,7 +331,7 @@ function RequirementRow({
             course={course}
             graph={graph}
             currentSemester={currentSemester}
-            startDate={startDate}
+            startTerm={startTerm}
           />
         ))}
         {extraCourses.length > 0 && (
@@ -371,12 +372,12 @@ function CourseRow({
   course,
   graph,
   currentSemester,
-  startDate
+  startTerm
 }: {
   course: GroupData["requirements"][number]["courses"][number]
   graph: CourseGraph
   currentSemester: number
-  startDate: string
+  startTerm: SemesterYearType
 }) {
   const courseData = getAttributes(graph, course.id)
 
@@ -392,7 +393,7 @@ function CourseRow({
   if (courseData) {
     status = getStatusForCourse(courseData, currentSemester)
     if (courseData.semester !== undefined) {
-      semesterCode = getSemesterCode(courseData.semester, startDate)
+      semesterCode = getSemesterCode(courseData.semester, startTerm)
     }
   }
 
@@ -416,7 +417,7 @@ function CourseRow({
           {status === "not_planned" ?
             "Not planned"
           : <>
-              <span className="block font-semibold">{`${semesterCode.semester} ${semesterCode.year}`}</span>
+              <span className="block font-semibold">{`${capitalize(semesterCode.semester)} ${semesterCode.year}`}</span>
               <span className="block">{statusInfo.content}</span>
             </>
           }
