@@ -1,10 +1,14 @@
-import { buildSemesters, studentProfileToGraph } from "@graph/graph"
+import { buildSemesters, hydratedStudentProfileToGraph } from "@graph/graph"
 import { getStudentProfileFromRequirements, pushCourseAndDependents } from "@graph/profile"
-import { BaseStudentProfile, HydratedStudentProfile, StudentProfile } from "@graph/types"
+import {
+  BaseStudentProfile,
+  BaseStudentProfileWithSemesters,
+  HydratedStudentProfile
+} from "@graph/types"
 import { ChangeType } from "@repo/constants"
 import { describe, expect, test } from "bun:test"
 
-const mathProfile: StudentProfile = {
+const mathProfile: BaseStudentProfileWithSemesters = {
   tracks: [],
   semesters: [],
   requiredCourses: [
@@ -18,10 +22,11 @@ const mathProfile: StudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 3,
-  startTerm: { semester: "FALL", year: 2020 }
+  startTerm: { semester: "FALL", year: 2020 },
+  takenCourses: []
 }
 
-const compositionProfile: StudentProfile = {
+const compositionProfile: BaseStudentProfileWithSemesters = {
   tracks: [],
   semesters: [],
   requiredCourses: ["0c990f7e-bbb2-4bea-9e50-6bdd1b29af01", "87675174-11fd-4f81-a0b9-6dfc80b1f29b"],
@@ -29,7 +34,8 @@ const compositionProfile: StudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 3,
-  startTerm: { semester: "FALL", year: 2020 }
+  startTerm: { semester: "FALL", year: 2020 },
+  takenCourses: []
 }
 
 const removeGenEdProgram = (profile: HydratedStudentProfile) => {
@@ -174,7 +180,7 @@ describe("pushing classes", () => {
     async ({ profile, classToPush, expected }) => {
       const studentProfile = await getStudentProfileFromRequirements({ ...profile })
       removeGenEdProgram(studentProfile)
-      const graph = studentProfileToGraph(studentProfile)
+      const graph = hydratedStudentProfileToGraph(studentProfile)
       // push last class in chain
 
       const updated = pushCourseAndDependents(graph, studentProfile, classToPush)
@@ -194,7 +200,8 @@ const csProfile: BaseStudentProfile = {
   timeToGraduate: 4,
   currentSemester: 1,
   coursePerSemester: 5,
-  startTerm: { semester: "FALL", year: 2020 }
+  startTerm: { semester: "FALL", year: 2020 },
+  takenCourses: []
 }
 
 test("test blob", async () => {

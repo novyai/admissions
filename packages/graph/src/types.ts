@@ -34,14 +34,13 @@ export type BaseStudentProfile = {
   currentSemester: number
   coursePerSemester: number
   startTerm: SemesterYearType
+  takenCourses: string[]
 }
 
-export const studentProfileSchema = z.custom<StudentProfile>()
+export const studentProfileSchema = z.custom<BaseStudentProfileWithSemesters>()
 
-export type StudentProfile = BaseStudentProfile & {
+export type BaseStudentProfileWithSemesters = BaseStudentProfile & {
   semesters: string[][]
-  // graph: Map<string, CourseNode>
-  // allCourses: CourseNode[]
 }
 
 export type HydratedStudentProfile = BaseStudentProfile & {

@@ -41,6 +41,21 @@ export async function createNewSchedule(
   coursesInfo?: CoursesInfo
 ) {
   const currentSemester = calculateSemesterDifference(startTerm) - 1
+
+  const constraints: ScheduleConstraints = {
+    positive: coursesInfo ? convertCoursesInfoToPositiveConstraints(coursesInfo) : [],
+    negative: []
+  }
+
+  const takenCourses: string[] = []
+  if (coursesInfo !== undefined) {
+    for (const semester in coursesInfo) {
+      for (const course of coursesInfo[semester]) {
+        takenCourses.push(course.value)
+      }
+    }
+  }
+
   const baseProfile: BaseStudentProfile = {
     tracks,
     requiredCourses: [],
@@ -48,13 +63,10 @@ export async function createNewSchedule(
     timeToGraduate: 8,
     coursePerSemester: 5,
     currentSemester: currentSemester,
-    startTerm: startTerm
+    startTerm: startTerm,
+    takenCourses: takenCourses
   }
 
-  const constraints: ScheduleConstraints = {
-    positive: coursesInfo ? convertCoursesInfoToPositiveConstraints(coursesInfo) : [],
-    negative: []
-  }
   const studentProfile = await getStudentProfileFromRequirements(baseProfile, constraints)
 
   const schedule = await db.schedule.create({

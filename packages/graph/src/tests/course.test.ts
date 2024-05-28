@@ -14,7 +14,8 @@ const baseProfile: BaseStudentProfile = {
   timeToGraduate: 0,
   currentSemester: 0,
   coursePerSemester: 5,
-  startTerm: { semester: "FALL", year: 2020 }
+  startTerm: { semester: "FALL", year: 2020 },
+  takenCourses: []
 }
 
 describe("addCourseToGraph function", () => {

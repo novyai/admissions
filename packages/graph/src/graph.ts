@@ -1,9 +1,4 @@
-import {
-  BaseStudentProfile,
-  CourseNode,
-  HydratedStudentProfile,
-  BaseStudentProfile as StudentProfile
-} from "@graph/types"
+import { BaseStudentProfile, CourseNode, HydratedStudentProfile } from "@graph/types"
 import { Change, ChangeType } from "@repo/constants"
 import { RequirementType } from "@repo/db"
 import Graph from "graphology"
@@ -42,7 +37,7 @@ export const getCorequisites = (graph: CourseGraph, courseID: string) =>
     .map(edgeId => graph.source(edgeId))
     .map(nodeId => graph.getNodeAttributes(nodeId))
 
-export function studentProfileToGraph(profile: HydratedStudentProfile): CourseGraph {
+export function hydratedStudentProfileToGraph(profile: HydratedStudentProfile): CourseGraph {
   const graph: CourseGraph = new Graph()
 
   for (const courseNode of profile.semesters.flat()) {
@@ -88,14 +83,15 @@ export function hydratedProfileToBaseStudentProfile(
     timeToGraduate: hydratedProfile.timeToGraduate,
     currentSemester: hydratedProfile.currentSemester,
     coursePerSemester: hydratedProfile.coursePerSemester,
-    startTerm: hydratedProfile.startTerm
+    startTerm: hydratedProfile.startTerm,
+    takenCourses: hydratedProfile.takenCourses
   }
 }
 
 export function graphToHydratedStudentProfile(
   graph: CourseGraph,
   courseToReqList: Map<string, string[]>,
-  profile: StudentProfile
+  profile: BaseStudentProfile
 ): HydratedStudentProfile {
   const allCourses: CourseNode[] = graph.mapNodes((courseId, course) =>
     toCourseNode(graph, courseId, course)
@@ -141,7 +137,7 @@ export function buildSemesters(graph: CourseGraph) {
 // }
 
 export const getAllPrereqs = (courseId: string, profile: HydratedStudentProfile): CourseNode[] => {
-  const graph = studentProfileToGraph(profile)
+  const graph = hydratedStudentProfileToGraph(profile)
 
   return _getAllPrereqs(courseId, graph).map(prereqId => toCourseNode(graph, prereqId, undefined))
 }
@@ -155,7 +151,7 @@ export const getAllDependents = (
   courseId: string,
   profile: HydratedStudentProfile
 ): CourseNode[] => {
-  const graph = studentProfileToGraph(profile)
+  const graph = hydratedStudentProfileToGraph(profile)
 
   return _getAllDependents(courseId, graph).map(prereqId =>
     toCourseNode(graph, prereqId, undefined)

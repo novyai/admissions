@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useState } from "react"
 import { TrackDataPayload } from "@/app/(app)/schedule/[scheduleId]/page"
 import { CourseAttributes, CourseGraph } from "@graph/course"
-import { studentProfileToGraph } from "@graph/graph"
+import { hydratedStudentProfileToGraph } from "@graph/graph"
 import { HydratedStudentProfile, SemesterYearType } from "@graph/types"
 import {
   Accordion,
@@ -79,7 +79,7 @@ const DegreeAudit = forwardRef<HTMLDivElement, DegreeAuditProps>(
       return <div>Multiple tracks not supported on our audit page for now</div>
     }
 
-    const graph = studentProfileToGraph(profile)
+    const graph = hydratedStudentProfileToGraph(profile)
 
     trackData.requirementGroup.sort((reqGroupA, reqGroupB) =>
       reqGroupA.name.localeCompare(reqGroupB.name)

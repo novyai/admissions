@@ -49,7 +49,6 @@ export function CourseSearchMultiSelect({
 
   React.useEffect(() => {
     getDebouncedCourses()
-    console.log("in use effect")
   }, [search, getDebouncedCourses])
 
   const handleUnselect = React.useCallback(

@@ -70,6 +70,7 @@ export async function hydratedProfileAndNodesByVersion(versionId: string) {
       id: versionId
     },
     select: {
+      id: true,
       blob: true
     }
   })
