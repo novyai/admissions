@@ -333,8 +333,6 @@ export async function createGraph(
     })
   }
 
-  console.log("profile in createGraph", profile.semesters)
-
   for (const [i, sem] of profile.semesters.entries()) {
     for (const courseId of sem) {
       graph.setNodeAttribute(courseId, "semester", i)
