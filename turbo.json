@@ -53,10 +53,18 @@
       "persistent": false
     },
     "studio": {},
-    "db:reset": {},
-    "db:generate": {},
-    "db:migrate:deploy": {},
-    "db:migrate:dev": {},
+    "db:reset": {
+      "cache": false
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "db:migrate:deploy": {
+      "cache": false
+    },
+    "db:migrate:dev": {
+      "cache": false
+    },
     "db:format": {
       "cache": false
     },
