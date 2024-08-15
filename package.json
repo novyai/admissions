@@ -16,8 +16,8 @@
     "db:format": "turbo run db:format",
     "db:generate": "turbo run db:generate",
     "db:push": "turbo run db:push",
-    "db:studio": "turbo run db:studio",
-    "db:dev": "turbo run db:dev",
+    "db:studio": "turbo run studio",
+    "local:dev": "docker compose -f ./docker-compose.yaml up -d",
     "test": "turbo run test",
     "test:watch": "turbo run test:watch --concurrency=11"
   },

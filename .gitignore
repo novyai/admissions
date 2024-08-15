@@ -40,3 +40,4 @@ yarn-error.log*
 
 # Turborepo
 .turbo
+.env*.local

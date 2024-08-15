@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": ["**/.env.*local", "./.env"],
   "globalEnv": [
     "NODE_ENV",
     "DATABASE_URL",
@@ -22,7 +22,7 @@
     "CLERK_USER_WEBHOOK_SECRET",
     "PORT"
   ],
-  "pipeline": {
+    "pipeline": {
     "build": {
       "dependsOn": ["^db:generate", "^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
@@ -33,9 +33,16 @@
     "test": {},
     "test:watch": {},
     "dev": {
-      "dependsOn": ["^db:generate", "^db:dev"],
+      "dependsOn": [
+        "//#local:dev",
+        "^db:migrate:deploy",
+        "^db:generate"
+      ],
       "cache": false,
       "persistent": true
+    },
+     "//#local:dev": {
+      "cache": false
     },
     "clean": {
       "cache": false,
@@ -48,6 +55,7 @@
     "studio": {},
     "db:reset": {},
     "db:generate": {},
+    "db:migrate:deploy": {},
     "db:migrate:dev": {},
     "db:format": {
       "cache": false
